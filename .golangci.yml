@@ -1,0 +1,66 @@
+run:
+  concurrency: 4
+  timeout: 1m
+  issues-exit-code: 1
+  tests: true
+  skip-dirs-use-default: true
+  skip-files:
+    - ".*_mock_test.go$"
+  allow-parallel-runners: true
+
+# all available settings of specific linters
+linters-settings:
+  govet:
+    check-shadowing: true
+    enable-all: true
+    disable:
+      - fieldalignment
+  golint:
+    min-confidence: 0.8
+  gofmt:
+    simplify: true
+  goimports:
+    local-prefixes: github.com/circonus-labs,github.com/openhistogram,github.com/circonus
+  misspell:
+    locale: US
+  unused:
+    check-exported: false
+  unparam:
+    check-exported: false
+
+linters:
+  enable:
+    - errcheck
+    - exportloopref
+    - gocritic
+    - godot
+    - godox
+    - goerr113
+    - gofmt
+    - gosec
+    - gosimple
+    - govet
+    - ineffassign
+    - megacheck
+    - misspell
+    - prealloc
+    - predeclared
+    - revive
+    - staticcheck
+    - typecheck
+    - unparam
+    - unused
+    - unconvert
+    - wrapcheck
+  disable:
+    - scopelint # deprecated, replaced by 
+    - golint # deprecated, replaced by revive
+    - gci
+    - deadcode # deprecated, replaced by unused
+    - varcheck # deprecated, replaced by unused
+    - structcheck # deprecated, replaced by unused
+  disable-all: false
+  presets:
+    - bugs
+    - unused
+  fast: false

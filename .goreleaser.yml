@@ -1,0 +1,167 @@
+project_name: example-agent
+
+builds: 
+  - id: ea
+    main: ./cmd/example-agent
+    binary: sbin/example-agentd
+    env: 
+      - CGO_ENABLED=0
+    goarch: 
+      - amd64
+      - arm64
+    goos: 
+      - linux
+      - darwin
+      - windows
+    ignore: 
+      - goarch: 386
+      - goos: windows
+        goarch: arm64
+    ldflags: 
+      - -s
+      - -w
+      - -extldflags "-static"
+      - -X github.com/circonus-labs/circonus-kubernetes-agent/internal/release.VERSION={{.Version}}
+      - -X github.com/circonus-labs/circonus-kubernetes-agent/internal/release.COMMIT={{.ShortCommit}}
+      - -X github.com/circonus-labs/circonus-kubernetes-agent/internal/release.DATE={{.Date}}
+      - -X github.com/circonus-labs/circonus-kubernetes-agent/internal/release.TAG={{.Tag}}
+
+dockers:
+  - id: ea-amd64
+    goos: linux
+    goarch: amd64
+    goarm: ''
+    ids: ['ea']
+    image_templates:
+      - "circonus/{{.ProjectName}}:{{.Tag}}-amd64"
+      - "circonus/{{.ProjectName}}:latest-amd64"
+    skip_push: false
+    dockerfile: builds/docker/x86_64/Dockerfile
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.label-schema.schema-version=1.0"
+      - "--label=org.label-schema.version={{.Version}}"
+      - "--label=org.label-schema.name={{.ProjectName}}"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--platform=linux/amd64"
+    extra_files:
+      - etc/example-agent.yaml
+
+  - id: ea-arm64
+    goos: linux
+    goarch: arm64
+    goarm: ''
+    ids: ['ea']
+    image_templates:
+      - "circonus/{{.ProjectName}}:{{.Tag}}-arm64"
+      - "circonus/{{.ProjectName}}:latest-arm64"
+    skip_push: false
+    dockerfile: builds/docker/arm64/Dockerfile
+    build_flag_templates:
+      - "--pull"
+      - "--label=org.label-schema.schema-version=1.0"
+      - "--label=org.label-schema.version={{.Version}}"
+      - "--label=org.label-schema.name={{.ProjectName}}"
+      - "--label=org.opencontainers.image.created={{.Date}}"
+      - "--label=org.opencontainers.image.title={{.ProjectName}}"
+      - "--label=org.opencontainers.image.revision={{.FullCommit}}"
+      - "--label=org.opencontainers.image.version={{.Version}}"
+      - "--platform=linux/arm64"
+    extra_files:
+      - etc/example-agent.yaml
+
+docker_manifests:
+  - name_template: "circonus/{{.ProjectName}}:latest"
+    image_templates:
+      - "circonus/{{.ProjectName}}:latest-amd64"
+      - "circonus/{{.ProjectName}}:latest-arm64"
+  - name_template: "circonus/{{.ProjectName}}:{{.Tag}}"
+    image_templates:
+      - "circonus/{{.ProjectName}}:{{.Tag}}-amd64"
+      - "circonus/{{.ProjectName}}:{{.Tag}}-arm64"
+
+nfpms:
+  - vendor: Circonus, Inc.
+    homepage: https://circonus.commit
+    maintainer: Circonus <support@circonus.com>
+    description: Example Agent
+    license: MIT
+    file_name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Arch }}"
+    formats:
+      - deb
+      - rpm
+    bindir: /opt/circonus/example-agent
+    contents:
+      - src: "LICENSE"
+        dst: "/opt/circonus/example-agent/LICENSE"
+      - src: "README.md"
+        dst: "/opt/circonus/example-agent/README.md"
+      - src: "CHANGELOG.md"
+        dst: "/opt/circonus/example-agent/CHANGELOG.md"
+      - src: "service/example-agent.linux.service"
+        dst: "/opt/circonus/example-agent/service/example-agent.service"
+      - src: "service/example-agent.linux.init"
+        dst: "/opt/circonus/example-agent/service/example-agent.init"
+      - src: "etc/example-agent.yaml" 
+        dst: "/opt/circonus/example-agent/etc/example-agent.yaml"
+        type: "config|noreplace"
+    overrides:
+      deb:
+        scripts:
+          preinstall: "builds/deb/pre-install.sh"
+          postinstall: "builds/deb/post-install.sh"
+          preremove: "builds/deb/pre-remove.sh"
+          postremove: "builds/deb/post-remove.sh"
+      rpm:
+        scripts:
+          preinstall: "builds/rpm/pre-install.sh"
+          postinstall: "builds/rpm/post-install.sh"
+          postremove: "builds/rpm/post-remove.sh"
+
+archives:
+  - id: default
+    name_template: "{{.ProjectName}}_{{.Version}}_{{.Os}}_{{.Arch}}"
+    format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
+    files:
+      - LICENSE
+      - README.md
+      - CHANGELOG.md
+      - etc/example-agent.yaml
+      - service/*
+
+release:
+  github:
+      owner: circonus
+      name: go-example-agent
+  draft: false
+  prerelease: auto
+
+changelog:
+  use: git
+  sort: desc
+  abbrev: 0
+  groups:
+    - title: Features
+      regexp: "^.*feat[(\\w)]*:+.*$"
+      order: 0
+    - title: 'Bug fixes'
+      regexp: "^.*fix[(\\w)]*:+.*$"
+      order: 1
+    - title: 'Dependencies'
+      regexp: "^.*build(deps):+.*$"
+      order: 2
+    - title: Others
+      order: 999
+  filters:
+    exclude:
+      - '^docs:'
+      - typo
+
+checksum:
+  name_template: "{{.ProjectName}}_checksums.txt"
