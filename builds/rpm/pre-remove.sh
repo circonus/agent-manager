@@ -1,2 +1,8 @@
-# put any pre-remove commands in here for the service for rhel type systems
-# or delete this file if it is not applicable
+#!/bin/bash
+
+if [[ "$(readlink /proc/1/exe)" == */systemd ]]; then
+	systemctl stop circonus-cma.service
+else
+	# Assuming sysv
+	/etc/init.d/circonus-cma stop
+fi

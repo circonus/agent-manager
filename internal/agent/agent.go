@@ -6,9 +6,11 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/circonus/go-agent-template/internal/config"
-	"github.com/circonus/go-agent-template/internal/config/keys"
-	"github.com/circonus/go-agent-template/internal/release"
+	"github.com/circonus/collector-management-agent/internal/config"
+	"github.com/circonus/collector-management-agent/internal/config/keys"
+	"github.com/circonus/collector-management-agent/internal/credentials"
+	"github.com/circonus/collector-management-agent/internal/registration"
+	"github.com/circonus/collector-management-agent/internal/release"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
@@ -54,7 +56,15 @@ func (a *Agent) Start() error {
 
 	log.Info().Str("name", release.NAME).Str("version", release.VERSION).Msg("starting")
 
-	log.Info().Str("example_arg", viper.GetString(keys.ExampleArg)).Msg("example argument")
+	if viper.GetString(keys.Register) != "" {
+		if err := registration.Start(a.groupCtx); err != nil {
+			log.Fatal().Err(err).Msg("registering agent")
+		}
+	}
+
+	if err := credentials.Load(); err != nil {
+		log.Fatal().Err(err).Msg("loading API credentials")
+	}
 
 	a.logger.Debug().
 		Int("pid", os.Getpid()).

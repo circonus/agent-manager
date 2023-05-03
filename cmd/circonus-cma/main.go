@@ -14,9 +14,9 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/circonus/go-agent-template/internal/config/defaults"
-	"github.com/circonus/go-agent-template/internal/config/keys"
-	"github.com/circonus/go-agent-template/internal/release"
+	"github.com/circonus/collector-management-agent/internal/config/defaults"
+	"github.com/circonus/collector-management-agent/internal/config/keys"
+	"github.com/circonus/collector-management-agent/internal/release"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"

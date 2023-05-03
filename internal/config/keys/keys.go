@@ -7,8 +7,11 @@ package keys
 
 const (
 
-	// example argument.
-	ExampleArg = "example_arg"
+	// Register - token to use for registering this CMA.
+	Register = "register"
+
+	APIURL   = "api.url"
+	APIToken = "api.token"
 
 	//
 	// Logging.

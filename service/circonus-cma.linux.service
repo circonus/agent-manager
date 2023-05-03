@@ -1,0 +1,15 @@
+[Unit]
+Description=Circonus Collector Management Agent
+Documentation=https://github.com/circonus/collector-management-agent
+After=network.target
+
+[Service]
+EnvironmentFile=-/opt/circonus/cma/etc/circonus-cma.env
+User=cua
+ExecStart=/opt/circonus/cma/sbin/circonus-cma --config=/opt/circonus/cma/etc/circonus-cma.yaml $CMA_OPTS
+Restart=on-failure
+RestartForceExitStatus=SIGPIPE
+KillMode=control-group
+
+[Install]
+WantedBy=multi-user.target

@@ -1,3 +1,3 @@
 FROM gcr.io/distroless/static
-COPY example-agentd /
-ENTRYPOINT ["/example-agentd"]
+COPY circonus-cma /
+ENTRYPOINT ["/circonus-cma"]

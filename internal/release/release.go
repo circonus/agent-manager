@@ -7,9 +7,9 @@ package release
 
 const (
 	// NAME is the name of this application.
-	NAME = "example-agent"
+	NAME = "circonus-cma"
 	// ENVPREFIX is the environment variable prefix.
-	ENVPREFIX = "EA"
+	ENVPREFIX = "CMA"
 )
 
 // vars are manipulated at link time (see .goreleaser.yml).

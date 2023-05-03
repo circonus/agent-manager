@@ -9,13 +9,12 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/circonus/go-agent-template/internal/release"
+	"github.com/circonus/collector-management-agent/internal/release"
 	"github.com/rs/zerolog/log"
 )
 
 const (
-	// Example arg.
-	ExampleArg = "default value"
+	APIURL = "https://something.circonus.com"
 
 	// General defaults.
 
@@ -28,9 +27,10 @@ var (
 	// BasePath is the "base" directory
 	//
 	// expected installation structure:
-	// base        (e.g. /opt/circonus/example-agent)
-	//   /etc      (e.g. /opt/circonus/example-agent/etc)
-	//   /sbin     (e.g. /opt/circonus/example-agent/sbin)
+	// base        (e.g. /opt/circonus/cma)
+	//   /etc      (e.g. /opt/circonus/cma/etc)
+	//      /.id   (e.g. /opt/circonus/cma/etc/.id)
+	//   /sbin     (e.g. /opt/circonus/cma/sbin)
 	BasePath = ""
 
 	// EtcPath returns the default etc directory within base directory.
@@ -38,6 +38,11 @@ var (
 
 	// ConfigFile defines the default configuration file name.
 	ConfigFile = ""
+
+	// IDPath is where ID credentials are stored.
+	IDPath = ""
+	// IDFile is the file where the credentials are stored
+	IDFile = ""
 )
 
 func init() {
@@ -59,4 +64,10 @@ func init() {
 
 	EtcPath = filepath.Join(BasePath, "etc")
 	ConfigFile = filepath.Join(EtcPath, release.NAME+".yaml")
+	IDPath = filepath.Join(EtcPath, ".id")
+	IDFile = filepath.Join(IDPath, "token")
+
+	if err := os.MkdirAll(IDPath, 0700); err != nil {
+		log.Fatal().Err(err).Msg("creating ID path")
+	}
 }

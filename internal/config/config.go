@@ -7,9 +7,14 @@ package config
 
 // Config defines the running configuration options.
 type Config struct {
-	ExampleArg string `json:"example_arg" toml:"example_arg" yaml:"example_arg"`
-	Log        Log    `json:"log" toml:"log" yaml:"log"`
-	Debug      bool   `json:"debug" toml:"debug" yaml:"debug"`
+	API   API  `json:"api" toml:"api" yaml:"api"`
+	Log   Log  `json:"log" toml:"log" yaml:"log"`
+	Debug bool `json:"debug" toml:"debug" yaml:"debug"`
+}
+
+// API defines the various API options.
+type API struct {
+	URL string `json:"url" toml:"url" yaml:"url"`
 }
 
 // Log defines the logging configuration options.

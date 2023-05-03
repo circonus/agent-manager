@@ -9,9 +9,9 @@ import (
 	"fmt"
 	"runtime"
 
-	"github.com/circonus/go-agent-template/internal/agent"
-	"github.com/circonus/go-agent-template/internal/config/keys"
-	"github.com/circonus/go-agent-template/internal/release"
+	"github.com/circonus/collector-management-agent/internal/agent"
+	"github.com/circonus/collector-management-agent/internal/config/keys"
+	"github.com/circonus/collector-management-agent/internal/release"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

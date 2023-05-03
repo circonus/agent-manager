@@ -1,2 +1,8 @@
-# put any pre-remove commands in here for the service for ubuntu and debian systems
-# or delete this file if it is not applicable
+#!/bin/bash
+
+if [[ "$(readlink /proc/1/exe)" == */systemd ]]; then
+	deb-systemd-invoke stop circonus-cma.service
+else
+	# Assuming sysv
+	invoke-rc.d circonus-cma stop
+fi
