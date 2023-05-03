@@ -1,9 +1,9 @@
-project_name: example-agent
+project_name: circonus-cma
 
 builds: 
-  - id: ea
-    main: ./cmd/example-agent
-    binary: sbin/example-agentd
+  - id: cma
+    main: ./cmd/circonus-cma
+    binary: sbin/circonus-cma
     env: 
       - CGO_ENABLED=0
     goarch: 
@@ -27,11 +27,11 @@ builds:
       - -X github.com/circonus-labs/circonus-kubernetes-agent/internal/release.TAG={{.Tag}}
 
 dockers:
-  - id: ea-amd64
+  - id: cma-amd64
     goos: linux
     goarch: amd64
     goarm: ''
-    ids: ['ea']
+    ids: ['cma']
     image_templates:
       - "circonus/{{.ProjectName}}:{{.Tag}}-amd64"
       - "circonus/{{.ProjectName}}:latest-amd64"
@@ -48,7 +48,7 @@ dockers:
       - "--label=org.opencontainers.image.version={{.Version}}"
       - "--platform=linux/amd64"
     extra_files:
-      - etc/example-agent.yaml
+      - etc/circonus-cma.yaml
 
   - id: ea-arm64
     goos: linux
@@ -71,7 +71,7 @@ dockers:
       - "--label=org.opencontainers.image.version={{.Version}}"
       - "--platform=linux/arm64"
     extra_files:
-      - etc/example-agent.yaml
+      - etc/circonus-cma.yaml
 
 docker_manifests:
   - name_template: "circonus/{{.ProjectName}}:latest"
@@ -85,28 +85,28 @@ docker_manifests:
 
 nfpms:
   - vendor: Circonus, Inc.
-    homepage: https://circonus.commit
+    homepage: https://circonus.com
     maintainer: Circonus <support@circonus.com>
-    description: Example Agent
+    description: Circonus Collector Management Agent
     license: MIT
     file_name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Arch }}"
     formats:
       - deb
       - rpm
-    bindir: /opt/circonus/example-agent
+    bindir: /opt/circonus/cma
     contents:
       - src: "LICENSE"
-        dst: "/opt/circonus/example-agent/LICENSE"
+        dst: "/opt/circonus/cma/LICENSE"
       - src: "README.md"
-        dst: "/opt/circonus/example-agent/README.md"
+        dst: "/opt/circonus/cma/README.md"
       - src: "CHANGELOG.md"
-        dst: "/opt/circonus/example-agent/CHANGELOG.md"
-      - src: "service/example-agent.linux.service"
-        dst: "/opt/circonus/example-agent/service/example-agent.service"
-      - src: "service/example-agent.linux.init"
-        dst: "/opt/circonus/example-agent/service/example-agent.init"
-      - src: "etc/example-agent.yaml" 
-        dst: "/opt/circonus/example-agent/etc/example-agent.yaml"
+        dst: "/opt/circonus/cma/CHANGELOG.md"
+      - src: "service/circonus-cma.linux.service"
+        dst: "/opt/circonus/cma/service/circonus-cma.service"
+      - src: "service/circonus-cma.linux.init"
+        dst: "/opt/circonus/cma/service/circonus-cma.init"
+      - src: "etc/circonus-cma.yaml" 
+        dst: "/opt/circonus/cma/etc/circonus-cma.yaml"
         type: "config|noreplace"
     overrides:
       deb:
@@ -132,13 +132,13 @@ archives:
       - LICENSE
       - README.md
       - CHANGELOG.md
-      - etc/example-agent.yaml
+      - etc/circonus-cma.yaml
       - service/*
 
 release:
   github:
       owner: circonus
-      name: go-example-agent
+      name: collector-management-agent
   draft: false
   prerelease: auto
 
