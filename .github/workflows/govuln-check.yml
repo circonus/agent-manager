@@ -1,11 +1,11 @@
 name: vuln_check
-  on:
-    push:
-      tags:
-        - v*
-      branches:
-        - master
-    pull_request:
+on:
+  push:
+    tags:
+      - v*
+    branches:
+      - master
+  pull_request:
 jobs:
   govulncheck:
     name: vulncheck
