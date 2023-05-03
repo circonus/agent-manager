@@ -41,7 +41,7 @@ var (
 
 	// IDPath is where ID credentials are stored.
 	IDPath = ""
-	// IDFile is the file where the credentials are stored
+	// IDFile is the file where the credentials are stored.
 	IDFile = ""
 )
 
