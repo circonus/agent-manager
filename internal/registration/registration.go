@@ -24,17 +24,6 @@ type Request struct {
 	Meta Meta `json:"meta"`
 }
 
-type Claims struct {
-	Issuer         string `json:"iss,omitempty"`
-	Subject        string `json:"sub"`
-	Audience       string `json:"aud,omitempty"`
-	ExpirationTime string `json:"exp,omitempty"`
-	NotBeforeTime  string `json:"nbt,omitempty"`
-	IssuedAtTime   string `json:"iat,omitempty"`
-	JWTID          string `json:"jti,omitempty"`
-	MachineID      string `json:"mid"`
-}
-
 type Meta struct {
 	Hostname             string `json:"hostname"`
 	MachineID            string `json:"machine_id"`
@@ -152,14 +141,14 @@ func getMachineID() (string, error) {
 
 func getHostInfo() (Meta, error) {
 
-	hi, err := host.Info()
-	if err != nil {
-		return Meta{}, err //nolint:wrapcheck
-	}
-
 	meta := Meta{}
 
-	// hi.OS is runtime.GOOS, which is added above
+	hi, err := host.Info()
+	if err != nil {
+		return meta, err //nolint:wrapcheck
+	}
+
+	// hi.OS is runtime.GOOS
 	if hi.OS != "" {
 		meta.OS = hi.OS
 	}
