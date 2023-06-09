@@ -11,7 +11,10 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"time"
 
+	awsconfig "github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/feature/ec2/imds"
 	"github.com/circonus/collector-management-agent/internal/config/keys"
 	"github.com/circonus/collector-management-agent/internal/credentials"
 	"github.com/denisbrodbeck/machineid"
@@ -21,7 +24,8 @@ import (
 )
 
 type Request struct {
-	Meta Meta `json:"meta"`
+	Meta    Meta    `json:"meta"`
+	AWSMeta AWSTags `json:"aws,omitempty"`
 }
 
 type Meta struct {
@@ -35,6 +39,21 @@ type Meta struct {
 	KernelArch           string `json:"kernel_arch"`
 	VirtualizationSystem string `json:"virtualization_system"`
 	VirtualizationRole   string `json:"virtualization_role"`
+}
+
+type AWSTags struct {
+	InstanceID       string    `json:"instance_id,omitempty"`
+	AccountID        string    `json:"account_id,omitempty"`
+	Architecture     string    `json:"architecture,omitempty"`
+	AvailabilityZone string    `json:"availability_zone,omitempty"`
+	ImageID          string    `json:"image_id,omitempty"`
+	InstanceType     string    `json:"instance_type,omitempty"`
+	KernelID         string    `json:"kernel_id,omitempty"`
+	PendingTime      time.Time `json:"pending_time,omitempty"`
+	PrivateIP        string    `json:"private_ip,omitempty"`
+	RamdiskID        string    `json:"ramdisk_id,omitempty"`
+	Region           string    `json:"region,omitempty"`
+	Version          string    `json:"version,omitempty"`
 }
 
 // Start the registration process.
@@ -68,6 +87,15 @@ func Start(ctx context.Context) error {
 		Meta: meta,
 	}
 
+	awstags := viper.GetStringSlice(keys.AWSEC2Tags)
+	if len(awstags) > 0 {
+		at, err := getAWSTags(ctx, awstags) //nolint:govet
+		if err != nil {
+			log.Fatal().Err(err).Msg("adding AWS EC2 tags")
+		}
+		request.AWSMeta = at
+	}
+
 	jwt, err := getJWT(ctx, token, request)
 	if err != nil {
 		log.Fatal().Err(err).Msg("getting token")
@@ -96,7 +124,7 @@ func getJWT(ctx context.Context, token string, request Request) ([]byte, error) 
 		return nil, fmt.Errorf("marshal claims: %w", err)
 	}
 
-	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "registration")
+	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "agent", "registration")
 	if err != nil {
 		return nil, fmt.Errorf("req url: %w", err)
 	}
@@ -177,4 +205,53 @@ func getHostInfo() (Meta, error) {
 
 	return meta, nil
 
+}
+
+func getAWSTags(ctx context.Context, tags []string) (AWSTags, error) {
+	cfg, err := awsconfig.LoadDefaultConfig(ctx)
+	if err != nil {
+		return AWSTags{}, fmt.Errorf("failed loading default AWS config: %w", err)
+	}
+	imdsClient := imds.NewFromConfig(cfg)
+
+	iido, err := imdsClient.GetInstanceIdentityDocument(
+		ctx,
+		&imds.GetInstanceIdentityDocumentInput{},
+	)
+	if err != nil {
+		return AWSTags{}, fmt.Errorf("failed getting instance identity document: %w", err)
+	}
+
+	aws := AWSTags{}
+
+	for _, tag := range tags {
+		switch tag {
+		case "account_id":
+			aws.AccountID = iido.AccountID
+		case "architecture":
+			aws.Architecture = iido.Architecture
+		case "availability_zone":
+			aws.AvailabilityZone = iido.AvailabilityZone
+		case "image_id":
+			aws.ImageID = iido.ImageID
+		case "instance_id":
+			aws.InstanceID = iido.InstanceID
+		case "instance_type":
+			aws.InstanceType = iido.InstanceType
+		case "kernel_id":
+			aws.KernelID = iido.KernelID
+		case "pending_time":
+			aws.PendingTime = iido.PendingTime
+		case "private_ip":
+			aws.PrivateIP = iido.PrivateIP
+		case "ramdisk_id":
+			aws.RamdiskID = iido.RamdiskID
+		case "region":
+			aws.Region = iido.Region
+		case "version":
+			aws.Version = iido.Version
+		}
+	}
+
+	return aws, nil
 }
