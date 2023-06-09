@@ -16,6 +16,8 @@ import (
 const (
 	APIURL = "https://something.circonus.com"
 
+	PollingInterval = "60s"
+
 	// General defaults.
 
 	Debug     = false
@@ -43,6 +45,8 @@ var (
 	IDPath = ""
 	// IDFile is the file where the credentials are stored.
 	IDFile = ""
+
+	AWSEC2Tags = []string{}
 )
 
 func init() {
