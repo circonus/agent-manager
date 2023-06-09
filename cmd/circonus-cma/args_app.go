@@ -45,4 +45,34 @@ func initAppArgs(cmd *cobra.Command) {
 		viper.SetDefault(key, defaultValue)
 	}
 
+	{
+		const (
+			key          = keys.PollingInterval
+			longOpt      = "poll_interval"
+			envVar       = release.ENVPREFIX + "_POLL_INTERVAL"
+			description  = "Polling interval for actions"
+			defaultValue = defaults.PollingInterval
+		)
+
+		cmd.PersistentFlags().String(longOpt, defaultValue, envDescription(description, envVar))
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.PersistentFlags().Lookup(longOpt)))
+		bindEnvError(envVar, viper.BindEnv(key, envVar))
+		viper.SetDefault(key, defaultValue)
+	}
+
+	{
+		const (
+			key         = keys.AWSEC2Tags
+			longOpt     = "aws_ec2_tags"
+			envVar      = release.ENVPREFIX + "_AWS_EC2_TAGS"
+			description = "AWS EC2 tags for registration meta data"
+		)
+		defaultValue := defaults.AWSEC2Tags
+
+		cmd.PersistentFlags().StringArray(longOpt, defaultValue, envDescription(description, envVar))
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.PersistentFlags().Lookup(longOpt)))
+		bindEnvError(envVar, viper.BindEnv(key, envVar))
+		viper.SetDefault(key, defaultValue)
+	}
+
 }
