@@ -17,6 +17,7 @@ const (
 	STATUS    = "status"
 	RELOAD    = "reload"
 	INVENTORY = "inventory"
+	VERSION   = "version"
 )
 
 func runCommands(ctx context.Context, a Action) error {
@@ -111,6 +112,28 @@ func runCommands(ctx context.Context, a Action) error {
 			c, ok := collectors[runtime.GOOS][command.Collector]
 			if ok {
 				args := strings.Split(c.Status, " ")
+				cmd := exec.Command(args[0], args[1:]...) //nolint:gosec
+				output, err := cmd.CombinedOutput()
+				r := Result{
+					ActionID: a.ID,
+					CommandResult: CommandResult{
+						ID: command.ID,
+					},
+				}
+				if err != nil {
+					r.CommandResult.Error = err.Error()
+				}
+				if len(output) > 0 {
+					r.CommandResult.Output = base64.StdEncoding.EncodeToString(output)
+				}
+				if err = sendActionResult(ctx, r); err != nil {
+					log.Error().Err(err).Msg("command result")
+				}
+			}
+		case VERSION:
+			c, ok := collectors[runtime.GOOS][command.Collector]
+			if ok {
+				args := strings.Split(c.Version, " ")
 				cmd := exec.Command(args[0], args[1:]...) //nolint:gosec
 				output, err := cmd.CombinedOutput()
 				r := Result{
