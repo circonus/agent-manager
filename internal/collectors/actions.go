@@ -61,11 +61,11 @@ type ConfigResult struct {
 	ReloadResult string `json:"reload_result" yaml:"reload_result"`
 }
 
-// StdOut and StdErr will be base64 encoded.
+// Output will be base64 encoded.
 type CommandResult struct {
 	ID       string `json:"id" yaml:"id"`
-	StdOut   string `json:"stdout" yaml:"stdout"`
-	StdErr   string `json:"stderr" yaml:"stderr"`
+	Output   string `json:"output" yaml:"output"`
+	Error    string `json:"error" yaml:"error"`
 	ExitCode int    `json:"exit_code" yaml:"exit_code"`
 }
 
@@ -114,7 +114,9 @@ func getActions(ctx context.Context) error {
 		case CONFIG:
 			installConfigs(ctx, action)
 		case COMMAND:
-			runCommands(ctx, action)
+			if err := runCommands(ctx, action); err != nil {
+				log.Error().Err(err).Msg("running commands")
+			}
 		default:
 			log.Warn().Str("action_type", action.Type).Msg("unknown action type, skipping")
 		}

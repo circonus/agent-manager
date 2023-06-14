@@ -1,6 +1,14 @@
 package collectors
 
-import "context"
+import (
+	"context"
+	"encoding/base64"
+	"os/exec"
+	"runtime"
+	"strings"
+
+	"github.com/rs/zerolog/log"
+)
 
 const (
 	START     = "start"
@@ -11,20 +19,117 @@ const (
 	INVENTORY = "inventory"
 )
 
-func runCommands(ctx context.Context, a Action) {
+func runCommands(ctx context.Context, a Action) error {
+	collectors, err := LoadCollectors()
+	if err != nil {
+		return err
+	}
 	for _, command := range a.Commands {
-		// load collector inventory
 		switch command.Command {
 		case INVENTORY:
-			// re-download inventory
+			if err := FetchCollectors(ctx); err != nil {
+				log.Error().Err(err).Msg("refreshing collectors")
+			} else if err := CheckForCollectors(ctx); err != nil {
+				log.Error().Err(err).Msg("checking for collectors")
+			}
 		case START:
-			// start collector
+			c, ok := collectors[runtime.GOOS][command.Collector]
+			if ok {
+				args := strings.Split(c.Start, " ")
+				cmd := exec.Command(args[0], args[1:]...) //nolint:gosec
+				output, err := cmd.CombinedOutput()
+				r := Result{
+					ActionID: a.ID,
+					CommandResult: CommandResult{
+						ID: command.ID,
+					},
+				}
+				if err != nil {
+					r.CommandResult.Error = err.Error()
+				}
+				if len(output) > 0 {
+					r.CommandResult.Output = base64.StdEncoding.EncodeToString(output)
+				}
+				if err = sendActionResult(ctx, r); err != nil {
+					log.Error().Err(err).Msg("command result")
+				}
+			}
 		case STOP:
-			// stop collector
+			c, ok := collectors[runtime.GOOS][command.Collector]
+			if ok {
+				args := strings.Split(c.Stop, " ")
+				cmd := exec.Command(args[0], args[1:]...) //nolint:gosec
+				output, err := cmd.CombinedOutput()
+				r := Result{
+					ActionID: a.ID,
+					CommandResult: CommandResult{
+						ID: command.ID,
+					},
+				}
+				if err != nil {
+					r.CommandResult.Error = err.Error()
+				}
+				if len(output) > 0 {
+					r.CommandResult.Output = base64.StdEncoding.EncodeToString(output)
+				}
+				if err = sendActionResult(ctx, r); err != nil {
+					log.Error().Err(err).Msg("command result")
+				}
+			}
 		case RESTART:
-			// restart collector
+			c, ok := collectors[runtime.GOOS][command.Collector]
+			if ok {
+				args := strings.Split(c.Restart, " ")
+				cmd := exec.Command(args[0], args[1:]...) //nolint:gosec
+				output, err := cmd.CombinedOutput()
+				r := Result{
+					ActionID: a.ID,
+					CommandResult: CommandResult{
+						ID: command.ID,
+					},
+				}
+				if err != nil {
+					r.CommandResult.Error = err.Error()
+				}
+				if len(output) > 0 {
+					r.CommandResult.Output = base64.StdEncoding.EncodeToString(output)
+				}
+				if err = sendActionResult(ctx, r); err != nil {
+					log.Error().Err(err).Msg("command result")
+				}
+			}
+		case RELOAD:
+			// this needs to be handled differently as reload may be:
+			// a command or some type of endpoint
+			//
+			// c, ok := collectors[runtime.GOOS][command.Collector]
+			// if ok {
+			// args := strings.Split(c.Reload, " ")
+			// cmd := exec.Command(args[0], args[1:]...)
+			// }
 		case STATUS:
-			// get collector status
+			c, ok := collectors[runtime.GOOS][command.Collector]
+			if ok {
+				args := strings.Split(c.Status, " ")
+				cmd := exec.Command(args[0], args[1:]...) //nolint:gosec
+				output, err := cmd.CombinedOutput()
+				r := Result{
+					ActionID: a.ID,
+					CommandResult: CommandResult{
+						ID: command.ID,
+					},
+				}
+				if err != nil {
+					r.CommandResult.Error = err.Error()
+				}
+				if len(output) > 0 {
+					r.CommandResult.Output = base64.StdEncoding.EncodeToString(output)
+				}
+				if err = sendActionResult(ctx, r); err != nil {
+					log.Error().Err(err).Msg("command result")
+				}
+			}
 		}
 	}
+	return nil
 }
