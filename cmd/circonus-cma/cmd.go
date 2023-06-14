@@ -19,10 +19,9 @@ import (
 
 func initCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   release.NAME,
-		Short: "A brief description of this agent",
-		Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using this agent.`,
+		Use:               release.NAME,
+		Short:             "Circonus Management Agent",
+		Long:              `An agent to manage local collectors (metrics, logs, etc.)`,
 		PersistentPreRunE: initApp,
 		Run: func(cmd *cobra.Command, args []string) {
 			if viper.GetBool(keys.ShowVersion) {
