@@ -41,6 +41,9 @@ var (
 	// ConfigFile defines the default configuration file name.
 	ConfigFile = ""
 
+	// Collector inventory file.
+	InvetoryFile = ""
+
 	// IDPath is where ID credentials are stored.
 	IDPath = ""
 	// IDFile is the file where the credentials are stored.
@@ -68,6 +71,7 @@ func init() {
 
 	EtcPath = filepath.Join(BasePath, "etc")
 	ConfigFile = filepath.Join(EtcPath, release.NAME+".yaml")
+	InvetoryFile = filepath.Join(EtcPath, "inventory.yaml")
 	IDPath = filepath.Join(EtcPath, ".id")
 	IDFile = filepath.Join(IDPath, "token")
 

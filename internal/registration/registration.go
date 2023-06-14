@@ -23,7 +23,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-type Request struct {
+type Registration struct {
 	Meta    Meta    `json:"meta"`
 	AWSMeta AWSTags `json:"aws,omitempty"`
 }
@@ -83,7 +83,7 @@ func Start(ctx context.Context) error {
 	meta.Hostname = hn
 	meta.MachineID = mid
 
-	request := Request{
+	reg := Registration{
 		Meta: meta,
 	}
 
@@ -93,10 +93,10 @@ func Start(ctx context.Context) error {
 		if err != nil {
 			log.Fatal().Err(err).Msg("adding AWS EC2 tags")
 		}
-		request.AWSMeta = at
+		reg.AWSMeta = at
 	}
 
-	jwt, err := getJWT(ctx, token, request)
+	jwt, err := getJWT(ctx, token, reg)
 	if err != nil {
 		log.Fatal().Err(err).Msg("getting token")
 	}
@@ -108,18 +108,18 @@ func Start(ctx context.Context) error {
 	return nil
 }
 
-func getJWT(ctx context.Context, token string, request Request) ([]byte, error) {
+func getJWT(ctx context.Context, token string, reg Registration) ([]byte, error) {
 	if token == "" {
 		return nil, fmt.Errorf("invalid token (empty)") //nolint:goerr113
 	}
-	if request.Meta.Hostname == "" {
+	if reg.Meta.Hostname == "" {
 		return nil, fmt.Errorf("invalid claims (empty hostname)") //nolint:goerr113
 	}
-	if request.Meta.MachineID == "" {
+	if reg.Meta.MachineID == "" {
 		return nil, fmt.Errorf("invalid claims (empty machine id)") //nolint:goerr113
 	}
 
-	c, err := json.Marshal(request)
+	c, err := json.Marshal(reg)
 	if err != nil {
 		return nil, fmt.Errorf("marshal claims: %w", err)
 	}

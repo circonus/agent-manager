@@ -13,6 +13,12 @@ const (
 	APIURL   = "api.url"
 	APIToken = "api.token"
 
+	// frequency of polling for actions.
+	PollingInterval = "poll_interval"
+
+	// AWS EC2 tags to be included in registration meta data.
+	AWSEC2Tags = "aws_ec2_tags"
+
 	//
 	// Logging.
 	//

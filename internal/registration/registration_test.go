@@ -36,19 +36,19 @@ func Test_getJWT(t *testing.T) {
 					return
 				}
 
-				var request Request
-				if err = json.Unmarshal(b, &request); err != nil {
+				var reg Registration
+				if err = json.Unmarshal(b, &reg); err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return
 				}
 
-				if request.Meta.MachineID == "" {
+				if reg.Meta.MachineID == "" {
 					http.Error(w, "bad machine id", http.StatusBadRequest)
 					return
 				}
 
 				token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{
-					Subject: request.Meta.MachineID,
+					Subject: reg.Meta.MachineID,
 				})
 				tokenString, err := token.SignedString([]byte("secret"))
 				if err != nil {
@@ -72,8 +72,8 @@ func Test_getJWT(t *testing.T) {
 	viper.Set(keys.APIURL, ts.URL)
 
 	type args struct {
-		token   string
-		request Request
+		token string
+		reg   Registration
 	}
 	tests := []struct {
 		name    string
@@ -83,26 +83,26 @@ func Test_getJWT(t *testing.T) {
 	}{
 		{
 			name:    "invalid (no token)",
-			args:    args{token: "", request: Request{Meta: Meta{}}},
+			args:    args{token: "", reg: Registration{Meta: Meta{}}},
 			want:    nil,
 			wantErr: true,
 		},
 		{
 			name:    "invalid (no subject)",
-			args:    args{token: "foo", request: Request{Meta: Meta{}}},
+			args:    args{token: "foo", reg: Registration{Meta: Meta{}}},
 			want:    nil,
 			wantErr: true,
 		},
 		{
 			name:    "valid",
-			args:    args{token: "foo", request: Request{Meta: Meta{MachineID: "bar"}}},
+			args:    args{token: "foo", reg: Registration{Meta: Meta{MachineID: "bar"}}},
 			want:    []byte(`{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiYXIifQ.ST4yLHEt-g5qTE6NW5gAp6omAfVezv8dwUPTVtM2rKs"}`),
 			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := getJWT(context.Background(), tt.args.token, tt.args.request)
+			got, err := getJWT(context.Background(), tt.args.token, tt.args.reg)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("getJWT() error = %v, wantErr %v", err, tt.wantErr)
 				return
