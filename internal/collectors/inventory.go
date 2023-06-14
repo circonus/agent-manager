@@ -10,10 +10,13 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"os/exec"
 	"runtime"
+	"strings"
 
 	"github.com/circonus/collector-management-agent/internal/config/defaults"
 	"github.com/circonus/collector-management-agent/internal/config/keys"
+	"github.com/hashicorp/go-version"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
@@ -32,6 +35,7 @@ type Collector struct {
 	Restart     string   `json:"restart" yaml:"restart"`
 	Reload      string   `json:"reload" yaml:"reload"`
 	Status      string   `json:"status" yaml:"status"`
+	Version     string   `json:"version" yaml:"version"`
 	ConfigFiles []string `json:"config_files" yaml:"config_files"`
 }
 
@@ -117,7 +121,7 @@ func CheckForCollectors(ctx context.Context) error {
 		return fmt.Errorf("no collectors found for platform %s", runtime.GOOS) //nolint:goerr113
 	}
 
-	found := []string{}
+	found := InstalledCollectors{}
 
 	for name, c := range gcc {
 		if _, err := os.Stat(c.Binary); errors.Is(err, os.ErrNotExist) {
@@ -130,9 +134,13 @@ func CheckForCollectors(ctx context.Context) error {
 				continue
 			}
 		}
+		ver, err := getCollectorVersion(c.Version)
+		if err != nil {
+			log.Warn().Err(err).Str("collector", name).Msg("getting collector version")
+		}
 
 		log.Info().Str("collector agent", name).Msg("found")
-		found = append(found, name)
+		found = append(found, InstalledCollector{CollectorType: name, Version: ver})
 	}
 
 	if len(found) > 0 {
@@ -143,13 +151,41 @@ func CheckForCollectors(ctx context.Context) error {
 	return nil
 }
 
-func registerCollectors(ctx context.Context, c []string) error {
+func getCollectorVersion(vercmd string) (string, error) {
+	if vercmd == "" {
+		return "v0.0.0", nil
+	}
+	args := strings.Split(vercmd, " ")
+	cmd := exec.Command(args[0], args[1:]...) //nolint:gosec
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return "v0.0.0", err //nolint:wrapcheck
+	}
+
+	if len(output) > 0 {
+		v, err := version.NewVersion(string(output))
+		if err != nil {
+			return "v0.0.0", err //nolint:wrapcheck
+		}
+		return v.String(), nil
+	}
+
+	return "v0.0.0", nil
+}
+
+type InstalledCollectors []InstalledCollector
+type InstalledCollector struct {
+	CollectorType string `json:"collector_type"`
+	Version       string `json:"version"`
+}
+
+func registerCollectors(ctx context.Context, c InstalledCollectors) error {
 	token := viper.GetString(keys.APIToken)
 	if token == "" {
 		return fmt.Errorf("invalid api token (empty)") //nolint:goerr113
 	}
 
-	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "collector")
+	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "collector", "agent")
 	if err != nil {
 		return fmt.Errorf("req url: %w", err)
 	}
