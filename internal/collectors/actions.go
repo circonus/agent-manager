@@ -75,7 +75,7 @@ func getActions(ctx context.Context) error {
 		return fmt.Errorf("invalid api token (empty)") //nolint:goerr113
 	}
 
-	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "agent", "update")
+	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "collector", "update")
 	if err != nil {
 		return fmt.Errorf("req url: %w", err)
 	}
