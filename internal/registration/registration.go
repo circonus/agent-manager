@@ -134,7 +134,7 @@ func getJWT(ctx context.Context, token string, reg Registration) ([]byte, error)
 		return nil, fmt.Errorf("creating request: %w", err)
 	}
 
-	req.Header.Add("X-Circonus-Reg-Token", token)
+	req.Header.Add("X-Circonus-Register-Token", token)
 
 	client := &http.Client{}
 

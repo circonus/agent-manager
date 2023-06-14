@@ -52,7 +52,7 @@ func FetchCollectors(ctx context.Context) error {
 		return fmt.Errorf("creating request: %w", err)
 	}
 
-	req.Header.Add("X-Circonus-Token", token)
+	req.Header.Add("X-Circonus-Auth-Token", token)
 
 	client := &http.Client{}
 
@@ -164,7 +164,7 @@ func registerCollectors(ctx context.Context, c []string) error {
 		return fmt.Errorf("creating request: %w", err)
 	}
 
-	req.Header.Add("X-Circonus-Token", token)
+	req.Header.Add("X-Circonus-Auth-Token", token)
 
 	client := &http.Client{}
 

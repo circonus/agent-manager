@@ -85,7 +85,7 @@ func getActions(ctx context.Context) error {
 		return fmt.Errorf("creating request: %w", err)
 	}
 
-	req.Header.Add("X-Circonus-Token", token)
+	req.Header.Add("X-Circonus-Auth-Token", token)
 
 	client := &http.Client{}
 
@@ -146,7 +146,7 @@ func sendActionResult(ctx context.Context, r Result) error {
 		return fmt.Errorf("creating request: %w", err)
 	}
 
-	req.Header.Add("X-Circonus-Token", token)
+	req.Header.Add("X-Circonus-Auth-Token", token)
 
 	client := &http.Client{}
 
