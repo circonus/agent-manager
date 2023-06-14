@@ -64,6 +64,10 @@ func (a *Agent) Start() error {
 		}
 	}
 
+	if err := credentials.LoadAgentID(); err != nil {
+		log.Fatal().Err(err).Msg("loading agent id")
+	}
+
 	if err := credentials.LoadJWT(); err != nil {
 		log.Fatal().Err(err).Msg("loading API credentials")
 	}
@@ -80,6 +84,11 @@ func (a *Agent) Start() error {
 
 	a.group.Go(func() error {
 		p.Start(a.groupCtx)
+		return nil
+	})
+
+	a.group.Go(func() error {
+		registration.ReRegister(a.groupCtx)
 		return nil
 	})
 
