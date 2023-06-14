@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/circonus/collector-management-agent/internal/collectors"
 	"github.com/circonus/collector-management-agent/internal/config"
 	"github.com/circonus/collector-management-agent/internal/config/keys"
 	"github.com/circonus/collector-management-agent/internal/credentials"
@@ -71,9 +72,19 @@ func (a *Agent) Start() error {
 		Str("name", release.NAME).
 		Str("ver", release.VERSION).Msg("starting wait")
 
-	// if err := a.group.Wait(); err != nil {
-	// 	return fmt.Errorf("start agent: %w", err)
-	// }
+	p, err := collectors.NewPoller()
+	if err != nil {
+		a.logger.Fatal().Err(err).Msg("unable to start poller")
+	}
+
+	a.group.Go(func() error {
+		p.Start(a.groupCtx)
+		return nil
+	})
+
+	if err := a.group.Wait(); err != nil {
+		return fmt.Errorf("start agent: %w", err)
+	}
 
 	return nil
 }
