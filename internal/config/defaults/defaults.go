@@ -47,7 +47,9 @@ var (
 	// IDPath is where ID credentials are stored.
 	IDPath = ""
 	// IDFile is the file where the credentials are stored.
-	IDFile = ""
+	JwtTokenFile = ""
+	RegTokenFile = ""
+	AgentIDFile  = ""
 
 	AWSEC2Tags = []string{}
 )
@@ -73,7 +75,9 @@ func init() {
 	ConfigFile = filepath.Join(EtcPath, release.NAME+".yaml")
 	InvetoryFile = filepath.Join(EtcPath, "inventory.yaml")
 	IDPath = filepath.Join(EtcPath, ".id")
-	IDFile = filepath.Join(IDPath, "token")
+	JwtTokenFile = filepath.Join(IDPath, "jt")
+	RegTokenFile = filepath.Join(IDPath, "rt")
+	AgentIDFile = filepath.Join(IDPath, "ai")
 
 	if err := os.MkdirAll(IDPath, 0700); err != nil {
 		log.Fatal().Err(err).Msg("creating ID path")

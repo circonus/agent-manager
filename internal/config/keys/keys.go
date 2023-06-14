@@ -10,8 +10,10 @@ const (
 	// Register - token to use for registering this CMA.
 	Register = "register"
 
-	APIURL   = "api.url"
-	APIToken = "api.token"
+	APIURL            = "api.url"
+	APIToken          = "api.token"
+	AgentID           = "agent_id"
+	RegistrationToken = "registration_token"
 
 	// frequency of polling for actions.
 	PollingInterval = "poll_interval"
