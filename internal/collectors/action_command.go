@@ -42,7 +42,8 @@ func runCommands(ctx context.Context, a Action) error {
 				r := Result{
 					ActionID: a.ID,
 					CommandResult: CommandResult{
-						ID: command.ID,
+						ID:       command.ID,
+						ExitCode: cmd.ProcessState.ExitCode(),
 					},
 				}
 				if err != nil {
@@ -64,7 +65,8 @@ func runCommands(ctx context.Context, a Action) error {
 				r := Result{
 					ActionID: a.ID,
 					CommandResult: CommandResult{
-						ID: command.ID,
+						ID:       command.ID,
+						ExitCode: cmd.ProcessState.ExitCode(),
 					},
 				}
 				if err != nil {
@@ -86,7 +88,8 @@ func runCommands(ctx context.Context, a Action) error {
 				r := Result{
 					ActionID: a.ID,
 					CommandResult: CommandResult{
-						ID: command.ID,
+						ID:       command.ID,
+						ExitCode: cmd.ProcessState.ExitCode(),
 					},
 				}
 				if err != nil {
@@ -117,7 +120,8 @@ func runCommands(ctx context.Context, a Action) error {
 				r := Result{
 					ActionID: a.ID,
 					CommandResult: CommandResult{
-						ID: command.ID,
+						ID:       command.ID,
+						ExitCode: cmd.ProcessState.ExitCode(),
 					},
 				}
 				if err != nil {
@@ -139,7 +143,8 @@ func runCommands(ctx context.Context, a Action) error {
 				r := Result{
 					ActionID: a.ID,
 					CommandResult: CommandResult{
-						ID: command.ID,
+						ID:       command.ID,
+						ExitCode: cmd.ProcessState.ExitCode(),
 					},
 				}
 				if err != nil {

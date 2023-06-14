@@ -39,6 +39,12 @@ type Collector struct {
 	ConfigFiles []string `json:"config_files" yaml:"config_files"`
 }
 
+type InstalledCollectors []InstalledCollector
+type InstalledCollector struct {
+	CollectorType string `json:"collector_type"`
+	Version       string `json:"version"`
+}
+
 func FetchCollectors(ctx context.Context) error {
 	// /collector_type for list of known collectors
 	token := viper.GetString(keys.APIToken)
@@ -171,12 +177,6 @@ func getCollectorVersion(vercmd string) (string, error) {
 	}
 
 	return "v0.0.0", nil
-}
-
-type InstalledCollectors []InstalledCollector
-type InstalledCollector struct {
-	CollectorType string `json:"collector_type"`
-	Version       string `json:"version"`
 }
 
 func registerCollectors(ctx context.Context, c InstalledCollectors) error {
