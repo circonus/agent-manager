@@ -58,12 +58,13 @@ func (a *Agent) Start() error {
 	log.Info().Str("name", release.NAME).Str("version", release.VERSION).Msg("starting")
 
 	if viper.GetString(keys.Register) != "" {
+		credentials.SaveRegistrationToken([]byte(keys.Register))
 		if err := registration.Start(a.groupCtx); err != nil {
 			log.Fatal().Err(err).Msg("registering agent")
 		}
 	}
 
-	if err := credentials.Load(); err != nil {
+	if err := credentials.LoadJWT(); err != nil {
 		log.Fatal().Err(err).Msg("loading API credentials")
 	}
 
