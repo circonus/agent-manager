@@ -1,14 +1,21 @@
 package collectors
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
+	"net/http"
+	"net/url"
 	"os"
 	"runtime"
 
 	"github.com/circonus/collector-management-agent/internal/config/defaults"
+	"github.com/circonus/collector-management-agent/internal/config/keys"
 	"github.com/rs/zerolog/log"
+	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
 )
 
@@ -30,7 +37,46 @@ type Collector struct {
 
 func FetchCollectors(ctx context.Context) error {
 	// /collector_type for list of known collectors
-	return nil
+	token := viper.GetString(keys.APIToken)
+	if token == "" {
+		return fmt.Errorf("invalid api token (empty)") //nolint:goerr113
+	}
+
+	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "collector_type")
+	if err != nil {
+		return fmt.Errorf("req url: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "GET", reqURL, nil)
+	if err != nil {
+		return fmt.Errorf("creating request: %w", err)
+	}
+
+	req.Header.Add("X-Circonus-Token", token)
+
+	client := &http.Client{}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("calling actions endpoint: %w", err)
+	}
+
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("reading response body: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("non-200 response -- status: %s, body: %s", resp.Status, string(body)) //nolint:goerr113
+	}
+
+	var collectors Collectors
+	if err := json.Unmarshal(body, &collectors); err != nil {
+		return fmt.Errorf("unmarshal body: %w", err)
+	}
+
+	return SaveCollectors(collectors)
 }
 
 func LoadCollectors() (Collectors, error) {
@@ -91,12 +137,51 @@ func CheckForCollectors(ctx context.Context) error {
 
 	if len(found) > 0 {
 		// contact api and report what collectors were found
-		registerCollectors(ctx, found)
+		return registerCollectors(ctx, found)
 	}
 
 	return nil
 }
 
-func registerCollectors(ctx context.Context, c []string) {
-	// /collector POST list of found collectors
+func registerCollectors(ctx context.Context, c []string) error {
+	token := viper.GetString(keys.APIToken)
+	if token == "" {
+		return fmt.Errorf("invalid api token (empty)") //nolint:goerr113
+	}
+
+	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "collector")
+	if err != nil {
+		return fmt.Errorf("req url: %w", err)
+	}
+
+	data, err := json.Marshal(c)
+	if err != nil {
+		return fmt.Errorf("marshal claims: %w", err)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, "POST", reqURL, bytes.NewReader(data))
+	if err != nil {
+		return fmt.Errorf("creating request: %w", err)
+	}
+
+	req.Header.Add("X-Circonus-Token", token)
+
+	client := &http.Client{}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("calling actions endpoint: %w", err)
+	}
+
+	defer resp.Body.Close()
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("reading response body: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("non-200 response -- status: %s, body: %s", resp.Status, string(body)) //nolint:goerr113
+	}
+
+	return nil
 }
