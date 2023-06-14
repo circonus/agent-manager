@@ -6,7 +6,6 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"reflect"
 	"testing"
 
 	"github.com/circonus/collector-management-agent/internal/config/keys"
@@ -17,13 +16,13 @@ import (
 func Test_getJWT(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
-		case "/registration":
+		case "/agent/registration":
 			switch r.Method {
 			case "GET":
 				http.Error(w, "not found", http.StatusNotFound)
 				return
 			case "POST":
-				regToken := r.Header.Get("X-Circonus-Reg-Token")
+				regToken := r.Header.Get("X-Circonus-Register-Token")
 				if regToken == "" {
 					http.Error(w, "missing token", http.StatusUnauthorized)
 					return
@@ -55,9 +54,21 @@ func Test_getJWT(t *testing.T) {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return
 				}
+
+				r := Response{
+					AuthToken: tokenString,
+					Agent:     Agent{ID: "test"},
+				}
+
+				data, err := json.Marshal(r)
+				if err != nil {
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+
 				w.WriteHeader(http.StatusOK)
 				w.Header().Set("Content-Type", "application/json")
-				_, _ = w.Write([]byte(`{"token":"` + tokenString + `"}`))
+				_, _ = w.Write(data)
 			default:
 				http.Error(w, "not found", http.StatusNotFound)
 				return
@@ -78,25 +89,25 @@ func Test_getJWT(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		want    []byte
+		want    string
 		wantErr bool
 	}{
 		{
 			name:    "invalid (no token)",
 			args:    args{token: "", reg: Registration{Meta: Meta{}}},
-			want:    nil,
+			want:    "",
 			wantErr: true,
 		},
 		{
 			name:    "invalid (no subject)",
 			args:    args{token: "foo", reg: Registration{Meta: Meta{}}},
-			want:    nil,
+			want:    "",
 			wantErr: true,
 		},
 		{
 			name:    "valid",
-			args:    args{token: "foo", reg: Registration{Meta: Meta{MachineID: "bar"}}},
-			want:    []byte(`{"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiYXIifQ.ST4yLHEt-g5qTE6NW5gAp6omAfVezv8dwUPTVtM2rKs"}`),
+			args:    args{token: "foo", reg: Registration{Meta: Meta{MachineID: "bar", Hostname: "foo"}}},
+			want:    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiYXIifQ.ST4yLHEt-g5qTE6NW5gAp6omAfVezv8dwUPTVtM2rKs",
 			wantErr: false,
 		},
 	}
@@ -107,8 +118,10 @@ func Test_getJWT(t *testing.T) {
 				t.Errorf("getJWT() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("getJWT() = '%v', want '%v'", string(got), string(tt.want))
+			if got != nil {
+				if got.AuthToken != tt.want {
+					t.Errorf("getJWT() = '%v', want '%v'", got.AuthToken, tt.want)
+				}
 			}
 		})
 	}

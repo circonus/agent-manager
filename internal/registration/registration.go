@@ -56,6 +56,15 @@ type AWSTags struct {
 	Version          string    `json:"version,omitempty"`
 }
 
+type Response struct {
+	AuthToken string `json:"auth_token" yaml:"auth_token"`
+	Agent     Agent  `json:"agent" yaml:"agent"`
+}
+
+type Agent struct {
+	ID string `json:"agent_id" yaml:"agent_id"`
+}
+
 // Start the registration process.
 func Start(ctx context.Context) error {
 	log.Info().Msg("starting registration")
@@ -101,14 +110,17 @@ func Start(ctx context.Context) error {
 		log.Fatal().Err(err).Msg("getting token")
 	}
 
-	if err := credentials.Save(jwt); err != nil {
+	if err := credentials.SaveJWT([]byte(jwt.AuthToken)); err != nil {
 		log.Fatal().Err(err).Msg("saving token")
+	}
+	if err := credentials.SaveAgentID([]byte(jwt.Agent.ID)); err != nil {
+		log.Fatal().Err(err).Msg("saving agent id")
 	}
 
 	return nil
 }
 
-func getJWT(ctx context.Context, token string, reg Registration) ([]byte, error) {
+func getJWT(ctx context.Context, token string, reg Registration) (*Response, error) {
 	if token == "" {
 		return nil, fmt.Errorf("invalid token (empty)") //nolint:goerr113
 	}
@@ -153,7 +165,12 @@ func getJWT(ctx context.Context, token string, reg Registration) ([]byte, error)
 		return nil, fmt.Errorf("non-200 response -- status: %s, body: %s", resp.Status, string(body)) //nolint:goerr113
 	}
 
-	return body, nil
+	var response Response
+	if err := json.Unmarshal(body, &response); err != nil {
+		return nil, fmt.Errorf("parsing response body: %w", err)
+	}
+
+	return &response, nil
 }
 
 func getMachineID() (string, error) {
