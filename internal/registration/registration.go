@@ -136,7 +136,7 @@ func getJWT(ctx context.Context, token string, reg Registration) (*Response, err
 		return nil, fmt.Errorf("marshal claims: %w", err)
 	}
 
-	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "agent", "registration")
+	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "agent", "register")
 	if err != nil {
 		return nil, fmt.Errorf("req url: %w", err)
 	}
