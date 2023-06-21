@@ -57,8 +57,10 @@ func (a *Agent) Start() error {
 
 	log.Info().Str("name", release.NAME).Str("version", release.VERSION).Msg("starting")
 
+	log.Info().Str("registration_token", viper.GetString(keys.Register)).Msg("register")
+
 	if viper.GetString(keys.Register) != "" {
-		credentials.SaveRegistrationToken([]byte(keys.Register))
+		credentials.SaveRegistrationToken([]byte(viper.GetString(keys.Register)))
 		if err := registration.Start(a.groupCtx); err != nil {
 			log.Fatal().Err(err).Msg("registering agent")
 		}
