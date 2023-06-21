@@ -116,6 +116,10 @@ func Start(ctx context.Context) error {
 		log.Fatal().Err(err).Msg("saving agent id")
 	}
 
+	if err := credentials.LoadAgentID(); err != nil {
+		log.Fatal().Err(err).Msg("load agent id")
+	}
+
 	return nil
 }
 

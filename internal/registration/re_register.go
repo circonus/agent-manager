@@ -49,7 +49,7 @@ func getNewJWT(ctx context.Context) (*Response, error) {
 		return nil, fmt.Errorf("req url: %w", err)
 	}
 
-	data := []byte(`{"agent_id":"` + viper.GetString(keys.RegistrationToken) + `"}`)
+	data := []byte(`{"agent_id":"` + viper.GetString(keys.AgentID) + `"}`)
 
 	req, err := http.NewRequestWithContext(ctx, "POST", reqURL, bytes.NewReader(data))
 	if err != nil {
