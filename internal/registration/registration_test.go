@@ -41,13 +41,13 @@ func Test_getJWT(t *testing.T) {
 					return
 				}
 
-				if reg.Meta.MachineID == "" {
+				if reg.MachineID == "" {
 					http.Error(w, "bad machine id", http.StatusBadRequest)
 					return
 				}
 
 				token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{
-					Subject: reg.Meta.MachineID,
+					Subject: reg.MachineID,
 				})
 				tokenString, err := token.SignedString([]byte("secret"))
 				if err != nil {
@@ -94,19 +94,19 @@ func Test_getJWT(t *testing.T) {
 	}{
 		{
 			name:    "invalid (no token)",
-			args:    args{token: "", reg: Registration{Meta: Meta{}}},
+			args:    args{token: "", reg: Registration{}},
 			want:    "",
 			wantErr: true,
 		},
 		{
 			name:    "invalid (no subject)",
-			args:    args{token: "foo", reg: Registration{Meta: Meta{}}},
+			args:    args{token: "foo", reg: Registration{}},
 			want:    "",
 			wantErr: true,
 		},
 		{
 			name:    "valid",
-			args:    args{token: "foo", reg: Registration{Meta: Meta{MachineID: "bar", Hostname: "foo"}}},
+			args:    args{token: "foo", reg: Registration{MachineID: "bar", Hostname: "foo"}},
 			want:    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiYXIifQ.ST4yLHEt-g5qTE6NW5gAp6omAfVezv8dwUPTVtM2rKs",
 			wantErr: false,
 		},

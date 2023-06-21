@@ -17,6 +17,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/feature/ec2/imds"
 	"github.com/circonus/collector-management-agent/internal/config/keys"
 	"github.com/circonus/collector-management-agent/internal/credentials"
+	"github.com/circonus/collector-management-agent/internal/release"
 	"github.com/denisbrodbeck/machineid"
 	"github.com/rs/zerolog/log"
 	"github.com/shirou/gopsutil/host"
@@ -24,21 +25,22 @@ import (
 )
 
 type Registration struct {
-	Meta    Meta    `json:"meta"`
-	AWSMeta AWSTags `json:"aws,omitempty"`
-}
-
-type Meta struct {
-	Hostname             string `json:"hostname"`
+	Version              string `json:"version"`
 	MachineID            string `json:"machine_id"`
+	Hostname             string `json:"hostname"`
 	OS                   string `json:"os"`
 	Platform             string `json:"platform"`
 	PlatformVersion      string `json:"platform_version"`
 	PlatformFamily       string `json:"platform_family"`
-	KernelVersion        string `json:"kernel_version"`
 	KernelArch           string `json:"kernel_arch"`
+	KernelVersion        string `json:"kernel_version"`
 	VirtualizationSystem string `json:"virtualization_system"`
 	VirtualizationRole   string `json:"virtualization_role"`
+	Data                 Data   `json:"data,omitempty"`
+}
+
+type Data struct {
+	AWSMeta AWSTags `json:"aws,omitempty"`
 }
 
 type AWSTags struct {
@@ -84,17 +86,14 @@ func Start(ctx context.Context) error {
 		log.Fatal().Err(err).Str("mid", mid).Msg("invalid machine id")
 	}
 
-	meta, err := getHostInfo()
+	reg, err := getHostInfo()
 	if err != nil {
 		log.Fatal().Err(err).Msg("unable to retrieve host info")
 	}
 
-	meta.Hostname = hn
-	meta.MachineID = mid
-
-	reg := Registration{
-		Meta: meta,
-	}
+	reg.Hostname = hn
+	reg.MachineID = mid
+	reg.Version = "v" + release.VERSION
 
 	awstags := viper.GetStringSlice(keys.AWSEC2Tags)
 	if len(awstags) > 0 {
@@ -102,7 +101,7 @@ func Start(ctx context.Context) error {
 		if err != nil {
 			log.Fatal().Err(err).Msg("adding AWS EC2 tags")
 		}
-		reg.AWSMeta = at
+		reg.Data.AWSMeta = at
 	}
 
 	jwt, err := getJWT(ctx, token, reg)
@@ -124,10 +123,10 @@ func getJWT(ctx context.Context, token string, reg Registration) (*Response, err
 	if token == "" {
 		return nil, fmt.Errorf("invalid token (empty)") //nolint:goerr113
 	}
-	if reg.Meta.Hostname == "" {
+	if reg.Hostname == "" {
 		return nil, fmt.Errorf("invalid claims (empty hostname)") //nolint:goerr113
 	}
-	if reg.Meta.MachineID == "" {
+	if reg.MachineID == "" {
 		return nil, fmt.Errorf("invalid claims (empty machine id)") //nolint:goerr113
 	}
 
@@ -184,43 +183,43 @@ func getMachineID() (string, error) {
 	return fmt.Sprintf("%x", mac.Sum(nil)), nil
 }
 
-func getHostInfo() (Meta, error) {
+func getHostInfo() (Registration, error) {
 
-	meta := Meta{}
+	reg := Registration{}
 
 	hi, err := host.Info()
 	if err != nil {
-		return meta, err //nolint:wrapcheck
+		return reg, err //nolint:wrapcheck
 	}
 
 	// hi.OS is runtime.GOOS
 	if hi.OS != "" {
-		meta.OS = hi.OS
+		reg.OS = hi.OS
 	}
 
 	if hi.Platform != "" {
-		meta.Platform = hi.Platform
+		reg.Platform = hi.Platform
 	}
 	if hi.PlatformFamily != "" {
-		meta.PlatformFamily = hi.PlatformFamily
+		reg.PlatformFamily = hi.PlatformFamily
 	}
 	if hi.PlatformVersion != "" {
-		meta.PlatformVersion = hi.PlatformVersion
+		reg.PlatformVersion = hi.PlatformVersion
 	}
 	if hi.KernelVersion != "" {
-		meta.KernelVersion = hi.KernelVersion
+		reg.KernelVersion = hi.KernelVersion
 	}
 	if hi.KernelArch != "" {
-		meta.KernelArch = hi.KernelArch
+		reg.KernelArch = hi.KernelArch
 	}
 	if hi.VirtualizationSystem != "" {
-		meta.VirtualizationSystem = hi.VirtualizationSystem
+		reg.VirtualizationSystem = hi.VirtualizationSystem
 	}
 	if hi.VirtualizationRole != "" {
-		meta.VirtualizationRole = hi.VirtualizationRole
+		reg.VirtualizationRole = hi.VirtualizationRole
 	}
 
-	return meta, nil
+	return reg, nil
 
 }
 
