@@ -1,0 +1,47 @@
+[
+    {
+        "collector_config_assignment_id": "c3ef3233-2792-48be-aaab-745aaf02f5e9",
+        "collector_config_id": "9bbdcaad-bb13-47d2-9455-f535a0b59fc6",
+        "collector_config": {
+            "collector_config_id": "9bbdcaad-bb13-47d2-9455-f535a0b59fc6",
+            "collector_config_file_id": "d81c7650-19ae-4bf3-98df-5d24d53f5756",
+            "name": "test config",
+            "version": "v0.1.1",
+            "description": "test config",
+            "status": "active",
+            "source": null,
+            "config": "dGVzdAo=",
+            "builder_config": null,
+            "created_at": 1687374889,
+            "created_by": "c9613b88-8966-4c83-b5bc-0ab9b75c2ba9",
+            "updated_at": 1687374889,
+            "updated_by": "c9613b88-8966-4c83-b5bc-0ab9b75c2ba9"
+        },
+        "collector_id": "4ad1fe6a-1ae4-4595-be85-06ad2e204f25",
+        "collector": {
+            "collector_id": "4ad1fe6a-1ae4-4595-be85-06ad2e204f25",
+            "collector_type_id": "foo",
+            "version": null,
+            "name": null,
+            "description": null,
+            "status": "active",
+            "data": {
+                "test": "test"
+            },
+            "agent_id": "a1d86669-c7db-4696-b97a-dceedb33dcb5",
+            "created_at": 1687374818,
+            "created_by": "a1d86669-c7db-4696-b97a-dceedb33dcb5",
+            "updated_at": 1687374889,
+            "updated_by": "a1d86669-c7db-4696-b97a-dceedb33dcb5"
+        },
+        "status": "new",
+        "info": null,
+        "data": null,
+        "applied_at": null,
+        "applied_by": null,
+        "created_at": 1687374895,
+        "created_by": "c9613b88-8966-4c83-b5bc-0ab9b75c2ba9",
+        "updated_at": 1687374895,
+        "updated_by": "c9613b88-8966-4c83-b5bc-0ab9b75c2ba9"
+    }
+]
