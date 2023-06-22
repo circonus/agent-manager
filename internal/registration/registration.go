@@ -111,12 +111,9 @@ func Start(ctx context.Context) error {
 	if err := credentials.SaveJWT([]byte(jwt.AuthToken)); err != nil {
 		log.Fatal().Err(err).Msg("saving token")
 	}
+
 	if err := credentials.SaveAgentID([]byte(jwt.Agent.ID)); err != nil {
 		log.Fatal().Err(err).Msg("saving agent id")
-	}
-
-	if err := credentials.LoadAgentID(); err != nil {
-		log.Fatal().Err(err).Msg("load agent id")
 	}
 
 	return nil
@@ -166,6 +163,8 @@ func getJWT(ctx context.Context, token string, reg Registration) (*Response, err
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("non-200 response -- status: %s, body: %s", resp.Status, string(body)) //nolint:goerr113
 	}
+
+	log.Debug().Str("resp", string(body)).Msg("response")
 
 	var response Response
 	if err := json.Unmarshal(body, &response); err != nil {
