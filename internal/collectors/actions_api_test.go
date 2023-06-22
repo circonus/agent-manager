@@ -29,10 +29,26 @@ func TestParseAPIActions(t *testing.T) {
 			name:    "valid",
 			actFile: testAPIActionsFileName(),
 			invFile: inventoryFileName(),
-			want:    Actions{Action{Configs: map[string]Config{"foo": {ID: "c3ef3233-2792-48be-aaab-745aaf02f5e9", Path: "testdata/test_conf", Contents: "dGVzdAo="}}, ID: "", Type: "config", Commands: []Command(nil)}},
+			want: Actions{
+				Action{
+					Configs: map[string][]Config{
+						"foo": {
+							{
+								ID:       "c3ef3233-2792-48be-aaab-745aaf02f5e9",
+								Path:     "testdata/test_conf",
+								Contents: "dGVzdAo=",
+							},
+						},
+					},
+					ID:       "",
+					Type:     "config",
+					Commands: []Command(nil),
+				},
+			},
 			wantErr: false,
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			viper.Set(keys.InventoryFile, tt.invFile)

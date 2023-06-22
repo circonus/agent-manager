@@ -17,7 +17,7 @@ type APIAction struct {
 }
 
 type APIConfig struct {
-	ID       string `json:"collector_config_file_id"`
+	FileID   string `json:"collector_config_file_id"`
 	Contents string `json:"config"`
 }
 
@@ -39,7 +39,7 @@ func ParseAPIActions(data []byte) (Actions, error) {
 	actions := []Action{
 		{
 			Type:    CONFIG,
-			Configs: make(map[string]Config),
+			Configs: make(map[string][]Config),
 		},
 	}
 
@@ -52,26 +52,28 @@ func ParseAPIActions(data []byte) (Actions, error) {
 			continue
 		}
 
-		file, ok := coll.ConfigFiles[apiAction.Config.ID]
+		file, ok := coll.ConfigFiles[apiAction.Config.FileID]
 		if !ok {
-			log.Warn().Str("id", apiAction.Config.ID).Msg("unknown config file id")
+			log.Warn().Str("id", apiAction.Config.FileID).Msg("unknown config file id")
 			continue
 		}
 
 		if _, ok := actions[0].Configs[apiAction.Collector.ID]; !ok {
-			actions[0].Configs = make(map[string]Config)
+			actions[0].Configs = make(map[string][]Config)
 		}
-		actions[0].Configs[apiAction.Collector.ID] = Config{
+		cfgs := actions[0].Configs[apiAction.Collector.ID]
+		cfgs = append(cfgs, Config{
 			ID:       apiAction.ConfigAssignmentID,
 			Path:     file,
 			Contents: apiAction.Config.Contents,
-		}
+		})
+		actions[0].Configs[apiAction.Collector.ID] = cfgs
 
 		foundConfigs++
 	}
 
 	if foundConfigs == 0 {
-		return nil, fmt.Errorf("no configs found to install")
+		return nil, fmt.Errorf("no configs found to install") //nolint:goerr113
 	}
 
 	return actions, nil

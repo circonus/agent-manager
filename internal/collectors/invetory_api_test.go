@@ -1,7 +1,6 @@
 package collectors
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -37,7 +36,6 @@ func TestParseAPICollectors(t *testing.T) {
 				t.Fatalf("ParseAPICollectors() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			fmt.Printf("%#v", got)
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Fatalf("ParseAPICollectors() = %v, want %v", got, tt.want)
 			}

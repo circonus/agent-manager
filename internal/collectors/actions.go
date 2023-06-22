@@ -21,17 +21,17 @@ const (
 	CONFIG  = "config"
 	COMMAND = "command"
 
-	STATUS_ACTIVE = "active"
-	STATUS_ERROR  = "error"
+	STATUS_ACTIVE = "active" //nolint:revive
+	STATUS_ERROR  = "error"  //nolint:revive
 )
 
 type Actions []Action
 
 type Action struct {
-	Configs  map[string]Config `json:"configs" yaml:"configs"`
-	ID       string            `json:"id" yaml:"id"` // not used yet, api only supports configs
-	Type     string            `json:"type" yaml:"type"`
-	Commands []Command         `json:"commands" yaml:"commands"`
+	Configs  map[string][]Config `json:"configs" yaml:"configs"`
+	ID       string              `json:"id" yaml:"id"` // not used yet, api only supports configs
+	Type     string              `json:"type" yaml:"type"`
+	Commands []Command           `json:"commands" yaml:"commands"`
 }
 
 // not OS commands, commands the agent knows (e.g. restart_collector, collector_status, etc.).
@@ -52,21 +52,22 @@ type Config struct {
 
 type Result struct {
 	ActionID      string `json:"action_id" yaml:"action_id"` // not used at this time, api only supports configs
-	ConfigResult  `json:"config_resutl" yaml:"config_result"`
+	ConfigResult  `json:"config_result" yaml:"config_result"`
 	CommandResult `json:"command_result" yaml:"command_result"`
 }
 
 // write result will be "OK" or the err received when trying to write the file.
 // reload result will be empty or base64 encoded as it may be multi-line output.
 type ConfigResult struct {
-	ID         string     `json:"id" yaml:"id"`
+	ID         string     `json:"collector_config_assignment_id" yaml:"collector_config_assignment_id"`
 	Status     string     `json:"status" yaml:"status"` // STATUS_ACTIVE or STATUS_ERROR
-	ConfigData ConfigData `json:"data" yaml:"data"`
+	Info       string     `json:"info,omitempty" yaml:"info,omitempty"`
+	ConfigData ConfigData `json:"data,omitempty" yaml:"data,omitempty"`
 }
 
 type ConfigData struct {
-	WriteResult  string `json:"write_result" yaml:"write_result"`
-	ReloadResult string `json:"reload_result" yaml:"reload_result"`
+	WriteResult  string `json:"write_result,omitempty" yaml:"write_result,omitempty"`
+	ReloadResult string `json:"reload_result,omitempty" yaml:"reload_result,omitempty"`
 }
 
 // Output will be base64 encoded.
@@ -117,9 +118,9 @@ func getActions(ctx context.Context) error {
 		return fmt.Errorf("non-200 response -- status: %s, body: %s", resp.Status, string(body)) //nolint:goerr113
 	}
 
-	var actions Actions
-	if err := json.Unmarshal(body, &actions); err != nil {
-		return fmt.Errorf("unmarshal body: %w", err)
+	actions, err := ParseAPIActions(body)
+	if err != nil {
+		return fmt.Errorf("parsing api actions: %w", err)
 	}
 
 	for _, action := range actions {
@@ -138,20 +139,35 @@ func getActions(ctx context.Context) error {
 	return nil
 }
 
-func sendActionResult(ctx context.Context, r Result) error {
+func sendConfigResult(ctx context.Context, r ConfigResult) error {
+	data, err := json.Marshal(r)
+	if err != nil {
+		return fmt.Errorf("marshal result: %w", err)
+	}
+
+	fmt.Printf("sending config result: %v\n", string(data))
+
+	return sendActionResult(ctx, data)
+}
+
+func sendCommandResult(ctx context.Context, r CommandResult) error {
+	data, err := json.Marshal(r)
+	if err != nil {
+		return fmt.Errorf("marshal result: %w", err)
+	}
+
+	return sendActionResult(ctx, data)
+}
+
+func sendActionResult(ctx context.Context, data []byte) error {
 	token := viper.GetString(keys.APIToken)
 	if token == "" {
 		return fmt.Errorf("invalid api token (empty)") //nolint:goerr113
 	}
 
-	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "agent", "update")
+	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "collector", "update")
 	if err != nil {
 		return fmt.Errorf("req url: %w", err)
-	}
-
-	data, err := json.Marshal(r)
-	if err != nil {
-		return fmt.Errorf("marshal result: %w", err)
 	}
 
 	req, err := http.NewRequestWithContext(ctx, "POST", reqURL, bytes.NewReader(data))
@@ -178,9 +194,8 @@ func sendActionResult(ctx context.Context, r Result) error {
 		return fmt.Errorf("non-200 response -- status: %s, body: %s", resp.Status, string(body)) //nolint:goerr113
 	}
 
-	var actions Actions
-	if err := json.Unmarshal(body, &actions); err != nil {
-		return fmt.Errorf("unmarshal body: %w", err)
+	if len(body) > 0 {
+		log.Debug().Str("body", string(body)).Msg("action result response")
 	}
 
 	return nil
