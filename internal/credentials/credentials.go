@@ -4,17 +4,17 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/circonus/collector-management-agent/internal/config/defaults"
 	"github.com/circonus/collector-management-agent/internal/config/keys"
 	"github.com/spf13/viper"
 )
 
 func LoadJWT() error {
-	if defaults.JwtTokenFile == "" {
+	file := viper.GetString(keys.JwtTokenFile)
+	if file == "" {
 		return fmt.Errorf("invalid id file (empty)") //nolint:goerr113
 	}
 
-	token, err := os.ReadFile(defaults.JwtTokenFile)
+	token, err := read(file)
 	if err != nil {
 		return err //nolint:wrapcheck
 	}
@@ -25,22 +25,24 @@ func LoadJWT() error {
 }
 
 func SaveJWT(creds []byte) error {
-	if defaults.JwtTokenFile == "" {
+	file := viper.GetString(keys.JwtTokenFile)
+	if file == "" {
 		return fmt.Errorf("invalid id file (empty)") //nolint:goerr113
 	}
 	if len(creds) == 0 {
 		return fmt.Errorf("invalid credential token (empty)") //nolint:goerr113
 	}
 
-	return os.WriteFile(defaults.JwtTokenFile, creds, 0600) //nolint:wrapcheck
+	return write(file, creds) //nolint:wrapcheck
 }
 
 func LoadAgentID() error {
-	if defaults.AgentIDFile == "" {
+	file := viper.GetString(keys.AgentIDFile)
+	if file == "" {
 		return fmt.Errorf("invalid agent id file (empty)") //nolint:goerr113
 	}
 
-	token, err := os.ReadFile(defaults.AgentIDFile)
+	token, err := read(file)
 	if err != nil {
 		return err //nolint:wrapcheck
 	}
@@ -51,22 +53,24 @@ func LoadAgentID() error {
 }
 
 func SaveAgentID(creds []byte) error {
-	if defaults.AgentIDFile == "" {
+	file := viper.GetString(keys.AgentIDFile)
+	if file == "" {
 		return fmt.Errorf("invalid agent id file (empty)") //nolint:goerr113
 	}
 	if len(creds) == 0 {
 		return fmt.Errorf("invalid agent id (empty)") //nolint:goerr113
 	}
 
-	return os.WriteFile(defaults.AgentIDFile, creds, 0600) //nolint:wrapcheck
+	return write(file, creds) //nolint:wrapcheck
 }
 
 func LoadRegistrationToken() error {
-	if defaults.RegTokenFile == "" {
+	file := viper.GetString(keys.RegTokenFile)
+	if file == "" {
 		return fmt.Errorf("invalid registration token file (empty)") //nolint:goerr113
 	}
 
-	token, err := os.ReadFile(defaults.RegTokenFile)
+	token, err := read(file)
 	if err != nil {
 		return err //nolint:wrapcheck
 	}
@@ -77,12 +81,26 @@ func LoadRegistrationToken() error {
 }
 
 func SaveRegistrationToken(creds []byte) error {
-	if defaults.RegTokenFile == "" {
+	file := viper.GetString(keys.RegTokenFile)
+	if file == "" {
 		return fmt.Errorf("invalid registration token file (empty)") //nolint:goerr113
 	}
 	if len(creds) == 0 {
 		return fmt.Errorf("invalid registration token (empty)") //nolint:goerr113
 	}
 
-	return os.WriteFile(defaults.RegTokenFile, creds, 0600) //nolint:wrapcheck
+	return write(file, creds) //nolint:wrapcheck
+}
+
+func read(file string) ([]byte, error) {
+	data, err := os.ReadFile(file)
+	if err != nil {
+		return nil, err //nolint:wrapcheck
+	}
+
+	return data, nil
+}
+
+func write(file string, data []byte) error {
+	return os.WriteFile(file, data, 0600) //nolint:wrapcheck
 }
