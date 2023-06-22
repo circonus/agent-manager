@@ -23,13 +23,14 @@ Usage:
 
 Flags:
       --apiurl string              [ENV: CMA_API_URL] Circonus API URL (default "https://something.circonus.com")
-      --aws_ec2_tags stringArray   [ENV: CMA_AWS_EC2_TAGS] AWS EC2 tags for registration meta data
-  -c, --config string              config file (default: /Users/mgm/src/circonus/collector-management-agent/dist/cma_darwin_amd64_v1/etc/circonus-cma.yaml|.json|.toml)
+      --aws-ec2-tags stringArray   [ENV: CMA_AWS_EC2_TAGS] AWS EC2 tags for registration meta data
+  -c, --config string              config file (default: /home/vagrant/cma/etc/circonus-cma.yaml|.json|.toml)
   -d, --debug                      [ENV: CMA_DEBUG] Enable debug messages
   -h, --help                       help for circonus-cma
+      --inventory                  [ENV: CMA_INVENTORY] Inventory installed collectors
       --log-level string           [ENV: CMA_LOG_LEVEL] Log level [(panic|fatal|error|warn|info|debug|disabled)] (default "info")
       --log-pretty                 Output formatted/colored log lines [ignored on windows]
-      --poll_interval string       [ENV: CMA_POLL_INTERVAL] Polling interval for actions (default "60s")
+      --poll-interval string       [ENV: CMA_POLL_INTERVAL] Polling interval for actions (default "60s")
       --register string            [ENV: CMA_REGISTER] Registration token
   -V, --version                    Show version and exit
-```
+  ```
