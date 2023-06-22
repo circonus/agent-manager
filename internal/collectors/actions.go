@@ -20,6 +20,9 @@ const (
 	// action types.
 	CONFIG  = "config"
 	COMMAND = "command"
+
+	STATUS_ACTIVE = "active"
+	STATUS_ERROR  = "error"
 )
 
 type Actions []Action
@@ -56,14 +59,24 @@ type Result struct {
 // write result will be "OK" or the err received when trying to write the file.
 // reload result will be empty or base64 encoded as it may be multi-line output.
 type ConfigResult struct {
-	ID           string `json:"id" yaml:"id"`
+	ID         string     `json:"id" yaml:"id"`
+	Status     string     `json:"status" yaml:"status"` // STATUS_ACTIVE or STATUS_ERROR
+	ConfigData ConfigData `json:"data" yaml:"data"`
+}
+
+type ConfigData struct {
 	WriteResult  string `json:"write_result" yaml:"write_result"`
 	ReloadResult string `json:"reload_result" yaml:"reload_result"`
 }
 
 // Output will be base64 encoded.
 type CommandResult struct {
-	ID       string `json:"id" yaml:"id"`
+	ID          string      `json:"id" yaml:"id"`
+	Status      string      `json:"status" yaml:"status"` // active or error
+	CommandData CommandData `json:"data" yaml:"data"`
+}
+
+type CommandData struct {
 	Output   string `json:"output" yaml:"output"`
 	Error    string `json:"error" yaml:"error"`
 	ExitCode int    `json:"exit_code" yaml:"exit_code"`

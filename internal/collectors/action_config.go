@@ -15,8 +15,10 @@ func installConfigs(ctx context.Context, a Action) {
 			r := Result{
 				ActionID: a.ID,
 				ConfigResult: ConfigResult{
-					ID:          config.ID,
-					WriteResult: err.Error(),
+					ID: config.ID,
+					ConfigData: ConfigData{
+						WriteResult: err.Error(),
+					},
 				},
 			}
 			if err = sendActionResult(ctx, r); err != nil {
@@ -36,8 +38,10 @@ func installConfigs(ctx context.Context, a Action) {
 			r := Result{
 				ActionID: a.ID,
 				ConfigResult: ConfigResult{
-					ID:          config.ID,
-					WriteResult: err.Error(),
+					ID: config.ID,
+					ConfigData: ConfigData{
+						WriteResult: err.Error(),
+					},
 				},
 			}
 			if err := sendActionResult(ctx, r); err != nil {
@@ -49,8 +53,10 @@ func installConfigs(ctx context.Context, a Action) {
 		r := Result{
 			ActionID: a.ID,
 			ConfigResult: ConfigResult{
-				ID:          config.ID,
-				WriteResult: "OK",
+				ID: config.ID,
+				ConfigData: ConfigData{
+					WriteResult: "OK",
+				},
 			},
 		}
 		if err := sendActionResult(ctx, r); err != nil {

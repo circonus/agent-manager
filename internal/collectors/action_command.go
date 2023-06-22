@@ -42,15 +42,17 @@ func runCommands(ctx context.Context, a Action) error {
 				r := Result{
 					ActionID: a.ID,
 					CommandResult: CommandResult{
-						ID:       command.ID,
-						ExitCode: cmd.ProcessState.ExitCode(),
+						ID: command.ID,
+						CommandData: CommandData{
+							ExitCode: cmd.ProcessState.ExitCode(),
+						},
 					},
 				}
 				if err != nil {
-					r.CommandResult.Error = err.Error()
+					r.CommandResult.CommandData.Error = err.Error()
 				}
 				if len(output) > 0 {
-					r.CommandResult.Output = base64.StdEncoding.EncodeToString(output)
+					r.CommandResult.CommandData.Output = base64.StdEncoding.EncodeToString(output)
 				}
 				if err = sendActionResult(ctx, r); err != nil {
 					log.Error().Err(err).Msg("command result")
@@ -65,15 +67,17 @@ func runCommands(ctx context.Context, a Action) error {
 				r := Result{
 					ActionID: a.ID,
 					CommandResult: CommandResult{
-						ID:       command.ID,
-						ExitCode: cmd.ProcessState.ExitCode(),
+						ID: command.ID,
+						CommandData: CommandData{
+							ExitCode: cmd.ProcessState.ExitCode(),
+						},
 					},
 				}
 				if err != nil {
-					r.CommandResult.Error = err.Error()
+					r.CommandResult.CommandData.Error = err.Error()
 				}
 				if len(output) > 0 {
-					r.CommandResult.Output = base64.StdEncoding.EncodeToString(output)
+					r.CommandResult.CommandData.Output = base64.StdEncoding.EncodeToString(output)
 				}
 				if err = sendActionResult(ctx, r); err != nil {
 					log.Error().Err(err).Msg("command result")
@@ -88,15 +92,17 @@ func runCommands(ctx context.Context, a Action) error {
 				r := Result{
 					ActionID: a.ID,
 					CommandResult: CommandResult{
-						ID:       command.ID,
-						ExitCode: cmd.ProcessState.ExitCode(),
+						ID: command.ID,
+						CommandData: CommandData{
+							ExitCode: cmd.ProcessState.ExitCode(),
+						},
 					},
 				}
 				if err != nil {
-					r.CommandResult.Error = err.Error()
+					r.CommandResult.CommandData.Error = err.Error()
 				}
 				if len(output) > 0 {
-					r.CommandResult.Output = base64.StdEncoding.EncodeToString(output)
+					r.CommandResult.CommandData.Output = base64.StdEncoding.EncodeToString(output)
 				}
 				if err = sendActionResult(ctx, r); err != nil {
 					log.Error().Err(err).Msg("command result")
@@ -120,15 +126,17 @@ func runCommands(ctx context.Context, a Action) error {
 				r := Result{
 					ActionID: a.ID,
 					CommandResult: CommandResult{
-						ID:       command.ID,
-						ExitCode: cmd.ProcessState.ExitCode(),
+						ID: command.ID,
+						CommandData: CommandData{
+							ExitCode: cmd.ProcessState.ExitCode(),
+						},
 					},
 				}
 				if err != nil {
-					r.CommandResult.Error = err.Error()
+					r.CommandResult.CommandData.Error = err.Error()
 				}
 				if len(output) > 0 {
-					r.CommandResult.Output = base64.StdEncoding.EncodeToString(output)
+					r.CommandResult.CommandData.Output = base64.StdEncoding.EncodeToString(output)
 				}
 				if err = sendActionResult(ctx, r); err != nil {
 					log.Error().Err(err).Msg("command result")
@@ -143,15 +151,17 @@ func runCommands(ctx context.Context, a Action) error {
 				r := Result{
 					ActionID: a.ID,
 					CommandResult: CommandResult{
-						ID:       command.ID,
-						ExitCode: cmd.ProcessState.ExitCode(),
+						ID: command.ID,
+						CommandData: CommandData{
+							ExitCode: cmd.ProcessState.ExitCode(),
+						},
 					},
 				}
 				if err != nil {
-					r.CommandResult.Error = err.Error()
+					r.CommandResult.CommandData.Error = err.Error()
 				}
 				if len(output) > 0 {
-					r.CommandResult.Output = base64.StdEncoding.EncodeToString(output)
+					r.CommandResult.CommandData.Output = base64.StdEncoding.EncodeToString(output)
 				}
 				if err = sendActionResult(ctx, r); err != nil {
 					log.Error().Err(err).Msg("command result")
