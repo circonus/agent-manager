@@ -14,7 +14,6 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/circonus/collector-management-agent/internal/config/defaults"
 	"github.com/circonus/collector-management-agent/internal/config/keys"
 	"github.com/hashicorp/go-version"
 	"github.com/rs/zerolog/log"
@@ -29,20 +28,20 @@ import (
 type Collectors map[string]map[string]Collector
 
 type Collector struct {
-	Binary      string   `json:"binary" yaml:"binary"`
-	Start       string   `json:"start" yaml:"start"`
-	Stop        string   `json:"stop" yaml:"stop"`
-	Restart     string   `json:"restart" yaml:"restart"`
-	Reload      string   `json:"reload" yaml:"reload"`
-	Status      string   `json:"status" yaml:"status"`
-	Version     string   `json:"version" yaml:"version"`
-	ConfigFiles []string `json:"config_files" yaml:"config_files"`
+	ConfigFiles map[string]string `json:"config_files" yaml:"config_files"`
+	Binary      string            `json:"binary" yaml:"binary"`
+	Start       string            `json:"start" yaml:"start"`
+	Stop        string            `json:"stop" yaml:"stop"`
+	Restart     string            `json:"restart" yaml:"restart"`
+	Reload      string            `json:"reload" yaml:"reload"`
+	Status      string            `json:"status" yaml:"status"`
+	Version     string            `json:"version" yaml:"version"`
 }
 
 type InstalledCollectors []InstalledCollector
 type InstalledCollector struct {
-	CollectorType string `json:"collector_type"`
-	Version       string `json:"version"`
+	CollectorTypeID string `json:"collector_type_id"`
+	Version         string `json:"version"`
 }
 
 func FetchCollectors(ctx context.Context) error {
@@ -81,16 +80,21 @@ func FetchCollectors(ctx context.Context) error {
 		return fmt.Errorf("non-200 response -- status: %s, body: %s", resp.Status, string(body)) //nolint:goerr113
 	}
 
-	var collectors Collectors
-	if err := json.Unmarshal(body, &collectors); err != nil {
-		return fmt.Errorf("unmarshal body: %w", err)
+	collectors, err := ParseAPICollectors(body)
+	if err != nil {
+		return fmt.Errorf("parsing api response: %w", err)
 	}
 
 	return SaveCollectors(collectors)
 }
 
 func LoadCollectors() (Collectors, error) {
-	data, err := os.ReadFile(defaults.InvetoryFile)
+	file := viper.GetString(keys.InventoryFile)
+	if file == "" {
+		return nil, fmt.Errorf("invalid inventory file (empty)")
+	}
+
+	data, err := os.ReadFile(file)
 	if err != nil {
 		return nil, fmt.Errorf("loading collector inventory: %w", err)
 	}
@@ -104,12 +108,17 @@ func LoadCollectors() (Collectors, error) {
 }
 
 func SaveCollectors(c Collectors) error {
+	file := viper.GetString(keys.InventoryFile)
+	if file == "" {
+		return fmt.Errorf("invalid inventory file (empty)")
+	}
+
 	data, err := yaml.Marshal(c)
 	if err != nil {
 		return fmt.Errorf("marshal collector inventory: %w", err)
 	}
 
-	if err := os.WriteFile(defaults.InvetoryFile, data, 0600); err != nil {
+	if err := os.WriteFile(file, data, 0600); err != nil {
 		return fmt.Errorf("saving collector inventory: %w", err)
 	}
 
@@ -134,9 +143,9 @@ func CheckForCollectors(ctx context.Context) error {
 			log.Warn().Str("file", c.Binary).Msg("collector binary not found, skipping")
 			continue
 		}
-		for _, config := range c.ConfigFiles {
-			if _, err := os.Stat(config); errors.Is(err, os.ErrNotExist) {
-				log.Warn().Str("file", config).Msg("required config file not found, skipping")
+		for _, path := range c.ConfigFiles {
+			if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
+				log.Warn().Str("file", path).Msg("required config file not found, skipping")
 				continue
 			}
 		}
@@ -146,7 +155,7 @@ func CheckForCollectors(ctx context.Context) error {
 		}
 
 		log.Info().Str("collector agent", name).Msg("found")
-		found = append(found, InstalledCollector{CollectorType: name, Version: ver})
+		found = append(found, InstalledCollector{CollectorTypeID: name, Version: ver})
 	}
 
 	if len(found) > 0 {
