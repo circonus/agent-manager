@@ -32,6 +32,21 @@ func initAppArgs(cmd *cobra.Command) {
 
 	{
 		const (
+			key          = keys.Inventory
+			longOpt      = "inventory"
+			envVar       = release.ENVPREFIX + "_INVENTORY"
+			description  = "Inventory installed collectors"
+			defaultValue = false
+		)
+
+		cmd.PersistentFlags().Bool(longOpt, defaultValue, envDescription(description, envVar))
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.PersistentFlags().Lookup(longOpt)))
+		bindEnvError(envVar, viper.BindEnv(key, envVar))
+		viper.SetDefault(key, defaultValue)
+	}
+
+	{
+		const (
 			key          = keys.APIURL
 			longOpt      = "apiurl"
 			envVar       = release.ENVPREFIX + "_API_URL"

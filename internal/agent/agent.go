@@ -68,8 +68,21 @@ func (a *Agent) Start() error {
 		log.Fatal().Err(err).Msg("loading agent id")
 	}
 
+	if err := credentials.LoadRegistrationToken(); err != nil {
+		log.Fatal().Err(err).Msg("loading registration token")
+	}
+
 	if err := credentials.LoadJWT(); err != nil {
 		log.Fatal().Err(err).Msg("loading API credentials")
+	}
+
+	if viper.GetString(keys.Register) != "" || viper.GetBool(keys.Inventory) {
+		if err := collectors.FetchCollectors(a.groupCtx); err != nil {
+			log.Fatal().Err(err).Msg("fetching collectors")
+		}
+		if err := collectors.CheckForCollectors(a.groupCtx); err != nil {
+			log.Fatal().Err(err).Msg("checking for installed collectors")
+		}
 	}
 
 	a.logger.Debug().
