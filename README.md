@@ -24,7 +24,7 @@ Usage:
 Flags:
       --apiurl string              [ENV: CMA_API_URL] Circonus API URL (default "https://something.circonus.com")
       --aws-ec2-tags stringArray   [ENV: CMA_AWS_EC2_TAGS] AWS EC2 tags for registration meta data
-  -c, --config string              config file (default: /home/vagrant/cma/etc/circonus-cma.yaml|.json|.toml)
+  -c, --config string              config file (default: /opt/circonus/cma/etc/circonus-cma.yaml|.json|.toml)
   -d, --debug                      [ENV: CMA_DEBUG] Enable debug messages
   -h, --help                       help for circonus-cma
       --inventory                  [ENV: CMA_INVENTORY] Inventory installed collectors
