@@ -28,10 +28,10 @@ const (
 type Actions []Action
 
 type Action struct {
-	Configs  []Config  `json:"configs" yaml:"configs"`
-	ID       string    `json:"id" yaml:"id"`
-	Type     string    `json:"type" yaml:"type"`
-	Commands []Command `json:"commands" yaml:"commands"`
+	Configs  map[string]Config `json:"configs" yaml:"configs"`
+	ID       string            `json:"id" yaml:"id"` // not used yet, api only supports configs
+	Type     string            `json:"type" yaml:"type"`
+	Commands []Command         `json:"commands" yaml:"commands"`
 }
 
 // not OS commands, commands the agent knows (e.g. restart_collector, collector_status, etc.).
@@ -51,7 +51,7 @@ type Config struct {
 }
 
 type Result struct {
-	ActionID      string `json:"action_id" yaml:"action_id"`
+	ActionID      string `json:"action_id" yaml:"action_id"` // not used at this time, api only supports configs
 	ConfigResult  `json:"config_resutl" yaml:"config_result"`
 	CommandResult `json:"command_result" yaml:"command_result"`
 }
