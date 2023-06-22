@@ -18,13 +18,18 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+var initialized = false
+
 func inventoryFileName() string {
 	return filepath.Join("testdata", "inventory.yaml")
 }
 func binaryFileName() string {
 	return filepath.Join("testdata", "test_binary")
 }
-func ConfFileName() string {
+func confFileID() string {
+	return "d81c7650-19ae-4bf3-98df-5d24d53f5756"
+}
+func confFileName() string {
 	return filepath.Join("testdata", "test_conf")
 }
 func setupTest() {
@@ -36,7 +41,7 @@ func setupTest() {
 				Start:  "start foo",
 				Stop:   "stop foo",
 				ConfigFiles: map[string]string{
-					"000": ConfFileName(),
+					confFileID(): confFileName(),
 				},
 			},
 		},
@@ -50,9 +55,12 @@ func setupTest() {
 	if err := os.WriteFile(file, data, 0600); err != nil {
 		log.Fatal("write inv file", err)
 	}
+
+	initialized = true
 }
 
 func TestFetchCollectors(t *testing.T) {
+	setupTest()
 	testAuthToken := "foo"
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -72,13 +80,13 @@ func TestFetchCollectors(t *testing.T) {
 							{
 								CollectorPlatformID: runtime.GOOS,
 								CollectorTypeID:     "foo",
-								Executable:          filepath.Join("testdata", "test_binary"),
+								Executable:          binaryFileName(),
 								Start:               "start foo",
 								Stop:                "stop foo",
 								ConfigFiles: []ConfigFile{
 									{
-										ConfigFileID: "000",
-										Path:         filepath.Join("testdata", "test_conf"),
+										ConfigFileID: "d81c7650-19ae-4bf3-98df-5d24d53f5756",
+										Path:         confFileName(),
 									},
 								},
 							},
@@ -155,6 +163,8 @@ func TestFetchCollectors(t *testing.T) {
 }
 
 func TestLoadCollectors(t *testing.T) {
+	setupTest()
+
 	tests := []struct {
 		want    Collectors
 		invFile string
@@ -164,7 +174,7 @@ func TestLoadCollectors(t *testing.T) {
 		{
 			name:    "valid",
 			invFile: inventoryFileName(),
-			want:    Collectors{runtime.GOOS: map[string]Collector{"foo": {ConfigFiles: map[string]string{"000": filepath.Join("testdata", "test_conf")}, Binary: filepath.Join("testdata", "test_binary"), Start: "start foo", Stop: "stop foo", Restart: "", Reload: "", Status: "", Version: ""}}},
+			want:    Collectors{runtime.GOOS: map[string]Collector{"foo": {ConfigFiles: map[string]string{confFileID(): confFileName()}, Binary: binaryFileName(), Start: "start foo", Stop: "stop foo", Restart: "", Reload: "", Status: "", Version: ""}}},
 			wantErr: false,
 		},
 		{
@@ -191,6 +201,7 @@ func TestLoadCollectors(t *testing.T) {
 }
 
 func TestCheckForCollectors(t *testing.T) {
+	setupTest()
 	testAuthToken := "foo"
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

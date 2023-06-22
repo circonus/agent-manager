@@ -8,6 +8,9 @@ import (
 	"testing"
 )
 
+func testAPIInventoryFileName() string {
+	return filepath.Join("testdata", "api_inventory.json")
+}
 func TestParseAPICollectors(t *testing.T) {
 	tests := []struct {
 		want    Collectors
@@ -17,14 +20,14 @@ func TestParseAPICollectors(t *testing.T) {
 	}{
 		{
 			name:    "valid",
-			file:    "api_inventory.json",
+			file:    testAPIInventoryFileName(),
 			want:    Collectors{"linux": map[string]Collector{"telegraf": {Binary: "telegraf", Start: "", Stop: "", Restart: "", Reload: "", Status: "", Version: "", ConfigFiles: map[string]string{"d81c7650-19ae-4bf3-98df-5d24d53f5756": "/etc/telegraf/telegraf.conf"}}}},
 			wantErr: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			data, err := os.ReadFile(filepath.Join("testdata", tt.file))
+			data, err := os.ReadFile(tt.file)
 			if err != nil {
 				t.Fatalf("reading data: %s", err)
 			}
