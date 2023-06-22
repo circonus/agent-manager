@@ -1,0 +1,22 @@
+[
+    {
+        "platforms": [
+            {
+                "collector_platform_id": "darwin",
+                "collector_type_id": "telegraf",
+                "description": null,
+                "executable": "testdata/fake_bin",
+                "start": null,
+                "stop": null,
+                "reload": null,
+                "status": null,
+                "config_files": [
+                    {
+                        "collector_config_file_id": "d81c7650-19ae-4bf3-98df-5d24d53f5756",
+                        "path": "testdata/fake_conf"
+                    }
+                ]
+            }
+        ]
+    }
+]
