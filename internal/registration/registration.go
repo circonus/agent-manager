@@ -11,7 +11,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"time"
 
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/feature/ec2/imds"
@@ -44,18 +43,18 @@ type Data struct {
 }
 
 type AWSTags struct {
-	InstanceID       string    `json:"instance_id,omitempty"`
-	AccountID        string    `json:"account_id,omitempty"`
-	Architecture     string    `json:"architecture,omitempty"`
-	AvailabilityZone string    `json:"availability_zone,omitempty"`
-	ImageID          string    `json:"image_id,omitempty"`
-	InstanceType     string    `json:"instance_type,omitempty"`
-	KernelID         string    `json:"kernel_id,omitempty"`
-	PendingTime      time.Time `json:"pending_time,omitempty"`
-	PrivateIP        string    `json:"private_ip,omitempty"`
-	RamdiskID        string    `json:"ramdisk_id,omitempty"`
-	Region           string    `json:"region,omitempty"`
-	Version          string    `json:"version,omitempty"`
+	InstanceID       string `json:"instance_id,omitempty"`
+	AccountID        string `json:"account_id,omitempty"`
+	Architecture     string `json:"architecture,omitempty"`
+	AvailabilityZone string `json:"availability_zone,omitempty"`
+	ImageID          string `json:"image_id,omitempty"`
+	InstanceType     string `json:"instance_type,omitempty"`
+	KernelID         string `json:"kernel_id,omitempty"`
+	PendingTime      string `json:"pending_time,omitempty"`
+	PrivateIP        string `json:"private_ip,omitempty"`
+	RamdiskID        string `json:"ramdisk_id,omitempty"`
+	Region           string `json:"region,omitempty"`
+	Version          string `json:"version,omitempty"`
 }
 
 type Response struct {
@@ -261,7 +260,7 @@ func getAWSTags(ctx context.Context, tags []string) (AWSTags, error) {
 		case "kernel_id":
 			aws.KernelID = iido.KernelID
 		case "pending_time":
-			aws.PendingTime = iido.PendingTime
+			aws.PendingTime = iido.PendingTime.String()
 		case "private_ip":
 			aws.PrivateIP = iido.PrivateIP
 		case "ramdisk_id":
