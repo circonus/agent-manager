@@ -42,7 +42,7 @@ var (
 	ConfigFile = ""
 
 	// Collector inventory file.
-	InvetoryFile = ""
+	InventoryFile = ""
 
 	// IDPath is where ID credentials are stored.
 	IDPath = ""
@@ -73,7 +73,7 @@ func init() {
 
 	EtcPath = filepath.Join(BasePath, "etc")
 	ConfigFile = filepath.Join(EtcPath, release.NAME+".yaml")
-	InvetoryFile = filepath.Join(EtcPath, "inventory.yaml")
+	InventoryFile = filepath.Join(EtcPath, "inventory.yaml")
 	IDPath = filepath.Join(EtcPath, ".id")
 	JwtTokenFile = filepath.Join(IDPath, "jt")
 	RegTokenFile = filepath.Join(IDPath, "rt")

@@ -46,4 +46,10 @@ const (
 
 	// ShowVersion - show version information and exit.
 	ShowVersion = "version"
+
+	// Internal settings.
+	InventoryFile = "internal.inventory_file"
+	JwtTokenFile  = "internal.jwt_token_file" //nolint:gosec
+	RegTokenFile  = "internal.reg_token_file" //nolint:gosec
+	AgentIDFile   = "internal.agent_id_file"
 )
