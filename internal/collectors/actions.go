@@ -119,6 +119,10 @@ func getActions(ctx context.Context) error {
 	}
 
 	actions, err := ParseAPIActions(body)
+	if len(actions) == 0 {
+		log.Debug().Msg("no actions available")
+		return nil
+	}
 	if err != nil {
 		return fmt.Errorf("parsing api actions: %w", err)
 	}

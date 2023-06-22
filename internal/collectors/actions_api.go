@@ -73,7 +73,7 @@ func ParseAPIActions(data []byte) (Actions, error) {
 	}
 
 	if foundConfigs == 0 {
-		return nil, fmt.Errorf("no configs found to install") //nolint:goerr113
+		return Actions{}, fmt.Errorf("no configs found to install") //nolint:goerr113
 	}
 
 	return actions, nil
