@@ -17,6 +17,8 @@ func installConfigs(ctx context.Context, a Action) {
 	}
 	for collector, configs := range a.Configs {
 		for _, config := range configs {
+			log.Debug().Str("path", config.Path).Str("contents", config.Contents).Msg("incoming contents")
+
 			data, err := base64.StdEncoding.DecodeString(config.Contents)
 			if err != nil {
 				r := ConfigResult{
@@ -30,6 +32,8 @@ func installConfigs(ctx context.Context, a Action) {
 				}
 				continue
 			}
+
+			log.Debug().Str("path", config.Path).Str("contents", string(data)).Msg("decoded contents")
 
 			perms := os.FileMode(0640)
 
