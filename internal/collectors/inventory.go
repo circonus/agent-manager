@@ -93,7 +93,7 @@ func FetchCollectors(ctx context.Context) error {
 func LoadCollectors() (Collectors, error) {
 	file := viper.GetString(keys.InventoryFile)
 	if file == "" {
-		return nil, fmt.Errorf("invalid inventory file (empty)")
+		return nil, fmt.Errorf("invalid inventory file (empty)") //nolint:goerr113
 	}
 
 	data, err := os.ReadFile(file)
@@ -112,7 +112,7 @@ func LoadCollectors() (Collectors, error) {
 func SaveCollectors(c Collectors) error {
 	file := viper.GetString(keys.InventoryFile)
 	if file == "" {
-		return fmt.Errorf("invalid inventory file (empty)")
+		return fmt.Errorf("invalid inventory file (empty)") //nolint:goerr113
 	}
 
 	data, err := yaml.Marshal(c)
