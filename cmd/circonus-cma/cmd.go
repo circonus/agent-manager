@@ -10,6 +10,7 @@ import (
 	"runtime"
 
 	"github.com/circonus/collector-management-agent/internal/agent"
+	"github.com/circonus/collector-management-agent/internal/config/defaults"
 	"github.com/circonus/collector-management-agent/internal/config/keys"
 	"github.com/circonus/collector-management-agent/internal/release"
 	"github.com/rs/zerolog/log"
@@ -28,6 +29,12 @@ func initCmd() *cobra.Command {
 				fmt.Printf("%s v%s - commit: %s, date: %s, tag: %s, built with: %s\n", release.NAME, release.VERSION, release.COMMIT, release.DATE, release.TAG, runtime.Version())
 				return
 			}
+
+			// set internal viper items
+			viper.Set(keys.InventoryFile, defaults.InventoryFile)
+			viper.Set(keys.JwtTokenFile, defaults.JwtTokenFile)
+			viper.Set(keys.RegTokenFile, defaults.RegTokenFile)
+			viper.Set(keys.AgentIDFile, defaults.AgentIDFile)
 
 			a, err := agent.New()
 			if err != nil {
