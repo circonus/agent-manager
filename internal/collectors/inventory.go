@@ -80,6 +80,8 @@ func FetchCollectors(ctx context.Context) error {
 		return fmt.Errorf("non-200 response -- status: %s, body: %s", resp.Status, string(body)) //nolint:goerr113
 	}
 
+	log.Debug().Str("resp", string(body)).Msg("response")
+
 	collectors, err := ParseAPICollectors(body)
 	if err != nil {
 		return fmt.Errorf("parsing api response: %w", err)
@@ -170,15 +172,14 @@ func getCollectorVersion(vercmd string) (string, error) {
 	if vercmd == "" {
 		return "v0.0.0", nil
 	}
-	args := strings.Split(vercmd, " ")
-	cmd := exec.Command(args[0], args[1:]...) //nolint:gosec
+	cmd := exec.Command("bash", "-c", vercmd) //nolint:gosec
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		return "v0.0.0", err //nolint:wrapcheck
 	}
 
 	if len(output) > 0 {
-		v, err := version.NewVersion(string(output))
+		v, err := version.NewVersion(strings.TrimSpace(string(output)))
 		if err != nil {
 			return "v0.0.0", err //nolint:wrapcheck
 		}
@@ -227,6 +228,8 @@ func registerCollectors(ctx context.Context, c InstalledCollectors) error {
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("non-200 response -- status: %s, body: %s", resp.Status, string(body)) //nolint:goerr113
 	}
+
+	log.Debug().Str("resp", string(body)).Msg("response")
 
 	return nil
 }
