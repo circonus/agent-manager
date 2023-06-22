@@ -12,7 +12,7 @@ builds:
     goos: 
       - linux
       - darwin
-      - windows
+      # - windows
     ignore: 
       - goarch: 386
       - goos: windows
