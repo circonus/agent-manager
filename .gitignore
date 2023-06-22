@@ -80,3 +80,5 @@ Temporary Items
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,go,visualstudiocode
+
+internal/collectors/testdata/inventory.yaml
