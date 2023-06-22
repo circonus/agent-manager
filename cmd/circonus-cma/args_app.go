@@ -63,7 +63,7 @@ func initAppArgs(cmd *cobra.Command) {
 	{
 		const (
 			key          = keys.PollingInterval
-			longOpt      = "poll_interval"
+			longOpt      = "poll-interval"
 			envVar       = release.ENVPREFIX + "_POLL_INTERVAL"
 			description  = "Polling interval for actions"
 			defaultValue = defaults.PollingInterval
@@ -78,7 +78,7 @@ func initAppArgs(cmd *cobra.Command) {
 	{
 		const (
 			key         = keys.AWSEC2Tags
-			longOpt     = "aws_ec2_tags"
+			longOpt     = "aws-ec2-tags"
 			envVar      = release.ENVPREFIX + "_AWS_EC2_TAGS"
 			description = "AWS EC2 tags for registration meta data"
 		)
