@@ -23,6 +23,7 @@ func testAPIActionsFileName() string {
 func TestParseAPIActions(t *testing.T) {
 	setupTest()
 	zerolog.SetGlobalLevel(zerolog.Disabled)
+
 	tests := []struct {
 		name    string
 		actFile string
@@ -54,7 +55,7 @@ func TestParseAPIActions(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests {
+	for _, tt := range tests { //nolint:varnamelen
 		t.Run(tt.name, func(t *testing.T) {
 			viper.Set(keys.InventoryFile, tt.invFile)
 			data, err := os.ReadFile(tt.actFile)
@@ -64,6 +65,7 @@ func TestParseAPIActions(t *testing.T) {
 			got, err := ParseAPIActions(data)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ParseAPIActions() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {

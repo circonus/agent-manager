@@ -28,6 +28,7 @@ func envDescription(desc, env string) string {
 	if env == "" {
 		return desc
 	}
+
 	return fmt.Sprintf("[ENV: %s] %s", env, desc)
 }
 

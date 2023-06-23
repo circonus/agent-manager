@@ -23,7 +23,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-var initialized = false
+var initialized = false //nolint:gochecknoglobals
 
 func inventoryFileName() string {
 	return filepath.Join("testdata", "inventory.yaml")
@@ -66,16 +66,16 @@ func setupTest() {
 
 func TestFetchCollectors(t *testing.T) {
 	setupTest()
-	testAuthToken := "foo"
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case "/collector_type":
 			switch r.Method {
-			case "GET":
+			case http.MethodGet:
 				authToken := r.Header.Get("X-Circonus-Auth-Token")
 				if authToken != testAuthToken {
 					http.Error(w, "invalid auth token", http.StatusUnauthorized)
+
 					return
 				}
 
@@ -101,6 +101,7 @@ func TestFetchCollectors(t *testing.T) {
 				data, err := json.Marshal(c)
 				if err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
+
 					return
 				}
 
@@ -109,10 +110,12 @@ func TestFetchCollectors(t *testing.T) {
 				_, _ = w.Write(data)
 			default:
 				http.Error(w, "not found", http.StatusNotFound)
+
 				return
 			}
 		default:
 			http.Error(w, "not found", http.StatusNotFound)
+
 			return
 		}
 	}))
@@ -196,8 +199,10 @@ func TestLoadCollectors(t *testing.T) {
 			got, err := LoadCollectors()
 			if (err != nil) != tt.wantErr {
 				t.Fatalf("LoadCollectors() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
+
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Fatalf("LoadCollectors() = %#v, want %#v", got, tt.want)
 			}
@@ -207,29 +212,33 @@ func TestLoadCollectors(t *testing.T) {
 
 func TestCheckForCollectors(t *testing.T) {
 	setupTest()
-	testAuthToken := "foo"
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case "/collector/agent":
 			switch r.Method {
-			case "POST":
+			case http.MethodPost:
 				authToken := r.Header.Get("X-Circonus-Auth-Token")
 				if authToken != testAuthToken {
 					http.Error(w, "invalid auth token", http.StatusUnauthorized)
+
 					return
 				}
 
 				defer r.Body.Close()
+
 				b, err := io.ReadAll(r.Body)
 				if err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
+
 					return
 				}
 
 				var collectors InstalledCollectors
+
 				if err = json.Unmarshal(b, &collectors); err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
+
 					return
 				}
 
@@ -238,10 +247,12 @@ func TestCheckForCollectors(t *testing.T) {
 				_, _ = w.Write([]byte(""))
 			default:
 				http.Error(w, "not found", http.StatusNotFound)
+
 				return
 			}
 		default:
 			http.Error(w, "not found", http.StatusNotFound)
+
 			return
 		}
 	}))
@@ -282,6 +293,7 @@ func TestCheckForCollectors(t *testing.T) {
 			wantErr:  true,
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			viper.Set(keys.APIURL, tt.reqURL)

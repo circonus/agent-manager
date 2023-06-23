@@ -29,38 +29,68 @@ linters-settings:
     check-exported: false
 
 linters:
-  enable:
-    - errcheck
-    - exportloopref
-    - gocritic
-    - godot
-    - godox
-    - goerr113
-    - gofmt
-    - gosec
-    - gosimple
-    - govet
-    - ineffassign
-    - megacheck
-    - misspell
-    - prealloc
-    - predeclared
-    - revive
-    - staticcheck
-    - typecheck
-    - unparam
-    - unused
-    - unconvert
-    - wrapcheck
+  disable-all: false
+  enable-all: true
+  fast: false
   disable:
+    - goimports
+    - depguard
+    - funlen
+    - gofumpt
+    - exhaustivestruct
+    - exhaustruct
+    - forbidigo
+    - lll
+    - cyclop
+    - gomnd
+    - gocognit
+    - testpackage
+    - paralleltest
+    - tagliatelle
+    - varnamelen
+    - tagliatelle
+    - nolintlint
     - scopelint # deprecated, replaced by 
     - golint # deprecated, replaced by revive
     - gci
     - deadcode # deprecated, replaced by unused
     - varcheck # deprecated, replaced by unused
     - structcheck # deprecated, replaced by unused
-  disable-all: false
-  presets:
-    - bugs
-    - unused
-  fast: false
+  # enable:
+  #   - errcheck
+  #   - exportloopref
+  #   - gocritic
+  #   - godot
+  #   - godox
+  #   - goerr113
+  #   - gofmt
+  #   - gosec
+  #   - gosimple
+  #   - govet
+  #   - ineffassign
+  #   - megacheck
+  #   - misspell
+  #   - prealloc
+  #   - predeclared
+  #   - revive
+  #   - staticcheck
+  #   - typecheck
+  #   - unparam
+  #   - unused
+  #   - unconvert
+  #   - wrapcheck
+  #   - zerologlint
+  # presets:
+  #   - bugs
+  #   - comment
+  #   # - complexity
+  #   - error
+  #   # - format
+  #   # - import
+  #   - metalinter
+  #   # - module
+  #   - performance
+  #   - sql
+  #   # - style
+  #   # - test
+  #   - unused

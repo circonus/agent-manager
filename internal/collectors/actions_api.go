@@ -54,18 +54,21 @@ func ParseAPIActions(data []byte) (Actions, error) {
 		coll, ok := collectors[runtime.GOOS][apiAction.Collector.ID]
 		if !ok {
 			log.Warn().Str("collector", apiAction.Collector.ID).Str("platform", runtime.GOOS).Msg("unknown collector for this platform")
+
 			continue
 		}
 
 		file, ok := coll.ConfigFiles[apiAction.Config.FileID]
 		if !ok {
 			log.Warn().Str("id", apiAction.Config.FileID).Msg("unknown config file id")
+
 			continue
 		}
 
 		if _, ok := actions[0].Configs[apiAction.Collector.ID]; !ok {
 			actions[0].Configs = make(map[string][]Config)
 		}
+
 		cfgs := actions[0].Configs[apiAction.Collector.ID]
 		cfgs = append(cfgs, Config{
 			ID:       apiAction.ConfigAssignmentID,

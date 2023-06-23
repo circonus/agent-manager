@@ -64,7 +64,7 @@ type AWSTags struct {
 
 type Response struct {
 	AuthToken string `json:"auth_token" yaml:"auth_token"`
-	Agent     Agent  `json:"agent" yaml:"agent"`
+	Agent     Agent  `json:"agent"      yaml:"agent"`
 }
 
 type Agent struct {
@@ -81,6 +81,7 @@ func Start(ctx context.Context) error {
 	if err != nil {
 		log.Fatal().Err(err).Msg("getting hostname")
 	}
+
 	if hn == "" {
 		log.Fatal().Str("hostname", hn).Msg("empty hostname")
 	}
@@ -105,6 +106,7 @@ func Start(ctx context.Context) error {
 		if err != nil {
 			log.Fatal().Err(err).Msg("adding AWS EC2 tags")
 		}
+
 		reg.Data.AWSMeta = at
 	}
 
@@ -128,9 +130,11 @@ func getJWT(ctx context.Context, token string, reg Registration) (*Response, err
 	if token == "" {
 		return nil, fmt.Errorf("invalid token (empty)") //nolint:goerr113
 	}
+
 	if reg.Hostname == "" {
 		return nil, fmt.Errorf("invalid claims (empty hostname)") //nolint:goerr113
 	}
+
 	if reg.MachineID == "" {
 		return nil, fmt.Errorf("invalid claims (empty machine id)") //nolint:goerr113
 	}
@@ -145,7 +149,7 @@ func getJWT(ctx context.Context, token string, reg Registration) (*Response, err
 		return nil, fmt.Errorf("req url: %w", err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, "POST", reqURL, bytes.NewBuffer(c))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, reqURL, bytes.NewBuffer(c))
 	if err != nil {
 		return nil, fmt.Errorf("creating request: %w", err)
 	}
@@ -160,6 +164,7 @@ func getJWT(ctx context.Context, token string, reg Registration) (*Response, err
 	}
 
 	defer resp.Body.Close()
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("reading response body: %w", err)
@@ -191,7 +196,6 @@ func getMachineID() (string, error) {
 }
 
 func getHostInfo() (Registration, error) {
-
 	reg := Registration{}
 
 	hi, err := host.Info()
@@ -207,27 +211,32 @@ func getHostInfo() (Registration, error) {
 	if hi.Platform != "" {
 		reg.Platform = hi.Platform
 	}
+
 	if hi.PlatformFamily != "" {
 		reg.PlatformFamily = hi.PlatformFamily
 	}
+
 	if hi.PlatformVersion != "" {
 		reg.PlatformVersion = hi.PlatformVersion
 	}
+
 	if hi.KernelVersion != "" {
 		reg.KernelVersion = hi.KernelVersion
 	}
+
 	if hi.KernelArch != "" {
 		reg.KernelArch = hi.KernelArch
 	}
+
 	if hi.VirtualizationSystem != "" {
 		reg.VirtualizationSystem = hi.VirtualizationSystem
 	}
+
 	if hi.VirtualizationRole != "" {
 		reg.VirtualizationRole = hi.VirtualizationRole
 	}
 
 	return reg, nil
-
 }
 
 func getAWSTags(ctx context.Context, tags []string) (AWSTags, error) {
@@ -235,6 +244,7 @@ func getAWSTags(ctx context.Context, tags []string) (AWSTags, error) {
 	if err != nil {
 		return AWSTags{}, fmt.Errorf("failed loading default AWS config: %w", err)
 	}
+
 	imdsClient := imds.NewFromConfig(cfg)
 
 	iido, err := imdsClient.GetInstanceIdentityDocument(

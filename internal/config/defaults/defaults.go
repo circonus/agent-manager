@@ -3,6 +3,7 @@
 // license that can be found in the LICENSE file.
 //
 
+//nolint:gochecknoglobals
 package defaults
 
 import (
@@ -54,9 +55,9 @@ var (
 	AWSEC2Tags = []string{}
 )
 
-func init() {
-	var exePath string
-	var resolvedExePath string
+func init() { //nolint:gochecknoinits
+	var exePath, resolvedExePath string
+
 	var err error
 
 	exePath, err = os.Executable()

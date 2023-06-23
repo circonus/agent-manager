@@ -10,31 +10,36 @@ import (
 	"encoding/base64"
 	"os"
 	"runtime"
+	"strings"
 
 	"github.com/rs/zerolog/log"
 )
 
-func installConfigs(ctx context.Context, a Action) {
+func installConfigs(ctx context.Context, action Action) {
 	collectors, err := LoadCollectors()
 	if err != nil {
 		log.Warn().Err(err).Msg("unable to load collectors, skipping configs")
+
 		return
 	}
-	for collector, configs := range a.Configs {
+
+	for collector, configs := range action.Configs {
 		for _, config := range configs {
 			log.Debug().Str("path", config.Path).Str("contents", config.Contents).Msg("incoming contents")
 
 			data, err := base64.StdEncoding.DecodeString(config.Contents)
 			if err != nil {
-				r := ConfigResult{
+				result := ConfigResult{
 					ID: config.ID,
 					ConfigData: ConfigData{
 						WriteResult: err.Error(),
 					},
 				}
-				if err = sendConfigResult(ctx, r); err != nil {
+
+				if err = sendConfigResult(ctx, result); err != nil {
 					log.Error().Err(err).Msg("config result")
 				}
+
 				continue
 			}
 
@@ -48,43 +53,55 @@ func installConfigs(ctx context.Context, a Action) {
 			}
 
 			if err := os.WriteFile(config.Path, data, perms); err != nil {
-				r := ConfigResult{
+				result := ConfigResult{
 					ID:     config.ID,
-					Status: STATUS_ERROR,
+					Status: STATUS_ERROR, //nolint:nosnakecase
 					Info:   err.Error(),
 					ConfigData: ConfigData{
 						WriteResult: err.Error(),
 					},
 				}
-				if err := sendConfigResult(ctx, r); err != nil {
+
+				if err := sendConfigResult(ctx, result); err != nil {
 					log.Error().Err(err).Msg("config result")
 				}
+
 				continue
 			}
 
-			r := ConfigResult{
+			result := ConfigResult{
 				ID:     config.ID,
-				Status: STATUS_ACTIVE,
+				Status: STATUS_ACTIVE, //nolint:nosnakecase
 				ConfigData: ConfigData{
 					WriteResult: "OK",
 				},
 			}
-			if err := sendConfigResult(ctx, r); err != nil {
+
+			if err := sendConfigResult(ctx, result); err != nil {
 				log.Error().Err(err).Msg("config result")
 			}
 		}
-		c, ok := collectors[runtime.GOOS][collector]
+
+		coll, ok := collectors[runtime.GOOS][collector]
 		if !ok {
 			log.Warn().Str("platform", runtime.GOOS).Str("collector", collector).Msg("unable to find collector definition for reload, skipping")
+
 			continue
 		}
-		if c.Reload == "" {
+
+		switch {
+		case coll.Reload == "":
 			continue
-		}
-		if c.Reload == RESTART {
-			output, code, err := execute(ctx, c.Restart)
+		case strings.ToLower(coll.Reload) == RESTART:
+			output, code, err := execute(ctx, coll.Restart)
 			if err != nil {
-				log.Warn().Err(err).Str("output", string(output)).Int("exit_code", code).Str("cmd", c.Restart).Msg("restart failed")
+				log.Warn().Err(err).Str("output", string(output)).Int("exit_code", code).Str("cmd", coll.Restart).Msg("restart failed")
+			}
+		//TODO: add case(s) for other options e.g. hitting an endpoint to trigger a reload
+		default:
+			output, code, err := execute(ctx, coll.Reload)
+			if err != nil {
+				log.Warn().Err(err).Str("output", string(output)).Int("exit_code", code).Str("cmd", coll.Reload).Msg("reload failed")
 			}
 		}
 	}

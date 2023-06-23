@@ -89,5 +89,4 @@ func initAppArgs(cmd *cobra.Command) {
 		bindEnvError(envVar, viper.BindEnv(key, envVar))
 		viper.SetDefault(key, defaultValue)
 	}
-
 }

@@ -7,11 +7,11 @@ package config
 
 // Config defines the running configuration options.
 type Config struct {
-	API             API      `json:"api" toml:"api" yaml:"api"`
+	API             API      `json:"api"           toml:"api"           yaml:"api"`
 	PollingInterval string   `json:"poll_interval" toml:"poll_interval" yaml:"poll_interval"`
-	Log             Log      `json:"log" toml:"log" yaml:"log"`
-	AWSEC2Tags      []string `json:"aws_ec2_tags"`
-	Debug           bool     `json:"debug" toml:"debug" yaml:"debug"`
+	Log             Log      `json:"log"           toml:"log"           yaml:"log"`
+	AWSEC2Tags      []string `json:"aws_ec2_tags"  toml:"aws_ec2_tags"  yaml:"aws_ec2_tags"`
+	Debug           bool     `json:"debug"         toml:"debug"         yaml:"debug"`
 }
 
 // API defines the various API options.
@@ -21,8 +21,8 @@ type API struct {
 
 // Log defines the logging configuration options.
 type Log struct {
-	Level  string `json:"level" yaml:"level" toml:"level"`
-	Pretty bool   `json:"pretty" yaml:"pretty" toml:"pretty"`
+	Level  string `json:"level"  toml:"level"  yaml:"level"`
+	Pretty bool   `json:"pretty" toml:"pretty" yaml:"pretty"`
 }
 
 func Validate() error {

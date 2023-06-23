@@ -34,6 +34,7 @@ func NewPoller() (*Poller, error) {
 
 func (p *Poller) Start(ctx context.Context) {
 	log.Info().Str("interval", p.interval.String()).Msg("starting poller")
+
 	for {
 		t := time.NewTimer(p.interval)
 		select {
@@ -41,9 +42,11 @@ func (p *Poller) Start(ctx context.Context) {
 			if !t.Stop() {
 				<-t.C
 			}
+
 			return
 		case <-t.C:
 			log.Debug().Msg("checking for new actions")
+
 			if err := getActions(ctx); err != nil {
 				log.Error().Err(err).Msg("getting actions")
 			}

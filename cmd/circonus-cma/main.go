@@ -23,7 +23,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-var cfgFile string
+var cfgFile string //nolint:gochecknoglobals
 
 func main() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
@@ -37,8 +37,7 @@ func main() {
 	cobra.OnInitialize(initConfig)
 
 	cmd := initCmd()
-	err := cmd.Execute()
-	if err != nil {
+	if err := cmd.Execute(); err != nil {
 		log.Fatal().Err(err).Msg("starting agent")
 	}
 }
@@ -87,6 +86,7 @@ func initLogging() error {
 	if viper.GetBool(keys.Debug) {
 		viper.Set(keys.LogLevel, "debug")
 		zerolog.SetGlobalLevel(zerolog.DebugLevel)
+
 		return nil
 	}
 

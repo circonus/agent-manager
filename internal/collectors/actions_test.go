@@ -17,18 +17,22 @@ import (
 	"github.com/spf13/viper"
 )
 
+const (
+	testAuthToken = "foo"
+)
+
 func Test_getActions(t *testing.T) {
 	setupTest()
-	testAuthToken := "foo"
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case "/collector/update":
 			switch r.Method {
-			case "GET":
+			case http.MethodGet:
 				authToken := r.Header.Get("X-Circonus-Auth-Token")
 				if authToken != testAuthToken {
 					http.Error(w, "invalid auth token", http.StatusUnauthorized)
+
 					return
 				}
 
@@ -48,37 +52,44 @@ func Test_getActions(t *testing.T) {
 				data, err := json.Marshal(a)
 				if err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
+
 					return
 				}
 
 				w.WriteHeader(http.StatusOK)
 				w.Header().Set("Content-Type", "application/json")
 				_, _ = w.Write(data)
-			case "POST":
+
+			case http.MethodPost:
 				authToken := r.Header.Get("X-Circonus-Auth-Token")
 				if authToken != testAuthToken {
 					http.Error(w, "invalid auth token", http.StatusUnauthorized)
+
 					return
 				}
 				defer r.Body.Close()
 				b, err := io.ReadAll(r.Body)
 				if err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
+
 					return
 				}
 
 				var c ConfigResult
 				if err := json.Unmarshal(b, &c); err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
+
 					return
 				}
 
 			default:
 				http.Error(w, "not found", http.StatusNotFound)
+
 				return
 			}
 		default:
 			http.Error(w, "not found", http.StatusNotFound)
+
 			return
 		}
 	}))
