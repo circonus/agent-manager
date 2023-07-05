@@ -11,7 +11,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/circonus/collector-management-agent/internal/config/keys"
+	"github.com/circonus/agent-manager/internal/config/keys"
 	"github.com/rs/zerolog"
 	"github.com/spf13/viper"
 )

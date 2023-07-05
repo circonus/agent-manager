@@ -6,9 +6,9 @@
 package main
 
 import (
-	"github.com/circonus/collector-management-agent/internal/config/defaults"
-	"github.com/circonus/collector-management-agent/internal/config/keys"
-	"github.com/circonus/collector-management-agent/internal/release"
+	"github.com/circonus/agent-manager/internal/config/defaults"
+	"github.com/circonus/agent-manager/internal/config/keys"
+	"github.com/circonus/agent-manager/internal/release"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )

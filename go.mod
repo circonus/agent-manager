@@ -1,4 +1,4 @@
-module github.com/circonus/collector-management-agent
+module github.com/circonus/agent-manager
 
 go 1.20
 

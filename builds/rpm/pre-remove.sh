@@ -1,8 +1,8 @@
 #!/bin/bash
 
 if [[ "$(readlink /proc/1/exe)" == */systemd ]]; then
-	systemctl stop circonus-cma.service
+	systemctl stop circonus-am.service
 else
 	# Assuming sysv
-	/etc/init.d/circonus-cma stop
+	/etc/init.d/circonus-am stop
 fi

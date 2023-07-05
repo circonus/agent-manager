@@ -10,7 +10,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/circonus/collector-management-agent/internal/release"
+	"github.com/circonus/agent-manager/internal/release"
 	"github.com/rs/zerolog/log"
 )
 

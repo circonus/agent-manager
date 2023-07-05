@@ -14,9 +14,9 @@ import (
 	"os"
 	"runtime"
 
-	"github.com/circonus/collector-management-agent/internal/config/defaults"
-	"github.com/circonus/collector-management-agent/internal/config/keys"
-	"github.com/circonus/collector-management-agent/internal/release"
+	"github.com/circonus/agent-manager/internal/config/defaults"
+	"github.com/circonus/agent-manager/internal/config/keys"
+	"github.com/circonus/agent-manager/internal/release"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"

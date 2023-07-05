@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/circonus/collector-management-agent/internal/config/keys"
+	"github.com/circonus/agent-manager/internal/config/keys"
 	"github.com/spf13/viper"
 )
 

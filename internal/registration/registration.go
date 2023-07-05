@@ -19,9 +19,9 @@ import (
 
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/feature/ec2/imds"
-	"github.com/circonus/collector-management-agent/internal/config/keys"
-	"github.com/circonus/collector-management-agent/internal/credentials"
-	"github.com/circonus/collector-management-agent/internal/release"
+	"github.com/circonus/agent-manager/internal/config/keys"
+	"github.com/circonus/agent-manager/internal/credentials"
+	"github.com/circonus/agent-manager/internal/release"
 	"github.com/denisbrodbeck/machineid"
 	"github.com/rs/zerolog/log"
 	"github.com/shirou/gopsutil/host"

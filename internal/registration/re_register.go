@@ -15,8 +15,8 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/circonus/collector-management-agent/internal/config/keys"
-	"github.com/circonus/collector-management-agent/internal/credentials"
+	"github.com/circonus/agent-manager/internal/config/keys"
+	"github.com/circonus/agent-manager/internal/credentials"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 )
