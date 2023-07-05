@@ -1,8 +1,8 @@
 #!/bin/bash
 
 if [[ "$(readlink /proc/1/exe)" == */systemd ]]; then
-	deb-systemd-invoke stop circonus-cma.service
+	deb-systemd-invoke stop circonus-am.service
 else
 	# Assuming sysv
-	invoke-rc.d circonus-cma stop
+	invoke-rc.d circonus-am stop
 fi

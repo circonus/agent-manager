@@ -13,7 +13,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/circonus/collector-management-agent/internal/config/keys"
+	"github.com/circonus/agent-manager/internal/config/keys"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/spf13/viper"
 )

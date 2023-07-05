@@ -1,0 +1,15 @@
+[Unit]
+Description=Circonus Agent Manager
+Documentation=https://github.com/circonus/agent-manager
+After=network.target
+
+[Service]
+EnvironmentFile=-/opt/circonus/am/etc/circonus-am.env
+User=cua
+ExecStart=/opt/circonus/cma/sbin/circonus-am --config=/opt/circonus/am/etc/circonus-am.yaml $CMA_OPTS
+Restart=on-failure
+RestartForceExitStatus=SIGPIPE
+KillMode=control-group
+
+[Install]
+WantedBy=multi-user.target

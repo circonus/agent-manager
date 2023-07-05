@@ -1,4 +1,4 @@
-# Circonus Management Agent configuration
+# Circonus Agent Manager
 
 api:
   token: 

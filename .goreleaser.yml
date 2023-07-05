@@ -1,9 +1,9 @@
-project_name: circonus-cma
+project_name: circonus-am
 
 builds: 
-  - id: cma
-    main: ./cmd/circonus-cma
-    binary: sbin/circonus-cma
+  - id: am
+    main: ./cmd/circonus-am
+    binary: sbin/circonus-am
     env: 
       - CGO_ENABLED=0
     goarch: 
@@ -21,17 +21,17 @@ builds:
       - -s
       - -w
       - -extldflags "-static"
-      - -X github.com/circonus-labs/circonus-kubernetes-agent/internal/release.VERSION={{.Version}}
-      - -X github.com/circonus-labs/circonus-kubernetes-agent/internal/release.COMMIT={{.ShortCommit}}
-      - -X github.com/circonus-labs/circonus-kubernetes-agent/internal/release.DATE={{.Date}}
-      - -X github.com/circonus-labs/circonus-kubernetes-agent/internal/release.TAG={{.Tag}}
+      - -X github.com/circonus/agent-manager/internal/release.VERSION={{.Version}}
+      - -X github.com/circonus/agent-manager/internal/release.COMMIT={{.ShortCommit}}
+      - -X github.com/circonus/agent-manager/internal/release.DATE={{.Date}}
+      - -X github.com/circonus/agent-manager/internal/release.TAG={{.Tag}}
 
 # dockers:
-#   - id: cma-amd64
+#   - id: am-amd64
 #     goos: linux
 #     goarch: amd64
 #     goarm: ''
-#     ids: ['cma']
+#     ids: ['am']
 #     image_templates:
 #       - "circonus/{{.ProjectName}}:{{.Tag}}-amd64"
 #       - "circonus/{{.ProjectName}}:latest-amd64"
@@ -50,11 +50,11 @@ builds:
 #     extra_files:
 #       - etc/circonus-cma.yaml
 
-#   - id: ea-arm64
+#   - id: am-arm64
 #     goos: linux
 #     goarch: arm64
 #     goarm: ''
-#     ids: ['ea']
+#     ids: ['am']
 #     image_templates:
 #       - "circonus/{{.ProjectName}}:{{.Tag}}-arm64"
 #       - "circonus/{{.ProjectName}}:latest-arm64"
@@ -87,26 +87,26 @@ nfpms:
   - vendor: Circonus, Inc.
     homepage: https://circonus.com
     maintainer: Circonus <support@circonus.com>
-    description: Circonus Collector Management Agent
+    description: Circonus Agent Manager
     license: MIT
     file_name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Arch }}"
     formats:
       - deb
       - rpm
-    bindir: /opt/circonus/cma
+    bindir: /opt/circonus/am
     contents:
       - src: "LICENSE"
-        dst: "/opt/circonus/cma/LICENSE"
+        dst: "/opt/circonus/am/LICENSE"
       - src: "README.md"
-        dst: "/opt/circonus/cma/README.md"
+        dst: "/opt/circonus/am/README.md"
       - src: "CHANGELOG.md"
-        dst: "/opt/circonus/cma/CHANGELOG.md"
-      - src: "service/circonus-cma.linux.service"
-        dst: "/opt/circonus/cma/service/circonus-cma.service"
-      - src: "service/circonus-cma.linux.init"
-        dst: "/opt/circonus/cma/service/circonus-cma.init"
-      - src: "etc/circonus-cma.yaml" 
-        dst: "/opt/circonus/cma/etc/circonus-cma.yaml"
+        dst: "/opt/circonus/am/CHANGELOG.md"
+      - src: "service/circonus-am.linux.service"
+        dst: "/opt/circonus/am/service/circonus-am.service"
+      - src: "service/circonus-am.linux.init"
+        dst: "/opt/circonus/am/service/circonus-am.init"
+      - src: "etc/circonus-am.yaml" 
+        dst: "/opt/circonus/am/etc/circonus-am.yaml"
         type: "config|noreplace"
     overrides:
       deb:
@@ -132,13 +132,13 @@ archives:
       - LICENSE
       - README.md
       - CHANGELOG.md
-      - etc/circonus-cma.yaml
+      - etc/circonus-am.yaml
       - service/*
 
 release:
   github:
       owner: circonus
-      name: collector-management-agent
+      name: agent-collector
   draft: false
   prerelease: auto
 
