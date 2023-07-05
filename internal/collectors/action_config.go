@@ -97,7 +97,7 @@ func installConfigs(ctx context.Context, action Action) {
 			if err != nil {
 				log.Warn().Err(err).Str("output", string(output)).Int("exit_code", code).Str("cmd", coll.Restart).Msg("restart failed")
 			}
-		//TODO: add case(s) for other options e.g. hitting an endpoint to trigger a reload
+		//FUTURE: add case(s) for other options e.g. hitting an endpoint to trigger a reload
 		default:
 			output, code, err := execute(ctx, coll.Reload)
 			if err != nil {
