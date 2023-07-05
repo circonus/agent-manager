@@ -33,6 +33,10 @@ linters:
   enable-all: true
   fast: false
   disable:
+    - nosnakecase
+    - interfacer
+    - ifshort
+    - maligned
     - goimports
     - depguard
     - funlen
