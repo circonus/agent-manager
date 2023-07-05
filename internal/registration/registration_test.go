@@ -23,13 +23,15 @@ func Test_getJWT(t *testing.T) {
 		switch r.URL.Path {
 		case "/agent/registration":
 			switch r.Method {
-			case "GET":
+			case http.MethodGet:
 				http.Error(w, "not found", http.StatusNotFound)
+
 				return
-			case "POST":
+			case http.MethodPost:
 				regToken := r.Header.Get("X-Circonus-Register-Token")
 				if regToken == "" {
 					http.Error(w, "missing token", http.StatusUnauthorized)
+
 					return
 				}
 
@@ -37,17 +39,20 @@ func Test_getJWT(t *testing.T) {
 				b, err := io.ReadAll(r.Body)
 				if err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
+
 					return
 				}
 
 				var reg Registration
 				if err = json.Unmarshal(b, &reg); err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
+
 					return
 				}
 
 				if reg.MachineID == "" {
 					http.Error(w, "bad machine id", http.StatusBadRequest)
+
 					return
 				}
 
@@ -57,6 +62,7 @@ func Test_getJWT(t *testing.T) {
 				tokenString, err := token.SignedString([]byte("secret"))
 				if err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
+
 					return
 				}
 
@@ -68,6 +74,7 @@ func Test_getJWT(t *testing.T) {
 				data, err := json.Marshal(r)
 				if err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
+
 					return
 				}
 
@@ -76,10 +83,12 @@ func Test_getJWT(t *testing.T) {
 				_, _ = w.Write(data)
 			default:
 				http.Error(w, "not found", http.StatusNotFound)
+
 				return
 			}
 		default:
 			http.Error(w, "not found", http.StatusNotFound)
+
 			return
 		}
 	}))
@@ -91,6 +100,7 @@ func Test_getJWT(t *testing.T) {
 		token string
 		reg   Registration
 	}
+
 	tests := []struct {
 		name    string
 		args    args
@@ -121,6 +131,7 @@ func Test_getJWT(t *testing.T) {
 			got, err := getJWT(context.Background(), tt.args.token, tt.args.reg)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("getJWT() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
 			if got != nil {

@@ -26,7 +26,7 @@ import (
 // Agent holds the main agent process.
 type Agent struct {
 	group       *errgroup.Group
-	groupCtx    context.Context
+	groupCtx    context.Context //nolint:containedctx
 	groupCancel context.CancelFunc
 	signalCh    chan os.Signal
 	logger      zerolog.Logger
@@ -38,7 +38,8 @@ func New() (*Agent, error) {
 	g, gctx := errgroup.WithContext(ctx)
 
 	var err error
-	a := Agent{
+
+	agent := Agent{
 		group:       g,
 		groupCtx:    gctx,
 		groupCancel: cancel,
@@ -51,9 +52,9 @@ func New() (*Agent, error) {
 		return nil, fmt.Errorf("config validate: %w", err)
 	}
 
-	a.signalNotifySetup()
+	agent.signalNotifySetup()
 
-	return &a, nil
+	return &agent, nil
 }
 
 // Start is the main agent entry point.
@@ -63,7 +64,10 @@ func (a *Agent) Start() error {
 	log.Info().Str("name", release.NAME).Str("version", release.VERSION).Msg("starting")
 
 	if viper.GetString(keys.Register) != "" {
-		credentials.SaveRegistrationToken([]byte(viper.GetString(keys.Register)))
+		if err := credentials.SaveRegistrationToken([]byte(viper.GetString(keys.Register))); err != nil {
+			log.Fatal().Err(err).Msg("saving registration token")
+		}
+
 		if err := registration.Start(a.groupCtx); err != nil {
 			log.Fatal().Err(err).Msg("registering agent")
 		}
@@ -85,6 +89,7 @@ func (a *Agent) Start() error {
 		if err := collectors.FetchCollectors(a.groupCtx); err != nil {
 			log.Fatal().Err(err).Msg("fetching collectors")
 		}
+
 		if err := collectors.CheckForCollectors(a.groupCtx); err != nil {
 			log.Fatal().Err(err).Msg("checking for installed collectors")
 		}
@@ -95,18 +100,20 @@ func (a *Agent) Start() error {
 		Str("name", release.NAME).
 		Str("ver", release.VERSION).Msg("starting wait")
 
-	p, err := collectors.NewPoller()
+	poller, err := collectors.NewPoller()
 	if err != nil {
 		a.logger.Fatal().Err(err).Msg("unable to start poller")
 	}
 
 	a.group.Go(func() error {
-		p.Start(a.groupCtx)
+		poller.Start(a.groupCtx)
+
 		return nil
 	})
 
 	a.group.Go(func() error {
 		registration.ReRegister(a.groupCtx)
+
 		return nil
 	})
 

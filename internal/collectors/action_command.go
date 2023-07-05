@@ -23,12 +23,13 @@ const (
 	VERSION   = "version"
 )
 
-func runCommands(ctx context.Context, a Action) error {
+func runCommands(ctx context.Context, action Action) error {
 	collectors, err := LoadCollectors()
 	if err != nil {
 		return err
 	}
-	for _, command := range a.Commands {
+
+	for _, command := range action.Commands {
 		switch command.Command {
 		case INVENTORY:
 			if err := FetchCollectors(ctx); err != nil {
@@ -72,100 +73,116 @@ func runCommands(ctx context.Context, a Action) error {
 			}
 		}
 	}
+
 	return nil
 }
 
 func cmdStart(ctx context.Context, collector Collector, command Command) {
 	output, code, err := execute(ctx, collector.Start)
-	r := CommandResult{
+	result := CommandResult{
 		ID: command.ID,
 		CommandData: CommandData{
 			ExitCode: code,
 		},
 	}
+
 	if err != nil {
-		r.CommandData.Error = err.Error()
+		result.CommandData.Error = err.Error()
 	}
+
 	if len(output) > 0 {
-		r.CommandData.Output = base64.StdEncoding.EncodeToString(output)
+		result.CommandData.Output = base64.StdEncoding.EncodeToString(output)
 	}
-	if err = sendCommandResult(ctx, r); err != nil {
+
+	if err = sendCommandResult(ctx, result); err != nil {
 		log.Error().Err(err).Msg("command result")
 	}
 }
 
 func cmdStop(ctx context.Context, collector Collector, command Command) {
 	output, code, err := execute(ctx, collector.Stop)
-	r := CommandResult{
+	result := CommandResult{
 		ID: command.ID,
 		CommandData: CommandData{
 			ExitCode: code,
 		},
 	}
+
 	if err != nil {
-		r.CommandData.Error = err.Error()
+		result.CommandData.Error = err.Error()
 	}
+
 	if len(output) > 0 {
-		r.CommandData.Output = base64.StdEncoding.EncodeToString(output)
+		result.CommandData.Output = base64.StdEncoding.EncodeToString(output)
 	}
-	if err = sendCommandResult(ctx, r); err != nil {
+
+	if err = sendCommandResult(ctx, result); err != nil {
 		log.Error().Err(err).Msg("command result")
 	}
 }
 
 func cmdRestart(ctx context.Context, collector Collector, command Command) {
 	output, code, err := execute(ctx, collector.Restart)
-	r := CommandResult{
+	result := CommandResult{
 		ID: command.ID,
 		CommandData: CommandData{
 			ExitCode: code,
 		},
 	}
+
 	if err != nil {
-		r.CommandData.Error = err.Error()
+		result.CommandData.Error = err.Error()
 	}
+
 	if len(output) > 0 {
-		r.CommandData.Output = base64.StdEncoding.EncodeToString(output)
+		result.CommandData.Output = base64.StdEncoding.EncodeToString(output)
 	}
-	if err = sendCommandResult(ctx, r); err != nil {
+
+	if err = sendCommandResult(ctx, result); err != nil {
 		log.Error().Err(err).Msg("command result")
 	}
 }
 
 func cmdVersion(ctx context.Context, collector Collector, command Command) {
 	output, code, err := execute(ctx, collector.Version)
-	r := CommandResult{
+	result := CommandResult{
 		ID: command.ID,
 		CommandData: CommandData{
 			ExitCode: code,
 		},
 	}
+
 	if err != nil {
-		r.CommandData.Error = err.Error()
+		result.CommandData.Error = err.Error()
 	}
+
 	if len(output) > 0 {
-		r.CommandData.Output = base64.StdEncoding.EncodeToString(output)
+		result.CommandData.Output = base64.StdEncoding.EncodeToString(output)
 	}
-	if err = sendCommandResult(ctx, r); err != nil {
+
+	if err = sendCommandResult(ctx, result); err != nil {
 		log.Error().Err(err).Msg("command result")
 	}
 }
 
 func cmdStatus(ctx context.Context, collector Collector, command Command) {
 	output, code, err := execute(ctx, collector.Status)
-	r := CommandResult{
+	result := CommandResult{
 		ID: command.ID,
 		CommandData: CommandData{
 			ExitCode: code,
 		},
 	}
+
 	if err != nil {
-		r.CommandData.Error = err.Error()
+		result.CommandData.Error = err.Error()
 	}
+
 	if len(output) > 0 {
-		r.CommandData.Output = base64.StdEncoding.EncodeToString(output)
+		result.CommandData.Output = base64.StdEncoding.EncodeToString(output)
 	}
-	if err = sendCommandResult(ctx, r); err != nil {
+
+	if err = sendCommandResult(ctx, result); err != nil {
 		log.Error().Err(err).Msg("command result")
 	}
 }

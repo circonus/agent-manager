@@ -39,8 +39,10 @@ func TestParseAPICollectors(t *testing.T) {
 			got, err := ParseAPICollectors(data)
 			if (err != nil) != tt.wantErr {
 				t.Fatalf("ParseAPICollectors() error = %v, wantErr %v", err, tt.wantErr)
+
 				return
 			}
+
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Fatalf("ParseAPICollectors() = %v, want %v", got, tt.want)
 			}

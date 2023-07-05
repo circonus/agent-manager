@@ -25,10 +25,12 @@ import (
 
 func ReRegister(ctx context.Context) {
 	ticker := time.NewTicker(1 * time.Hour)
+
 	for {
 		select {
 		case <-ctx.Done():
 			ticker.Stop()
+
 			return
 		case <-ticker.C:
 			reg, err := getNewJWT(ctx)
@@ -56,7 +58,7 @@ func getNewJWT(ctx context.Context) (*Response, error) {
 
 	data := []byte(`{"agent_id":"` + viper.GetString(keys.AgentID) + `"}`)
 
-	req, err := http.NewRequestWithContext(ctx, "POST", reqURL, bytes.NewReader(data))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, reqURL, bytes.NewReader(data))
 	if err != nil {
 		return nil, fmt.Errorf("creating request: %w", err)
 	}
@@ -71,6 +73,7 @@ func getNewJWT(ctx context.Context) (*Response, error) {
 	}
 
 	defer resp.Body.Close()
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, fmt.Errorf("reading response body: %w", err)

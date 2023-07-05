@@ -34,6 +34,7 @@ func SaveJWT(creds []byte) error {
 	if file == "" {
 		return fmt.Errorf("invalid id file (empty)") //nolint:goerr113
 	}
+
 	if len(creds) == 0 {
 		return fmt.Errorf("invalid credential token (empty)") //nolint:goerr113
 	}
@@ -62,6 +63,7 @@ func SaveAgentID(creds []byte) error {
 	if file == "" {
 		return fmt.Errorf("invalid agent id file (empty)") //nolint:goerr113
 	}
+
 	if len(creds) == 0 {
 		return fmt.Errorf("invalid agent id (empty)") //nolint:goerr113
 	}
@@ -90,6 +92,7 @@ func SaveRegistrationToken(creds []byte) error {
 	if file == "" {
 		return fmt.Errorf("invalid registration token file (empty)") //nolint:goerr113
 	}
+
 	if len(creds) == 0 {
 		return fmt.Errorf("invalid registration token (empty)") //nolint:goerr113
 	}

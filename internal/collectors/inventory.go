@@ -26,6 +26,10 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+const (
+	noVersion = "v0.0.0"
+)
+
 // handle requesting list of collectors from api, determining if any are installed locally, and responding with collectors found
 
 // key1 is platform (GOOS) e.g. darwin, windows, linux, freebsd, etc.
@@ -34,13 +38,13 @@ type Collectors map[string]map[string]Collector
 
 type Collector struct {
 	ConfigFiles map[string]string `json:"config_files" yaml:"config_files"`
-	Binary      string            `json:"binary" yaml:"binary"`
-	Start       string            `json:"start" yaml:"start"`
-	Stop        string            `json:"stop" yaml:"stop"`
-	Restart     string            `json:"restart" yaml:"restart"`
-	Reload      string            `json:"reload" yaml:"reload"`
-	Status      string            `json:"status" yaml:"status"`
-	Version     string            `json:"version" yaml:"version"`
+	Binary      string            `json:"binary"       yaml:"binary"`
+	Start       string            `json:"start"        yaml:"start"`
+	Stop        string            `json:"stop"         yaml:"stop"`
+	Restart     string            `json:"restart"      yaml:"restart"`
+	Reload      string            `json:"reload"       yaml:"reload"`
+	Status      string            `json:"status"       yaml:"status"`
+	Version     string            `json:"version"      yaml:"version"`
 }
 
 type InstalledCollectors []InstalledCollector
@@ -61,7 +65,7 @@ func FetchCollectors(ctx context.Context) error {
 		return fmt.Errorf("req url: %w", err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, "GET", reqURL, nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, reqURL, nil)
 	if err != nil {
 		return fmt.Errorf("creating request: %w", err)
 	}
@@ -76,6 +80,7 @@ func FetchCollectors(ctx context.Context) error {
 	}
 
 	defer resp.Body.Close()
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return fmt.Errorf("reading response body: %w", err)
@@ -148,14 +153,18 @@ func CheckForCollectors(ctx context.Context) error {
 	for name, c := range gcc {
 		if _, err := os.Stat(c.Binary); errors.Is(err, os.ErrNotExist) {
 			log.Warn().Str("file", c.Binary).Msg("collector binary not found, skipping")
+
 			continue
 		}
+
 		for _, path := range c.ConfigFiles {
 			if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
 				log.Warn().Str("file", path).Msg("required config file not found, skipping")
+
 				continue
 			}
 		}
+
 		ver, err := getCollectorVersion(c.Version)
 		if err != nil {
 			log.Warn().Err(err).Str("collector", name).Msg("getting collector version")
@@ -175,23 +184,26 @@ func CheckForCollectors(ctx context.Context) error {
 
 func getCollectorVersion(vercmd string) (string, error) {
 	if vercmd == "" {
-		return "v0.0.0", nil
+		return noVersion, nil
 	}
+
 	cmd := exec.Command("bash", "-c", vercmd) //nolint:gosec
+
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return "v0.0.0", err //nolint:wrapcheck
+		return noVersion, err //nolint:wrapcheck
 	}
 
 	if len(output) > 0 {
 		v, err := version.NewVersion(strings.TrimSpace(string(output)))
 		if err != nil {
-			return "v0.0.0", err //nolint:wrapcheck
+			return noVersion, err //nolint:wrapcheck
 		}
+
 		return v.String(), nil
 	}
 
-	return "v0.0.0", nil
+	return noVersion, nil
 }
 
 func registerCollectors(ctx context.Context, c InstalledCollectors) error {
@@ -210,7 +222,7 @@ func registerCollectors(ctx context.Context, c InstalledCollectors) error {
 		return fmt.Errorf("marshal claims: %w", err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, "POST", reqURL, bytes.NewReader(data))
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, reqURL, bytes.NewReader(data))
 	if err != nil {
 		return fmt.Errorf("creating request: %w", err)
 	}
@@ -225,6 +237,7 @@ func registerCollectors(ctx context.Context, c InstalledCollectors) error {
 	}
 
 	defer resp.Body.Close()
+
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return fmt.Errorf("reading response body: %w", err)
