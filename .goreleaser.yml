@@ -138,7 +138,7 @@ archives:
 release:
   github:
       owner: circonus
-      name: agent-collector
+      name: agent-manager
   draft: false
   prerelease: auto
 
