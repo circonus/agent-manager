@@ -11,6 +11,7 @@ import (
 	"os"
 	"runtime"
 	"strings"
+	"syscall"
 
 	"github.com/rs/zerolog/log"
 )
@@ -67,6 +68,29 @@ func installConfigs(ctx context.Context, action Action) {
 				}
 
 				continue
+			}
+
+			fileSys := f.Sys()
+			if _, ok := fileSys.(*syscall.Stat_t); ok {
+				gid := int(fileSys.(*syscall.Stat_t).Gid) //nolint:forcetypeassert
+				uid := int(fileSys.(*syscall.Stat_t).Uid) //nolint:forcetypeassert
+
+				if err := os.Chown(config.Path, uid, gid); err != nil {
+					result := ConfigResult{
+						ID:     config.ID,
+						Status: STATUS_ERROR, //nolint:nosnakecase
+						Info:   err.Error(),
+						ConfigData: ConfigData{
+							WriteResult: err.Error(),
+						},
+					}
+
+					if err := sendConfigResult(ctx, result); err != nil {
+						log.Error().Err(err).Msg("config result")
+					}
+
+					continue
+				}
 			}
 
 			result := ConfigResult{
