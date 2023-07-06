@@ -8,10 +8,8 @@ package collectors
 import (
 	"context"
 	"encoding/base64"
-	"os"
 	"runtime"
 	"strings"
-	"syscall"
 
 	"github.com/rs/zerolog/log"
 )
@@ -46,14 +44,7 @@ func installConfigs(ctx context.Context, action Action) {
 
 			log.Debug().Str("path", config.Path).Str("contents", string(data)).Msg("decoded contents")
 
-			perms := os.FileMode(0640)
-
-			f, err := os.Stat(config.Path)
-			if err == nil {
-				perms = f.Mode().Perm()
-			}
-
-			if err := os.WriteFile(config.Path, data, perms); err != nil {
+			if err := writeConfig(config.Path, data); err != nil {
 				result := ConfigResult{
 					ID:     config.ID,
 					Status: STATUS_ERROR, //nolint:nosnakecase
@@ -68,29 +59,6 @@ func installConfigs(ctx context.Context, action Action) {
 				}
 
 				continue
-			}
-
-			fileSys := f.Sys()
-			if _, ok := fileSys.(*syscall.Stat_t); ok {
-				gid := int(fileSys.(*syscall.Stat_t).Gid) //nolint:forcetypeassert
-				uid := int(fileSys.(*syscall.Stat_t).Uid) //nolint:forcetypeassert
-
-				if err := os.Chown(config.Path, uid, gid); err != nil {
-					result := ConfigResult{
-						ID:     config.ID,
-						Status: STATUS_ERROR, //nolint:nosnakecase
-						Info:   err.Error(),
-						ConfigData: ConfigData{
-							WriteResult: err.Error(),
-						},
-					}
-
-					if err := sendConfigResult(ctx, result); err != nil {
-						log.Error().Err(err).Msg("config result")
-					}
-
-					continue
-				}
 			}
 
 			result := ConfigResult{
