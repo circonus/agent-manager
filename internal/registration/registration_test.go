@@ -68,7 +68,7 @@ func Test_getJWT(t *testing.T) {
 
 				r := Response{
 					AuthToken: tokenString,
-					Agent:     Agent{ID: "test"},
+					Manager:   Manager{ID: "test"},
 				}
 
 				data, err := json.Marshal(r)

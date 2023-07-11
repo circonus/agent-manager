@@ -63,12 +63,12 @@ type AWSTags struct {
 }
 
 type Response struct {
-	AuthToken string `json:"auth_token" yaml:"auth_token"`
-	Agent     Agent  `json:"agent"      yaml:"agent"`
+	AuthToken string  `json:"auth_token" yaml:"auth_token"`
+	Manager   Manager `json:"manager"    yaml:"manager"`
 }
 
-type Agent struct {
-	ID string `json:"agent_id" yaml:"agent_id"`
+type Manager struct {
+	ID string `json:"manager_id" yaml:"manager_id"`
 }
 
 // Start the registration process.
@@ -119,8 +119,8 @@ func Start(ctx context.Context) error {
 		log.Fatal().Err(err).Msg("saving token")
 	}
 
-	if err := credentials.SaveAgentID([]byte(jwt.Agent.ID)); err != nil {
-		log.Fatal().Err(err).Msg("saving agent id")
+	if err := credentials.SaveManagerID([]byte(jwt.Manager.ID)); err != nil {
+		log.Fatal().Err(err).Msg("saving manager id")
 	}
 
 	return nil
@@ -144,7 +144,7 @@ func getJWT(ctx context.Context, token string, reg Registration) (*Response, err
 		return nil, fmt.Errorf("marshal claims: %w", err)
 	}
 
-	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "agent", "register")
+	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "manager", "register")
 	if err != nil {
 		return nil, fmt.Errorf("req url: %w", err)
 	}

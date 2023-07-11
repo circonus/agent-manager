@@ -51,12 +51,12 @@ func getNewJWT(ctx context.Context) (*Response, error) {
 		return nil, fmt.Errorf("invalid token (empty)") //nolint:goerr113
 	}
 
-	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "agent", "register")
+	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "manager", "register")
 	if err != nil {
 		return nil, fmt.Errorf("req url: %w", err)
 	}
 
-	data := []byte(`{"agent_id":"` + viper.GetString(keys.AgentID) + `"}`)
+	data := []byte(`{"manager_id":"` + viper.GetString(keys.ManagerID) + `"}`)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, reqURL, bytes.NewReader(data))
 	if err != nil {
