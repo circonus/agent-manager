@@ -1,5 +1,9 @@
 # unreleased
 
+## v0.0.4
+
+* feat: add default api url
+
 ## v0.0.3
 
 * fix: rename env prefix CAM
