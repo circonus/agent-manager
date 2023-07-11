@@ -73,8 +73,8 @@ func (a *Agent) Start() error {
 		}
 	}
 
-	if err := credentials.LoadAgentID(); err != nil {
-		log.Fatal().Err(err).Msg("loading agent id")
+	if err := credentials.LoadManagerID(); err != nil {
+		log.Fatal().Err(err).Msg("loading manager id")
 	}
 
 	if err := credentials.LoadRegistrationToken(); err != nil {

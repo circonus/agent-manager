@@ -35,7 +35,7 @@ func initCmd() *cobra.Command {
 			viper.Set(keys.InventoryFile, defaults.InventoryFile)
 			viper.Set(keys.JwtTokenFile, defaults.JwtTokenFile)
 			viper.Set(keys.RegTokenFile, defaults.RegTokenFile)
-			viper.Set(keys.AgentIDFile, defaults.AgentIDFile)
+			viper.Set(keys.ManagerIDFile, defaults.ManagerIDFile)
 
 			a, err := agent.New()
 			if err != nil {
