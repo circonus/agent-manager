@@ -13,7 +13,7 @@ const (
 
 	APIURL            = "api.url"
 	APIToken          = "api.token"
-	AgentID           = "agent_id"
+	ManagerID         = "manager_id"
 	RegistrationToken = "registration_token"
 
 	// frequency of polling for actions.
@@ -52,5 +52,5 @@ const (
 	InventoryFile = "internal.inventory_file"
 	JwtTokenFile  = "internal.jwt_token_file" //nolint:gosec
 	RegTokenFile  = "internal.reg_token_file" //nolint:gosec
-	AgentIDFile   = "internal.agent_id_file"
+	ManagerIDFile = "internal.manager_id_file"
 )
