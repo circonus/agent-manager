@@ -42,10 +42,10 @@ func SaveJWT(creds []byte) error {
 	return write(file, creds) //nolint:wrapcheck
 }
 
-func LoadAgentID() error {
-	file := viper.GetString(keys.AgentIDFile)
+func LoadManagerID() error {
+	file := viper.GetString(keys.ManagerIDFile)
 	if file == "" {
-		return fmt.Errorf("invalid agent id file (empty)") //nolint:goerr113
+		return fmt.Errorf("invalid manager id file (empty)") //nolint:goerr113
 	}
 
 	token, err := read(file)
@@ -53,19 +53,19 @@ func LoadAgentID() error {
 		return err //nolint:wrapcheck
 	}
 
-	viper.Set(keys.AgentID, string(token))
+	viper.Set(keys.ManagerID, string(token))
 
 	return nil
 }
 
-func SaveAgentID(creds []byte) error {
-	file := viper.GetString(keys.AgentIDFile)
+func SaveManagerID(creds []byte) error {
+	file := viper.GetString(keys.ManagerIDFile)
 	if file == "" {
-		return fmt.Errorf("invalid agent id file (empty)") //nolint:goerr113
+		return fmt.Errorf("invalid manager id file (empty)") //nolint:goerr113
 	}
 
 	if len(creds) == 0 {
-		return fmt.Errorf("invalid agent id (empty)") //nolint:goerr113
+		return fmt.Errorf("invalid manager id (empty)") //nolint:goerr113
 	}
 
 	return write(file, creds) //nolint:wrapcheck
