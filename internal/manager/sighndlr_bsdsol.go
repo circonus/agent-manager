@@ -8,7 +8,7 @@
 // Signal handling for FreeBSD, OpenBSD, Darwin, and Solaris
 // systems that have SIGINFO
 
-package agent
+package manager
 
 import (
 	"fmt"
@@ -20,12 +20,12 @@ import (
 	"golang.org/x/sys/unix"
 )
 
-func (a *Agent) signalNotifySetup() {
-	signal.Notify(a.signalCh, os.Interrupt, unix.SIGTERM, unix.SIGHUP, unix.SIGINFO)
+func (m *Manager) signalNotifySetup() {
+	signal.Notify(m.signalCh, os.Interrupt, unix.SIGTERM, unix.SIGHUP, unix.SIGINFO)
 }
 
 // handleSignals runs the signal handler thread.
-func (a *Agent) handleSignals() error {
+func (m *Manager) handleSignals() error {
 	const stacktraceBufSize = 1 * units.MiB
 
 	// pre-allocate a buffer
@@ -33,22 +33,22 @@ func (a *Agent) handleSignals() error {
 
 	for {
 		select {
-		case sig := <-a.signalCh:
-			a.logger.Info().Str("signal", sig.String()).Msg("received signal")
+		case sig := <-m.signalCh:
+			m.logger.Info().Str("signal", sig.String()).Msg("received signal")
 
 			switch sig {
 			case os.Interrupt, unix.SIGTERM:
-				a.Stop()
+				m.Stop()
 			case unix.SIGHUP:
 				// Noop
 			case unix.SIGINFO:
 				stacklen := runtime.Stack(buf, true)
 				fmt.Printf("=== received SIGINFO ===\n*** goroutine dump...\n%s\n*** end\n", buf[:stacklen])
 			default:
-				a.logger.Warn().Str("signal", sig.String()).Msg("unsupported")
+				m.logger.Warn().Str("signal", sig.String()).Msg("unsupported")
 			}
 
-		case <-a.groupCtx.Done():
+		case <-m.groupCtx.Done():
 			return nil
 		}
 	}
