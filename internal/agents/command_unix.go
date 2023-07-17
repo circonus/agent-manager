@@ -5,7 +5,7 @@
 
 //go:build linux || darwin || freebsd
 
-package collectors
+package agents
 
 import (
 	"context"

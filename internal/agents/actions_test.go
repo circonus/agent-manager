@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 //
 
-package collectors
+package agents
 
 import (
 	"context"
@@ -26,7 +26,7 @@ func Test_getActions(t *testing.T) {
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
-		case "/collector/update":
+		case "/agent/update":
 			switch r.Method {
 			case http.MethodGet:
 				authToken := r.Header.Get("X-Circonus-Auth-Token")
@@ -43,7 +43,7 @@ func Test_getActions(t *testing.T) {
 							FileID:   "d81c7650-19ae-4bf3-98df-5d24d53f5756",
 							Contents: "dGVzdAo=",
 						},
-						Collector: APIConfigCollector{
+						Agent: APIConfigAgent{
 							ID: "foo",
 						},
 					},

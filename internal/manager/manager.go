@@ -11,7 +11,7 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/circonus/agent-manager/internal/collectors"
+	"github.com/circonus/agent-manager/internal/agents"
 	"github.com/circonus/agent-manager/internal/config"
 	"github.com/circonus/agent-manager/internal/config/keys"
 	"github.com/circonus/agent-manager/internal/credentials"
@@ -86,11 +86,11 @@ func (m *Manager) Start() error {
 	}
 
 	if viper.GetString(keys.Register) != "" || viper.GetBool(keys.Inventory) {
-		if err := collectors.FetchAgents(m.groupCtx); err != nil {
+		if err := agents.FetchAgents(m.groupCtx); err != nil {
 			log.Fatal().Err(err).Msg("fetching agents")
 		}
 
-		if err := collectors.CheckForAgents(m.groupCtx); err != nil {
+		if err := agents.CheckForAgents(m.groupCtx); err != nil {
 			log.Fatal().Err(err).Msg("checking for installed agents")
 		}
 	}
@@ -100,7 +100,7 @@ func (m *Manager) Start() error {
 		Str("name", release.NAME).
 		Str("ver", release.VERSION).Msg("starting wait")
 
-	poller, err := collectors.NewPoller()
+	poller, err := agents.NewPoller()
 	if err != nil {
 		m.logger.Fatal().Err(err).Msg("unable to start poller")
 	}

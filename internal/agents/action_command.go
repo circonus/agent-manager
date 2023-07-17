@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 //
 
-package collectors
+package agents
 
 import (
 	"context"
@@ -24,7 +24,7 @@ const (
 )
 
 func runCommands(ctx context.Context, action Action) error {
-	collectors, err := LoadCollectors()
+	agents, err := LoadAgents()
 	if err != nil {
 		return err
 	}
@@ -32,44 +32,44 @@ func runCommands(ctx context.Context, action Action) error {
 	for _, command := range action.Commands {
 		switch command.Command {
 		case INVENTORY:
-			if err := FetchCollectors(ctx); err != nil {
-				log.Error().Err(err).Msg("refreshing collectors")
-			} else if err := CheckForCollectors(ctx); err != nil {
-				log.Error().Err(err).Msg("checking for collectors")
+			if err := FetchAgents(ctx); err != nil {
+				log.Error().Err(err).Msg("refreshing agents")
+			} else if err := CheckForAgents(ctx); err != nil {
+				log.Error().Err(err).Msg("checking for agents")
 			}
 		case START:
-			c, ok := collectors[runtime.GOOS][command.Collector]
+			a, ok := agents[runtime.GOOS][command.Agent]
 			if ok {
-				cmdStart(ctx, c, command)
+				cmdStart(ctx, a, command)
 			}
 		case STOP:
-			c, ok := collectors[runtime.GOOS][command.Collector]
+			a, ok := agents[runtime.GOOS][command.Agent]
 			if ok {
-				cmdStop(ctx, c, command)
+				cmdStop(ctx, a, command)
 			}
 		case RESTART:
-			c, ok := collectors[runtime.GOOS][command.Collector]
+			a, ok := agents[runtime.GOOS][command.Agent]
 			if ok {
-				cmdRestart(ctx, c, command)
+				cmdRestart(ctx, a, command)
 			}
 		case RELOAD:
 			// this needs to be handled differently as reload may be:
 			// a command or some type of endpoint
 			//
-			// c, ok := collectors[runtime.GOOS][command.Collector]
+			// a, ok := agents[runtime.GOOS][command.Agent]
 			// if ok {
-			// args := strings.Split(c.Reload, " ")
+			// args := strings.Split(a.Reload, " ")
 			// cmd := exec.Command(args[0], args[1:]...)
 			// }
 		case STATUS:
-			c, ok := collectors[runtime.GOOS][command.Collector]
+			a, ok := agents[runtime.GOOS][command.Agent]
 			if ok {
-				cmdStatus(ctx, c, command)
+				cmdStatus(ctx, a, command)
 			}
 		case VERSION:
-			c, ok := collectors[runtime.GOOS][command.Collector]
+			a, ok := agents[runtime.GOOS][command.Agent]
 			if ok {
-				cmdVersion(ctx, c, command)
+				cmdVersion(ctx, a, command)
 			}
 		}
 	}
@@ -77,8 +77,8 @@ func runCommands(ctx context.Context, action Action) error {
 	return nil
 }
 
-func cmdStart(ctx context.Context, collector Collector, command Command) {
-	output, code, err := execute(ctx, collector.Start)
+func cmdStart(ctx context.Context, agent Agent, command Command) {
+	output, code, err := execute(ctx, agent.Start)
 	result := CommandResult{
 		ID: command.ID,
 		CommandData: CommandData{
@@ -99,8 +99,8 @@ func cmdStart(ctx context.Context, collector Collector, command Command) {
 	}
 }
 
-func cmdStop(ctx context.Context, collector Collector, command Command) {
-	output, code, err := execute(ctx, collector.Stop)
+func cmdStop(ctx context.Context, agent Agent, command Command) {
+	output, code, err := execute(ctx, agent.Stop)
 	result := CommandResult{
 		ID: command.ID,
 		CommandData: CommandData{
@@ -121,8 +121,8 @@ func cmdStop(ctx context.Context, collector Collector, command Command) {
 	}
 }
 
-func cmdRestart(ctx context.Context, collector Collector, command Command) {
-	output, code, err := execute(ctx, collector.Restart)
+func cmdRestart(ctx context.Context, agent Agent, command Command) {
+	output, code, err := execute(ctx, agent.Restart)
 	result := CommandResult{
 		ID: command.ID,
 		CommandData: CommandData{
@@ -143,8 +143,8 @@ func cmdRestart(ctx context.Context, collector Collector, command Command) {
 	}
 }
 
-func cmdVersion(ctx context.Context, collector Collector, command Command) {
-	output, code, err := execute(ctx, collector.Version)
+func cmdVersion(ctx context.Context, agent Agent, command Command) {
+	output, code, err := execute(ctx, agent.Version)
 	result := CommandResult{
 		ID: command.ID,
 		CommandData: CommandData{
@@ -165,8 +165,8 @@ func cmdVersion(ctx context.Context, collector Collector, command Command) {
 	}
 }
 
-func cmdStatus(ctx context.Context, collector Collector, command Command) {
-	output, code, err := execute(ctx, collector.Status)
+func cmdStatus(ctx context.Context, agent Agent, command Command) {
+	output, code, err := execute(ctx, agent.Status)
 	result := CommandResult{
 		ID: command.ID,
 		CommandData: CommandData{

@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 //
 
-package collectors
+package agents
 
 import (
 	"context"
@@ -15,14 +15,14 @@ import (
 )
 
 func installConfigs(ctx context.Context, action Action) {
-	collectors, err := LoadCollectors()
+	agents, err := LoadAgents()
 	if err != nil {
-		log.Warn().Err(err).Msg("unable to load collectors, skipping configs")
+		log.Warn().Err(err).Msg("unable to load agents, skipping configs")
 
 		return
 	}
 
-	for collector, configs := range action.Configs {
+	for agent, configs := range action.Configs {
 		for _, config := range configs {
 			log.Debug().Str("path", config.Path).Str("contents", config.Contents).Msg("incoming contents")
 
@@ -74,9 +74,9 @@ func installConfigs(ctx context.Context, action Action) {
 			}
 		}
 
-		coll, ok := collectors[runtime.GOOS][collector]
+		coll, ok := agents[runtime.GOOS][agent]
 		if !ok {
-			log.Warn().Str("platform", runtime.GOOS).Str("collector", collector).Msg("unable to find collector definition for reload, skipping")
+			log.Warn().Str("platform", runtime.GOOS).Str("agent", agent).Msg("unable to find agent definition for reload, skipping")
 
 			continue
 		}
