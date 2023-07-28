@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137
-	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.13.4
+	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.13.6
 	github.com/rs/zerolog v1.29.1
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/viper v1.16.0
@@ -13,7 +13,7 @@ require (
 )
 
 require (
-	github.com/aws/aws-sdk-go-v2 v1.18.1 // indirect
+	github.com/aws/aws-sdk-go-v2 v1.19.1 // indirect
 	github.com/aws/aws-sdk-go-v2/credentials v1.13.26 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.34 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.28 // indirect
