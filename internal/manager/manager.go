@@ -95,6 +95,20 @@ func (m *Manager) Start() error {
 		}
 	}
 
+	//
+	// these two are command line actions and will exit after completion.
+	//
+
+	if viper.GetString(keys.Register) != "" {
+		m.logger.Info().Msg("registration complete")
+		os.Exit(0)
+	}
+
+	if viper.GetBool(keys.Inventory) {
+		m.logger.Info().Msg("invetory complete")
+		os.Exit(0)
+	}
+
 	m.logger.Debug().
 		Int("pid", os.Getpid()).
 		Str("name", release.NAME).
