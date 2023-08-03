@@ -84,3 +84,6 @@ Temporary Items
 internal/collectors/testdata/inventory.yaml
 
 .envrc
+
+.vagrant
+Vagrantfile
