@@ -21,6 +21,7 @@ type Platform struct {
 	ID          string       `json:"platform_id"   yaml:"platform_id"`
 	AgentTypeID string       `json:"agent_type_id" yaml:"agent_type_id"`
 	Executable  string       `json:"executable"    yaml:"executable"`
+	Commands    []Commands   `json:"commands"      yaml:"commands"`
 	Start       string       `json:"start"         yaml:"start"`
 	Stop        string       `json:"stop"          yaml:"stop"`
 	Restart     string       `json:"restart"       yaml:"restart"`
@@ -28,6 +29,11 @@ type Platform struct {
 	Status      string       `json:"status"        yaml:"status"`
 	Version     string       `json:"version"       yaml:"version"`
 	ConfigFiles []ConfigFile `json:"config_files"  yaml:"config_files"`
+}
+
+type Commands struct {
+	Command string `json:"command" yaml:"command"`
+	Name    string `json:"name"    yaml:"name"`
 }
 
 type ConfigFile struct {
@@ -47,12 +53,26 @@ func ParseAPIAgents(data []byte) (Agents, error) {
 		for _, platform := range agent.Platforms {
 			col := Agent{
 				Binary:      platform.Executable,
-				Start:       platform.Start,
-				Stop:        platform.Stop,
-				Restart:     platform.Restart,
-				Reload:      platform.Reload,
-				Version:     platform.Version,
 				ConfigFiles: make(map[string]string, len(platform.ConfigFiles)),
+			}
+
+			for _, c := range platform.Commands {
+				switch c.Name {
+				case "start":
+					col.Start = c.Command
+				case "stop":
+					col.Stop = c.Command
+				case "restart":
+					col.Restart = c.Command
+				case "reload":
+					col.Reload = c.Command
+				case "status":
+					col.Status = c.Command
+				case "version":
+					col.Version = c.Command
+				default:
+					log.Warn().Str("cmd", c.Name).Msg("unknown command")
+				}
 			}
 
 			for _, f := range platform.ConfigFiles {
