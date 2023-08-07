@@ -19,6 +19,10 @@
 * chore(deps): bump golang.org/x/sys from 0.10.0 to 0.11.0
 * chore(deps): bump github.com/aws/aws-sdk-go-v2/config from 1.18.31 to 1.18.32
 
+## v0.0.4
+
+* feat: add default api url
+
 ## v0.0.3
 
 * fix: rename env prefix CAM
