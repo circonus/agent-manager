@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 //
 
-package collectors
+package agents
 
 import (
 	"bytes"
@@ -39,13 +39,13 @@ type Action struct {
 	Commands []Command           `json:"commands" yaml:"commands"`
 }
 
-// not OS commands, commands the agent knows (e.g. restart_collector, collector_status, etc.).
-// how to restart a collector is in the collector inventory.
-// collector status would be the result of running `systemctl status <collector>`.
+// not OS commands, commands the agent knows (e.g. restart_agent, agent_status, etc.).
+// how to restart an agent is in the agent inventory.
+// agent status would be the result of running `systemctl status <agent>`.
 type Command struct {
-	ID        string `json:"id"        yaml:"id"`
-	Collector string `json:"collector" yaml:"collector"`
-	Command   string `json:"command"   yaml:"command"`
+	ID      string `json:"id"      yaml:"id"`
+	Agent   string `json:"agent"   yaml:"agent"`
+	Command string `json:"command" yaml:"command"`
 }
 
 // Contest should be base64 encoded.
@@ -56,18 +56,18 @@ type Config struct {
 }
 
 type Result struct {
-	ActionID      string `json:"action_id"      yaml:"action_id"` // not used at this time, api only supports configs
-	ConfigResult  `json:"config_result"  yaml:"config_result"`
-	CommandResult `json:"command_result" yaml:"command_result"`
+	ActionID      string        `json:"action_id"      yaml:"action_id"` // not used at this time, api only supports configs
+	ConfigResult  ConfigResult  `json:"config_result"  yaml:"config_result"`
+	CommandResult CommandResult `json:"command_result" yaml:"command_result"`
 }
 
 // write result will be "OK" or the err received when trying to write the file.
 // reload result will be empty or base64 encoded as it may be multi-line output.
 type ConfigResult struct {
-	ID         string     `json:"collector_config_assignment_id" yaml:"collector_config_assignment_id"`
-	Status     string     `json:"status"                         yaml:"status"` // STATUS_ACTIVE or STATUS_ERROR
-	Info       string     `json:"info,omitempty"                 yaml:"info,omitempty"`
-	ConfigData ConfigData `json:"data,omitempty"                 yaml:"data,omitempty"`
+	ID         string     `json:"config_assignment_id" yaml:"config_assignment_id"`
+	Status     string     `json:"status"               yaml:"status"` // STATUS_ACTIVE or STATUS_ERROR
+	Info       string     `json:"info,omitempty"       yaml:"info,omitempty"`
+	ConfigData ConfigData `json:"data,omitempty"       yaml:"data,omitempty"`
 }
 
 type ConfigData struct {
@@ -94,7 +94,7 @@ func getActions(ctx context.Context) error {
 		return fmt.Errorf("invalid api token (empty)") //nolint:goerr113
 	}
 
-	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "collector", "update")
+	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "agent", "update")
 	if err != nil {
 		return fmt.Errorf("req url: %w", err)
 	}
@@ -177,7 +177,7 @@ func sendActionResult(ctx context.Context, data []byte) error {
 		return fmt.Errorf("invalid api token (empty)") //nolint:goerr113
 	}
 
-	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "collector", "update")
+	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "agent", "update")
 	if err != nil {
 		return fmt.Errorf("req url: %w", err)
 	}

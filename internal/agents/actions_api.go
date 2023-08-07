@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 //
 
-package collectors
+package agents
 
 import (
 	"encoding/json"
@@ -16,22 +16,22 @@ import (
 type APIActions []APIAction
 
 type APIAction struct {
-	ConfigAssignmentID string             `json:"collector_config_assignment_id"`
-	Config             APIConfig          `json:"collector_config"`
-	Collector          APIConfigCollector `json:"collector"`
+	ConfigAssignmentID string         `json:"config_assignment_id"`
+	Config             APIConfig      `json:"configuration"`
+	Agent              APIConfigAgent `json:"agent"`
 }
 
 type APIConfig struct {
-	FileID   string `json:"collector_config_file_id"`
+	FileID   string `json:"config_file_id"`
 	Contents string `json:"config"`
 }
 
-type APIConfigCollector struct {
-	ID string `json:"collector_type_id"`
+type APIConfigAgent struct {
+	ID string `json:"agent_type_id"`
 }
 
 func ParseAPIActions(data []byte) (Actions, error) {
-	collectors, err := LoadCollectors()
+	agents, err := LoadAgents()
 	if err != nil {
 		return nil, err
 	}
@@ -51,9 +51,9 @@ func ParseAPIActions(data []byte) (Actions, error) {
 	foundConfigs := 0
 
 	for _, apiAction := range apiActions {
-		coll, ok := collectors[runtime.GOOS][apiAction.Collector.ID]
+		coll, ok := agents[runtime.GOOS][apiAction.Agent.ID]
 		if !ok {
-			log.Warn().Str("collector", apiAction.Collector.ID).Str("platform", runtime.GOOS).Msg("unknown collector for this platform")
+			log.Warn().Str("agent", apiAction.Agent.ID).Str("platform", runtime.GOOS).Msg("unknown agent for this platform")
 
 			continue
 		}
@@ -65,17 +65,17 @@ func ParseAPIActions(data []byte) (Actions, error) {
 			continue
 		}
 
-		if _, ok := actions[0].Configs[apiAction.Collector.ID]; !ok {
+		if _, ok := actions[0].Configs[apiAction.Agent.ID]; !ok {
 			actions[0].Configs = make(map[string][]Config)
 		}
 
-		cfgs := actions[0].Configs[apiAction.Collector.ID]
+		cfgs := actions[0].Configs[apiAction.Agent.ID]
 		cfgs = append(cfgs, Config{
 			ID:       apiAction.ConfigAssignmentID,
 			Path:     file,
 			Contents: apiAction.Config.Contents,
 		})
-		actions[0].Configs[apiAction.Collector.ID] = cfgs
+		actions[0].Configs[apiAction.Agent.ID] = cfgs
 
 		foundConfigs++
 	}

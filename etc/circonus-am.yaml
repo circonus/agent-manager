@@ -1,7 +1,6 @@
 # Circonus Agent Manager
 
 api:
-  token: 
   url:
 
 log:

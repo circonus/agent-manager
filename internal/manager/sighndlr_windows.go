@@ -3,29 +3,29 @@
 // license that can be found in the LICENSE file.
 //
 
-//go:build linux
+//go:build windows
 
-// Signal handling for Linux
-// doesn't have SIGINFO, using SIGTRAP instead
+// Signal handling for Windows
+// doesn't have SIGINFO, attempt to use SIGTRAP instead...
 
-package agent
+package manager
 
 import (
 	"fmt"
 	"os"
 	"os/signal"
 	"runtime"
+	"syscall"
 
 	"github.com/alecthomas/units"
-	"golang.org/x/sys/unix"
 )
 
-func (a *Agent) signalNotifySetup() {
-	signal.Notify(a.signalCh, os.Interrupt, unix.SIGTERM, unix.SIGHUP, unix.SIGTRAP)
+func (m *Manager) signalNotifySetup() {
+	signal.Notify(m.signalCh, os.Interrupt, syscall.SIGTERM, syscall.SIGHUP, syscall.SIGTRAP)
 }
 
 // handleSignals runs the signal handler thread.
-func (a *Agent) handleSignals() error {
+func (m *Manager) handleSignals() error {
 	const stacktraceBufSize = 1 * units.MiB
 
 	// pre-allocate a buffer
@@ -33,22 +33,22 @@ func (a *Agent) handleSignals() error {
 
 	for {
 		select {
-		case sig := <-a.signalCh:
-			a.logger.Info().Str("signal", sig.String()).Msg("received signal")
+		case sig := <-m.signalCh:
+			m.logger.Info().Str("signal", sig.String()).Msg("received signal")
 
 			switch sig {
-			case os.Interrupt, unix.SIGTERM:
-				a.Stop()
-			case unix.SIGHUP:
+			case os.Interrupt, syscall.SIGTERM:
+				m.Stop()
+			case syscall.SIGHUP:
 				// Noop
-			case unix.SIGTRAP:
+			case syscall.SIGTRAP:
 				stacklen := runtime.Stack(buf, true)
 				fmt.Printf("=== received SIGTRAP ===\n*** goroutine dump...\n%s\n*** end\n", buf[:stacklen])
 			default:
-				a.logger.Warn().Str("signal", sig.String()).Msg("unsupported")
+				m.logger.Warn().Str("signal", sig.String()).Msg("unsupported")
 			}
 
-		case <-a.groupCtx.Done():
+		case <-m.groupCtx.Done():
 			return nil
 		}
 	}

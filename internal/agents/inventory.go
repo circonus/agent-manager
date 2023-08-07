@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 //
 
-package collectors
+package agents
 
 import (
 	"bytes"
@@ -30,13 +30,13 @@ const (
 	noVersion = "v0.0.0"
 )
 
-// handle requesting list of collectors from api, determining if any are installed locally, and responding with collectors found
+// handle requesting list of agents from api, determining if any are installed locally, and responding with agents found
 
 // key1 is platform (GOOS) e.g. darwin, windows, linux, freebsd, etc.
-// key2 is collector e.g. fluent-bit, telegraf, etc.
-type Collectors map[string]map[string]Collector
+// key2 is agent e.g. fluent-bit, telegraf, etc.
+type Agents map[string]map[string]Agent
 
-type Collector struct {
+type Agent struct {
 	ConfigFiles map[string]string `json:"config_files" yaml:"config_files"`
 	Binary      string            `json:"binary"       yaml:"binary"`
 	Start       string            `json:"start"        yaml:"start"`
@@ -47,20 +47,19 @@ type Collector struct {
 	Version     string            `json:"version"      yaml:"version"`
 }
 
-type InstalledCollectors []InstalledCollector
-type InstalledCollector struct {
-	CollectorTypeID string `json:"collector_type_id"`
-	Version         string `json:"version"`
+type InstalledAgents []InstalledAgent
+type InstalledAgent struct {
+	AgentTypeID string `json:"agent_type_id"`
+	Version     string `json:"version"`
 }
 
-func FetchCollectors(ctx context.Context) error {
-	// /collector_type for list of known collectors
+func FetchAgents(ctx context.Context) error {
 	token := viper.GetString(keys.APIToken)
 	if token == "" {
 		return fmt.Errorf("invalid api token (empty)") //nolint:goerr113
 	}
 
-	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "collector_type")
+	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "agent_type")
 	if err != nil {
 		return fmt.Errorf("req url: %w", err)
 	}
@@ -92,15 +91,15 @@ func FetchCollectors(ctx context.Context) error {
 
 	log.Debug().Str("resp", string(body)).Msg("response")
 
-	collectors, err := ParseAPICollectors(body)
+	agents, err := ParseAPIAgents(body)
 	if err != nil {
 		return fmt.Errorf("parsing api response: %w", err)
 	}
 
-	return SaveCollectors(collectors)
+	return SaveAgents(agents)
 }
 
-func LoadCollectors() (Collectors, error) {
+func LoadAgents() (Agents, error) {
 	file := viper.GetString(keys.InventoryFile)
 	if file == "" {
 		return nil, fmt.Errorf("invalid inventory file (empty)") //nolint:goerr113
@@ -108,56 +107,56 @@ func LoadCollectors() (Collectors, error) {
 
 	data, err := os.ReadFile(file)
 	if err != nil {
-		return nil, fmt.Errorf("loading collector inventory: %w", err)
+		return nil, fmt.Errorf("loading agent inventory: %w", err)
 	}
 
-	var c Collectors
-	if err := yaml.Unmarshal(data, &c); err != nil {
-		return nil, fmt.Errorf("parsing collector inventory: %w", err)
+	var aa Agents
+	if err := yaml.Unmarshal(data, &aa); err != nil {
+		return nil, fmt.Errorf("parsing agent inventory: %w", err)
 	}
 
-	return c, nil
+	return aa, nil
 }
 
-func SaveCollectors(c Collectors) error {
+func SaveAgents(aa Agents) error {
 	file := viper.GetString(keys.InventoryFile)
 	if file == "" {
 		return fmt.Errorf("invalid inventory file (empty)") //nolint:goerr113
 	}
 
-	data, err := yaml.Marshal(c)
+	data, err := yaml.Marshal(aa)
 	if err != nil {
-		return fmt.Errorf("marshal collector inventory: %w", err)
+		return fmt.Errorf("marshal agent inventory: %w", err)
 	}
 
 	if err := os.WriteFile(file, data, 0600); err != nil {
-		return fmt.Errorf("saving collector inventory: %w", err)
+		return fmt.Errorf("saving agent inventory: %w", err)
 	}
 
 	return nil
 }
 
-func CheckForCollectors(ctx context.Context) error {
-	cc, err := LoadCollectors()
+func CheckForAgents(ctx context.Context) error {
+	aa, err := LoadAgents()
 	if err != nil {
 		return err
 	}
 
-	gcc, ok := cc[runtime.GOOS]
+	gaa, ok := aa[runtime.GOOS]
 	if !ok {
-		return fmt.Errorf("no collectors found for platform %s", runtime.GOOS) //nolint:goerr113
+		return fmt.Errorf("no agents found for platform %s", runtime.GOOS) //nolint:goerr113
 	}
 
-	found := InstalledCollectors{}
+	found := InstalledAgents{}
 
-	for name, c := range gcc {
-		if _, err := os.Stat(c.Binary); errors.Is(err, os.ErrNotExist) {
-			log.Warn().Str("file", c.Binary).Msg("collector binary not found, skipping")
+	for name, a := range gaa {
+		if _, err := os.Stat(a.Binary); errors.Is(err, os.ErrNotExist) {
+			log.Warn().Str("file", a.Binary).Msg("agent binary not found, skipping")
 
 			continue
 		}
 
-		for _, path := range c.ConfigFiles {
+		for _, path := range a.ConfigFiles {
 			if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
 				log.Warn().Str("file", path).Msg("required config file not found, skipping")
 
@@ -165,24 +164,24 @@ func CheckForCollectors(ctx context.Context) error {
 			}
 		}
 
-		ver, err := getCollectorVersion(c.Version)
+		ver, err := getAgentVersion(a.Version)
 		if err != nil {
-			log.Warn().Err(err).Str("collector", name).Msg("getting collector version")
+			log.Warn().Err(err).Str("agent", name).Msg("getting agent version")
 		}
 
-		log.Info().Str("collector agent", name).Msg("found")
-		found = append(found, InstalledCollector{CollectorTypeID: name, Version: ver})
+		log.Info().Str("agent", name).Msg("found")
+		found = append(found, InstalledAgent{AgentTypeID: name, Version: ver})
 	}
 
 	if len(found) > 0 {
-		// contact api and report what collectors were found
-		return registerCollectors(ctx, found)
+		// contact api and report what agents were found
+		return registerAgents(ctx, found)
 	}
 
 	return nil
 }
 
-func getCollectorVersion(vercmd string) (string, error) {
+func getAgentVersion(vercmd string) (string, error) {
 	if vercmd == "" {
 		return noVersion, nil
 	}
@@ -206,13 +205,13 @@ func getCollectorVersion(vercmd string) (string, error) {
 	return noVersion, nil
 }
 
-func registerCollectors(ctx context.Context, c InstalledCollectors) error {
+func registerAgents(ctx context.Context, c InstalledAgents) error {
 	token := viper.GetString(keys.APIToken)
 	if token == "" {
 		return fmt.Errorf("invalid api token (empty)") //nolint:goerr113
 	}
 
-	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "collector", "agent")
+	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "agent", "manager")
 	if err != nil {
 		return fmt.Errorf("req url: %w", err)
 	}

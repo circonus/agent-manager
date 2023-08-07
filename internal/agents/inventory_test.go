@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 //
 
-package collectors
+package agents
 
 import (
 	"context"
@@ -39,8 +39,8 @@ func confFileName() string {
 }
 func setupTest() {
 	file := inventoryFileName()
-	c := Collectors{
-		runtime.GOOS: map[string]Collector{
+	aa := Agents{
+		runtime.GOOS: map[string]Agent{
 			"foo": {
 				Binary: binaryFileName(),
 				Start:  "start foo",
@@ -52,7 +52,7 @@ func setupTest() {
 		},
 	}
 
-	data, err := yaml.Marshal(c)
+	data, err := yaml.Marshal(aa)
 	if err != nil {
 		log.Fatal("yaml marshal", err)
 	}
@@ -64,12 +64,12 @@ func setupTest() {
 	initialized = true
 }
 
-func TestFetchCollectors(t *testing.T) {
+func TestFetchAgents(t *testing.T) {
 	setupTest()
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
-		case "/collector_type":
+		case "/agent_type":
 			switch r.Method {
 			case http.MethodGet:
 				authToken := r.Header.Get("X-Circonus-Auth-Token")
@@ -79,15 +79,15 @@ func TestFetchCollectors(t *testing.T) {
 					return
 				}
 
-				c := APICollectors{
-					APICollector{
+				c := APIAgents{
+					APIAgent{
 						Platforms: []Platform{
 							{
-								CollectorPlatformID: runtime.GOOS,
-								CollectorTypeID:     "foo",
-								Executable:          binaryFileName(),
-								Start:               "start foo",
-								Stop:                "stop foo",
+								ID:          runtime.GOOS,
+								AgentTypeID: "foo",
+								Executable:  binaryFileName(),
+								Start:       "start foo",
+								Stop:        "stop foo",
 								ConfigFiles: []ConfigFile{
 									{
 										ConfigFileID: "d81c7650-19ae-4bf3-98df-5d24d53f5756",
@@ -163,18 +163,18 @@ func TestFetchCollectors(t *testing.T) {
 			viper.Set(keys.APIURL, tt.reqURL)
 			viper.Set(keys.APIToken, tt.apiToken)
 			viper.Set(keys.InventoryFile, tt.invFile)
-			if err := FetchCollectors(context.Background()); (err != nil) != tt.wantErr {
-				t.Fatalf("FetchCollectors() error = %v, wantErr %v", err, tt.wantErr)
+			if err := FetchAgents(context.Background()); (err != nil) != tt.wantErr {
+				t.Fatalf("FetchAgents() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
 }
 
-func TestLoadCollectors(t *testing.T) {
+func TestLoadAgents(t *testing.T) {
 	setupTest()
 
 	tests := []struct {
-		want    Collectors
+		want    Agents
 		invFile string
 		name    string
 		wantErr bool
@@ -182,7 +182,7 @@ func TestLoadCollectors(t *testing.T) {
 		{
 			name:    "valid",
 			invFile: inventoryFileName(),
-			want:    Collectors{runtime.GOOS: map[string]Collector{"foo": {ConfigFiles: map[string]string{confFileID(): confFileName()}, Binary: binaryFileName(), Start: "start foo", Stop: "stop foo", Restart: "", Reload: "", Status: "", Version: ""}}},
+			want:    Agents{runtime.GOOS: map[string]Agent{"foo": {ConfigFiles: map[string]string{confFileID(): confFileName()}, Binary: binaryFileName(), Start: "start foo", Stop: "stop foo", Restart: "", Reload: "", Status: "", Version: ""}}},
 			wantErr: false,
 		},
 		{
@@ -196,26 +196,26 @@ func TestLoadCollectors(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			viper.Set(keys.InventoryFile, tt.invFile)
 
-			got, err := LoadCollectors()
+			got, err := LoadAgents()
 			if (err != nil) != tt.wantErr {
-				t.Fatalf("LoadCollectors() error = %v, wantErr %v", err, tt.wantErr)
+				t.Fatalf("LoadAgents() error = %v, wantErr %v", err, tt.wantErr)
 
 				return
 			}
 
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Fatalf("LoadCollectors() = %#v, want %#v", got, tt.want)
+				t.Fatalf("LoadAgents() = %#v, want %#v", got, tt.want)
 			}
 		})
 	}
 }
 
-func TestCheckForCollectors(t *testing.T) {
+func TestCheckForAgents(t *testing.T) {
 	setupTest()
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
-		case "/collector/agent":
+		case "/agent/manager":
 			switch r.Method {
 			case http.MethodPost:
 				authToken := r.Header.Get("X-Circonus-Auth-Token")
@@ -234,9 +234,9 @@ func TestCheckForCollectors(t *testing.T) {
 					return
 				}
 
-				var collectors InstalledCollectors
+				var agents InstalledAgents
 
-				if err = json.Unmarshal(b, &collectors); err != nil {
+				if err = json.Unmarshal(b, &agents); err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 
 					return
@@ -300,8 +300,8 @@ func TestCheckForCollectors(t *testing.T) {
 			viper.Set(keys.APIToken, tt.apiToken)
 			viper.Set(keys.InventoryFile, tt.invFile)
 
-			if err := CheckForCollectors(context.Background()); (err != nil) != tt.wantErr {
-				t.Errorf("CheckForCollectors() error = %v, wantErr %v", err, tt.wantErr)
+			if err := CheckForAgents(context.Background()); (err != nil) != tt.wantErr {
+				t.Errorf("CheckForAgents() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

@@ -9,9 +9,9 @@ import (
 	"fmt"
 	"runtime"
 
-	"github.com/circonus/agent-manager/internal/agent"
 	"github.com/circonus/agent-manager/internal/config/defaults"
 	"github.com/circonus/agent-manager/internal/config/keys"
+	"github.com/circonus/agent-manager/internal/manager"
 	"github.com/circonus/agent-manager/internal/release"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
@@ -21,8 +21,8 @@ import (
 func initCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:               release.NAME,
-		Short:             "Circonus Management Agent",
-		Long:              `An agent to manage local collectors (metrics, logs, etc.)`,
+		Short:             "Circonus Agent Manager",
+		Long:              `Manager for local agents (metrics, logs, etc.)`,
 		PersistentPreRunE: initApp,
 		Run: func(cmd *cobra.Command, args []string) {
 			if viper.GetBool(keys.ShowVersion) {
@@ -35,15 +35,15 @@ func initCmd() *cobra.Command {
 			viper.Set(keys.InventoryFile, defaults.InventoryFile)
 			viper.Set(keys.JwtTokenFile, defaults.JwtTokenFile)
 			viper.Set(keys.RegTokenFile, defaults.RegTokenFile)
-			viper.Set(keys.AgentIDFile, defaults.AgentIDFile)
+			viper.Set(keys.ManagerIDFile, defaults.ManagerIDFile)
 
-			a, err := agent.New()
+			m, err := manager.New()
 			if err != nil {
 				log.Fatal().Err(err).Msg("initializing")
 			}
 
-			if err := a.Start(); err != nil {
-				log.Fatal().Err(err).Msg("starting agent")
+			if err := m.Start(); err != nil {
+				log.Fatal().Err(err).Msg("starting manager")
 			}
 		},
 	}

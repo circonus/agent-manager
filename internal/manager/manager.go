@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 //
 
-package agent
+package manager
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/circonus/agent-manager/internal/collectors"
+	"github.com/circonus/agent-manager/internal/agents"
 	"github.com/circonus/agent-manager/internal/config"
 	"github.com/circonus/agent-manager/internal/config/keys"
 	"github.com/circonus/agent-manager/internal/credentials"
@@ -23,8 +23,8 @@ import (
 	"golang.org/x/sync/errgroup"
 )
 
-// Agent holds the main agent process.
-type Agent struct {
+// Manager holds the main manager process.
+type Manager struct {
 	group       *errgroup.Group
 	groupCtx    context.Context //nolint:containedctx
 	groupCancel context.CancelFunc
@@ -32,19 +32,19 @@ type Agent struct {
 	logger      zerolog.Logger
 }
 
-// New returns a new agent instance.
-func New() (*Agent, error) {
+// New returns a new manager instance.
+func New() (*Manager, error) {
 	ctx, cancel := context.WithCancel(context.Background())
 	g, gctx := errgroup.WithContext(ctx)
 
 	var err error
 
-	agent := Agent{
+	manager := Manager{
 		group:       g,
 		groupCtx:    gctx,
 		groupCancel: cancel,
 		signalCh:    make(chan os.Signal, 10),
-		logger:      log.With().Str("pkg", "agent").Logger(),
+		logger:      log.With().Str("pkg", "manager").Logger(),
 	}
 
 	err = config.Validate()
@@ -52,14 +52,14 @@ func New() (*Agent, error) {
 		return nil, fmt.Errorf("config validate: %w", err)
 	}
 
-	agent.signalNotifySetup()
+	manager.signalNotifySetup()
 
-	return &agent, nil
+	return &manager, nil
 }
 
-// Start is the main agent entry point.
-func (a *Agent) Start() error {
-	a.group.Go(a.handleSignals)
+// Start is the main entry point.
+func (m *Manager) Start() error {
+	m.group.Go(m.handleSignals)
 
 	log.Info().Str("name", release.NAME).Str("version", release.VERSION).Msg("starting")
 
@@ -68,13 +68,13 @@ func (a *Agent) Start() error {
 			log.Fatal().Err(err).Msg("saving registration token")
 		}
 
-		if err := registration.Start(a.groupCtx); err != nil {
-			log.Fatal().Err(err).Msg("registering agent")
+		if err := registration.Start(m.groupCtx); err != nil {
+			log.Fatal().Err(err).Msg("registering agent manager")
 		}
 	}
 
-	if err := credentials.LoadAgentID(); err != nil {
-		log.Fatal().Err(err).Msg("loading agent id")
+	if err := credentials.LoadManagerID(); err != nil {
+		log.Fatal().Err(err).Msg("loading manager id")
 	}
 
 	if err := credentials.LoadRegistrationToken(); err != nil {
@@ -86,57 +86,71 @@ func (a *Agent) Start() error {
 	}
 
 	if viper.GetString(keys.Register) != "" || viper.GetBool(keys.Inventory) {
-		if err := collectors.FetchCollectors(a.groupCtx); err != nil {
-			log.Fatal().Err(err).Msg("fetching collectors")
+		if err := agents.FetchAgents(m.groupCtx); err != nil {
+			log.Fatal().Err(err).Msg("fetching agents")
 		}
 
-		if err := collectors.CheckForCollectors(a.groupCtx); err != nil {
-			log.Fatal().Err(err).Msg("checking for installed collectors")
+		if err := agents.CheckForAgents(m.groupCtx); err != nil {
+			log.Fatal().Err(err).Msg("checking for installed agents")
 		}
 	}
 
-	a.logger.Debug().
+	//
+	// these two are command line actions and will exit after completion.
+	//
+
+	if viper.GetString(keys.Register) != "" {
+		m.logger.Info().Msg("registration complete")
+		os.Exit(0)
+	}
+
+	if viper.GetBool(keys.Inventory) {
+		m.logger.Info().Msg("invetory complete")
+		os.Exit(0)
+	}
+
+	m.logger.Debug().
 		Int("pid", os.Getpid()).
 		Str("name", release.NAME).
 		Str("ver", release.VERSION).Msg("starting wait")
 
-	poller, err := collectors.NewPoller()
+	poller, err := agents.NewPoller()
 	if err != nil {
-		a.logger.Fatal().Err(err).Msg("unable to start poller")
+		m.logger.Fatal().Err(err).Msg("unable to start poller")
 	}
 
-	a.group.Go(func() error {
-		poller.Start(a.groupCtx)
+	m.group.Go(func() error {
+		poller.Start(m.groupCtx)
 
 		return nil
 	})
 
-	a.group.Go(func() error {
-		registration.ReRegister(a.groupCtx)
+	m.group.Go(func() error {
+		registration.ReRegister(m.groupCtx)
 
 		return nil
 	})
 
-	if err := a.group.Wait(); err != nil {
-		return fmt.Errorf("start agent: %w", err)
+	if err := m.group.Wait(); err != nil {
+		return fmt.Errorf("start manager: %w", err)
 	}
 
 	return nil
 }
 
-// Stop cleans up and shuts down the Agent.
-func (a *Agent) Stop() {
-	a.stopSignalHandler()
-	a.groupCancel()
+// Stop cleans up and shuts down the manager.
+func (m *Manager) Stop() {
+	m.stopSignalHandler()
+	m.groupCancel()
 
-	a.logger.Debug().
+	m.logger.Debug().
 		Int("pid", os.Getpid()).
 		Str("name", release.NAME).
 		Str("ver", release.VERSION).Msg("Stopped")
 }
 
 // stopSignalHandler disables the signal handler.
-func (a *Agent) stopSignalHandler() {
-	signal.Stop(a.signalCh)
+func (m *Manager) stopSignalHandler() {
+	signal.Stop(m.signalCh)
 	signal.Reset() // so a second ctrl-c will force immediate stop
 }

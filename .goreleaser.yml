@@ -11,7 +11,6 @@ builds:
       - arm64
     goos: 
       - linux
-      # - darwin
       # - windows
     ignore: 
       - goarch: 386
@@ -25,6 +24,123 @@ builds:
       - -X github.com/circonus/agent-manager/internal/release.COMMIT={{.ShortCommit}}
       - -X github.com/circonus/agent-manager/internal/release.DATE={{.Date}}
       - -X github.com/circonus/agent-manager/internal/release.TAG={{.Tag}}
+
+  - id: am-macos_amd64
+    main: ./cmd/circonus-am
+    binary: sbin/circonus-am
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+    goarch:
+      - amd64
+    ldflags:
+      - -s
+      - -w
+      - -extldflags "-static"
+      - -X github.com/circonus/agent-manager/internal/release.VERSION={{.Version}}
+      - -X github.com/circonus/agent-manager/internal/release.COMMIT={{.ShortCommit}}
+      - -X github.com/circonus/agent-manager/internal/release.DATE={{.Date}}
+      - -X github.com/circonus/agent-manager/internal/release.TAG={{.Tag}}
+    hooks:
+      post: ./macos_sign.sh {{ .Path }}
+
+  - id: am-macos_arm64
+    main: ./cmd/circonus-am
+    binary: sbin/circonus-am
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+    goarch:
+      - arm64
+    ldflags:
+      - -s
+      - -w
+      - -extldflags "-static"
+      - -X github.com/circonus/agent-manager/internal/release.VERSION={{.Version}}
+      - -X github.com/circonus/agent-manager/internal/release.COMMIT={{.ShortCommit}}
+      - -X github.com/circonus/agent-manager/internal/release.DATE={{.Date}}
+      - -X github.com/circonus/agent-manager/internal/release.TAG={{.Tag}}
+    hooks:
+      post: ./macos_sign.sh {{ .Path }}
+
+universal_binaries:
+  - id: macos_universal
+    ids:
+      - am-macos_amd64
+      - am-macos_arm64
+    name_template: sbin/circonus-am
+    replace: false
+    hooks:
+      post: ./macos_sign.sh {{ .Path }}
+
+brews:
+  - repository:
+      owner: circonus
+      name: homebrew-circonus-agent-manager
+    folder: Formula
+    goarm: "7"
+    homepage: https://circonus.com
+    description: Circonus Agent Manager
+    license: MIT
+    caveats: |
+      1. Run #{sbin}/circonus-am --register="registration token"
+      2. Run "brew services start circonus-agent-manager"
+
+      Or, if upgrading, run "brew services restart circonus-agent-manager"
+
+    test: |
+      system "#{sbin}/circonus-am --version"
+
+    install: |
+      sbin.install "sbin/circonus-am"
+      pkgetc.install "etc/circonus-am.yaml" => "circonus-am.yaml"
+      doc.install "README.md", "LICENSE"
+
+    service: |
+      run [opt_sbin/"circonus-am", "--config", etc/"circonus-am.yaml"]
+      keep_alive true
+      log_path var/"log/circonus-agent-manager.log"
+      error_log_path var/"log/circonus-agent-manager.log"
+
+nfpms:
+  - vendor: Circonus, Inc.
+    homepage: https://circonus.com
+    maintainer: Circonus <support@circonus.com>
+    description: Circonus Agent Manager
+    license: MIT
+    file_name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Arch }}"
+    formats:
+      - deb
+      - rpm
+    bindir: /opt/circonus/am
+    contents:
+      - src: "LICENSE"
+        dst: "/opt/circonus/am/LICENSE"
+      - src: "README.md"
+        dst: "/opt/circonus/am/README.md"
+      - src: "CHANGELOG.md"
+        dst: "/opt/circonus/am/CHANGELOG.md"
+      - src: "service/circonus-am.linux.service"
+        dst: "/opt/circonus/am/service/circonus-am.service"
+      - src: "service/circonus-am.linux.init"
+        dst: "/opt/circonus/am/service/circonus-am.init"
+      - src: "etc/circonus-am.yaml" 
+        dst: "/opt/circonus/am/etc/circonus-am.yaml"
+        type: "config|noreplace"
+    overrides:
+      deb:
+        scripts:
+          preinstall: "builds/deb/pre-install.sh"
+          postinstall: "builds/deb/post-install.sh"
+          preremove: "builds/deb/pre-remove.sh"
+          postremove: "builds/deb/post-remove.sh"
+      rpm:
+        scripts:
+          preinstall: "builds/rpm/pre-install.sh"
+          postinstall: "builds/rpm/post-install.sh"
+          postremove: "builds/rpm/post-remove.sh"
 
 # dockers:
 #   - id: am-amd64
@@ -82,44 +198,6 @@ builds:
 #     image_templates:
 #       - "circonus/{{.ProjectName}}:{{.Tag}}-amd64"
 #       - "circonus/{{.ProjectName}}:{{.Tag}}-arm64"
-
-nfpms:
-  - vendor: Circonus, Inc.
-    homepage: https://circonus.com
-    maintainer: Circonus <support@circonus.com>
-    description: Circonus Agent Manager
-    license: MIT
-    file_name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Arch }}"
-    formats:
-      - deb
-      - rpm
-    bindir: /opt/circonus/am
-    contents:
-      - src: "LICENSE"
-        dst: "/opt/circonus/am/LICENSE"
-      - src: "README.md"
-        dst: "/opt/circonus/am/README.md"
-      - src: "CHANGELOG.md"
-        dst: "/opt/circonus/am/CHANGELOG.md"
-      - src: "service/circonus-am.linux.service"
-        dst: "/opt/circonus/am/service/circonus-am.service"
-      - src: "service/circonus-am.linux.init"
-        dst: "/opt/circonus/am/service/circonus-am.init"
-      - src: "etc/circonus-am.yaml" 
-        dst: "/opt/circonus/am/etc/circonus-am.yaml"
-        type: "config|noreplace"
-    overrides:
-      deb:
-        scripts:
-          preinstall: "builds/deb/pre-install.sh"
-          postinstall: "builds/deb/post-install.sh"
-          preremove: "builds/deb/pre-remove.sh"
-          postremove: "builds/deb/post-remove.sh"
-      rpm:
-        scripts:
-          preinstall: "builds/rpm/pre-install.sh"
-          postinstall: "builds/rpm/post-install.sh"
-          postremove: "builds/rpm/post-remove.sh"
 
 archives:
   - id: default
