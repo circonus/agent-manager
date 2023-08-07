@@ -34,3 +34,14 @@ Flags:
       --register string            [ENV: CAM_REGISTER] Registration token
   -V, --version                    Show version and exit
   ```
+
+## Linux installation
+
+1. Download appropriate package from releases page
+1. Install
+1. Run `/opt/circonus/agent-manager/sbin/circonua-am --register=<registration_token>`
+1. If registration successful, start the agent manager `systemctl start circonus-agent-manager`
+1. If an additional agent is installed AFTER the agent manager has registered
+   1. Stop agent manager `systemctl stop circonus-agent-manager`
+   1. Run `/opt/circonus/agent-manager/sbin/circonus-am --inventory`
+   1. Start agent manager `/opt/circonus/agent-manager/sbin/circonua-am --register=<registration_token>`
