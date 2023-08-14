@@ -45,4 +45,4 @@ Flags:
 1. If an additional agent is installed AFTER the agent manager has registered
    1. Stop agent manager `sudo systemctl stop circonus-am`
    1. Run `sudo /opt/circonus/am/sbin/circonus-am --inventory`
-   1. Start agent manager `sudo /opt/circonus/am/sbin/circonua-am --register=<registration_token>`
+   1. Start agent manager `sudo systemctl start circonus-am`
