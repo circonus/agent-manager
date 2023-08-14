@@ -35,7 +35,7 @@ func initAppArgs(cmd *cobra.Command) {
 			key          = keys.Inventory
 			longOpt      = "inventory"
 			envVar       = release.ENVPREFIX + "_INVENTORY"
-			description  = "Inventory installed collectors"
+			description  = "Inventory installed agents"
 			defaultValue = false
 		)
 

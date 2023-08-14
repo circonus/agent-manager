@@ -27,7 +27,7 @@ Flags:
   -c, --config string              config file (default: /opt/circonus/cma/etc/circonus-cma.yaml|.json|.toml)
   -d, --debug                      [ENV: CAM_DEBUG] Enable debug messages
   -h, --help                       help for circonus-cma
-      --inventory                  [ENV: CAM_INVENTORY] Inventory installed collectors
+      --inventory                  [ENV: CAM_INVENTORY] Inventory installed agents
       --log-level string           [ENV: CAM_LOG_LEVEL] Log level [(panic|fatal|error|warn|info|debug|disabled)] (default "info")
       --log-pretty                 Output formatted/colored log lines [ignored on windows]
       --poll-interval string       [ENV: CAM_POLL_INTERVAL] Polling interval for actions (default "60s")
