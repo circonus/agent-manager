@@ -1,5 +1,9 @@
 # unreleased
 
+## v0.1.2
+
+* fix: dangling cma names in service files
+
 ## v0.1.1
 
 * fix: update default api url
