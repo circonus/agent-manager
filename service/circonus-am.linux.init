@@ -133,11 +133,11 @@ case $1 in
 
         log_success_msg "Starting the process" "$name"
         if command -v startproc >/dev/null; then
-            startproc -p "$pidfile" -q -- "$daemon" --pidfile="$pidfile" --config="$config" $CMA_OPTS
+            startproc -p "$pidfile" -q -- "$daemon" --pidfile="$pidfile" --config="$config" $AM_OPTS
         elif which start-stop-daemon > /dev/null 2>&1; then
-            start-stop-daemon --start --quiet --pidfile=$pidfile --exec $daemon -- --pidfile $pidfile --config=$config $CMA_OPTS >>$STDOUT 2>>$STDERR &
+            start-stop-daemon --start --quiet --pidfile=$pidfile --exec $daemon -- --pidfile $pidfile --config=$config $AM_OPTS >>$STDOUT 2>>$STDERR &
         else
-            nohup $daemon --pidfile=$pidfile --config=$config $CMA_OPTS >>$STDOUT 2>>$STDERR &
+            nohup $daemon --pidfile=$pidfile --config=$config $AM_OPTS >>$STDOUT 2>>$STDERR &
         fi
         log_success_msg "$name process was started"
         ;;
