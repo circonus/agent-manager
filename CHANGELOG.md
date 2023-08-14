@@ -1,5 +1,9 @@
 # unreleased
 
+## v0.1.1
+
+* fix: update default api url
+
 ## v0.1.0
 
 * doc: add some linux spcefic install instructions
