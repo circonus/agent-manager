@@ -5,7 +5,6 @@ After=network.target
 
 [Service]
 EnvironmentFile=-/opt/circonus/am/etc/circonus-am.env
-User=cua
 ExecStart=/opt/circonus/am/sbin/circonus-am --config=/opt/circonus/am/etc/circonus-am.yaml $AM_OPTS
 Restart=on-failure
 RestartForceExitStatus=SIGPIPE
