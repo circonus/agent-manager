@@ -1,5 +1,9 @@
 # unreleased
 
+## v0.1.3
+
+* fix: do not run as cua with systemd
+
 ## v0.1.2
 
 * fix: dangling cma names in service files
