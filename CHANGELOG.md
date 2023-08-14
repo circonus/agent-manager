@@ -1,5 +1,9 @@
 # unreleased
 
+## v0.1.4
+
+* fix: remove term 'collectors' from inventory option
+
 ## v0.1.3
 
 * fix: do not run as cua with systemd
