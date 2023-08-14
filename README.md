@@ -38,7 +38,7 @@ Flags:
 ## Linux installation
 
 1. Download appropriate package from releases page
-1. Install
+1. Install (use `sudo` to install, like all packages)
 1. Run `sudo /opt/circonus/am/sbin/circonua-am --register=<registration_token>`
 1. If registration successful, start the agent manager `sudo systemctl start circonus-am`
 1. Check status of agent manager `sudo systemctl status circonus-am`
