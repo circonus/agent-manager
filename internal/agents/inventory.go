@@ -156,13 +156,15 @@ func CheckForAgents(ctx context.Context) error {
 			continue
 		}
 
-		for _, path := range a.ConfigFiles {
-			if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
-				log.Warn().Str("file", path).Msg("required config file not found, skipping")
+		// only check for binary...
+		//
+		// for _, path := range a.ConfigFiles {
+		// 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
+		// 		log.Warn().Str("file", path).Msg("required config file not found, skipping")
 
-				continue
-			}
-		}
+		// 		continue
+		// 	}
+		// }
 
 		ver, err := getAgentVersion(a.Version)
 		if err != nil {
