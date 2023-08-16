@@ -99,7 +99,7 @@ brews:
       doc.install "README.md", "LICENSE"
 
     service: |
-      run [opt_sbin/"circonus-am", "--config", etc/"circonus-am.yaml"]
+      run [opt_sbin/"circonus-am", "--config", etc/"circonus-am/circonus-am.yaml"]
       keep_alive true
       log_path var/"log/circonus-agent-manager.log"
       error_log_path var/"log/circonus-agent-manager.log"
