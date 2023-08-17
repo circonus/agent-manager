@@ -85,10 +85,12 @@ brews:
     description: Circonus Agent Manager
     license: MIT
     caveats: |
+      Install:
       1. Run #{sbin}/circonus-am --register="registration token"
       2. Run "brew services start circonus-am"
 
-      Or, if upgrading, run "brew services restart circonus-am"
+      Upgrade:
+      1. Run "brew services restart circonus-am"
 
     test: |
       system "#{sbin}/circonus-am --version"
