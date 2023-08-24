@@ -15,12 +15,16 @@ const (
 	APIToken          = "api.token"
 	ManagerID         = "manager_id"
 	RegistrationToken = "registration_token"
+	RefreshToken      = "refresh_token"
 
 	// frequency of polling for actions.
 	PollingInterval = "poll_interval"
 
 	// AWS EC2 tags to be included in registration meta data.
 	AWSEC2Tags = "aws_ec2_tags"
+
+	// Tags are custom comma separated key:value tags to be added to meta data.
+	Tags = "tags"
 
 	//
 	// Logging.
@@ -49,8 +53,9 @@ const (
 	ShowVersion = "version"
 
 	// Internal settings.
-	InventoryFile = "internal.inventory_file"
-	JwtTokenFile  = "internal.jwt_token_file" //nolint:gosec
-	RegTokenFile  = "internal.reg_token_file" //nolint:gosec
-	ManagerIDFile = "internal.manager_id_file"
+	InventoryFile    = "internal.inventory_file"
+	JwtTokenFile     = "internal.jwt_token_file" //nolint:gosec
+	RegTokenFile     = "internal.reg_token_file" //nolint:gosec
+	ManagerIDFile    = "internal.manager_id_file"
+	RefreshTokenFile = "internal.refresh_token_file"
 )

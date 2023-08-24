@@ -48,11 +48,13 @@ var (
 	// IDPath is where ID credentials are stored.
 	IDPath = ""
 	// IDFile is the file where the credentials are stored.
-	JwtTokenFile  = ""
-	RegTokenFile  = ""
-	ManagerIDFile = ""
+	JwtTokenFile     = ""
+	RegTokenFile     = ""
+	ManagerIDFile    = ""
+	RefreshTokenFile = ""
 
 	AWSEC2Tags = []string{}
+	Tags       = []string{}
 )
 
 func init() { //nolint:gochecknoinits
@@ -79,6 +81,7 @@ func init() { //nolint:gochecknoinits
 	JwtTokenFile = filepath.Join(IDPath, "jt")
 	RegTokenFile = filepath.Join(IDPath, "rt")
 	ManagerIDFile = filepath.Join(IDPath, "ai")
+	RefreshTokenFile = filepath.Join(IDPath, "rft")
 
 	if err := os.MkdirAll(IDPath, 0700); err != nil {
 		log.Fatal().Err(err).Msg("creating ID path")

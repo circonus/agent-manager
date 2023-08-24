@@ -31,11 +31,12 @@ func initCmd() *cobra.Command {
 				return
 			}
 
-			// set internal viper items
+			// set internal config items
 			viper.Set(keys.InventoryFile, defaults.InventoryFile)
 			viper.Set(keys.JwtTokenFile, defaults.JwtTokenFile)
 			viper.Set(keys.RegTokenFile, defaults.RegTokenFile)
 			viper.Set(keys.ManagerIDFile, defaults.ManagerIDFile)
+			viper.Set(keys.RefreshTokenFile, defaults.RefreshTokenFile)
 
 			m, err := manager.New()
 			if err != nil {

@@ -7,11 +7,12 @@ package config
 
 // Config defines the running configuration options.
 type Config struct {
-	API             API      `json:"api"           toml:"api"           yaml:"api"`
-	PollingInterval string   `json:"poll_interval" toml:"poll_interval" yaml:"poll_interval"`
-	Log             Log      `json:"log"           toml:"log"           yaml:"log"`
-	AWSEC2Tags      []string `json:"aws_ec2_tags"  toml:"aws_ec2_tags"  yaml:"aws_ec2_tags"`
-	Debug           bool     `json:"debug"         toml:"debug"         yaml:"debug"`
+	Tags            map[string]string `json:"tags"          toml:"tags"          yaml:"tags"`
+	API             API               `json:"api"           toml:"api"           yaml:"api"`
+	PollingInterval string            `json:"poll_interval" toml:"poll_interval" yaml:"poll_interval"`
+	Log             Log               `json:"log"           toml:"log"           yaml:"log"`
+	AWSEC2Tags      []string          `json:"aws_ec2_tags"  toml:"aws_ec2_tags"  yaml:"aws_ec2_tags"`
+	Debug           bool              `json:"debug"         toml:"debug"         yaml:"debug"`
 }
 
 // API defines the various API options.
