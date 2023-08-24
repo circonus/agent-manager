@@ -71,10 +71,10 @@ func SaveManagerID(creds []byte) error {
 	return write(file, creds) //nolint:wrapcheck
 }
 
-func LoadRegistrationToken() error {
-	file := viper.GetString(keys.RegTokenFile)
+func LoadRefreshToken() error {
+	file := viper.GetString(keys.RefreshTokenFile)
 	if file == "" {
-		return fmt.Errorf("invalid registration token file (empty)") //nolint:goerr113
+		return fmt.Errorf("invalid refresh token file (empty)") //nolint:goerr113
 	}
 
 	token, err := read(file)
@@ -82,19 +82,19 @@ func LoadRegistrationToken() error {
 		return err //nolint:wrapcheck
 	}
 
-	viper.Set(keys.RegistrationToken, string(token))
+	viper.Set(keys.RefreshToken, string(token))
 
 	return nil
 }
 
-func SaveRegistrationToken(creds []byte) error {
-	file := viper.GetString(keys.RegTokenFile)
+func SaveRefreshToken(creds []byte) error {
+	file := viper.GetString(keys.RefreshTokenFile)
 	if file == "" {
-		return fmt.Errorf("invalid registration token file (empty)") //nolint:goerr113
+		return fmt.Errorf("invalid refresh token file (empty)") //nolint:goerr113
 	}
 
 	if len(creds) == 0 {
-		return fmt.Errorf("invalid registration token (empty)") //nolint:goerr113
+		return fmt.Errorf("invalid refresh token (empty)") //nolint:goerr113
 	}
 
 	return write(file, creds) //nolint:wrapcheck

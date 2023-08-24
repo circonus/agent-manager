@@ -46,10 +46,8 @@ var (
 	InventoryFile = ""
 
 	// IDPath is where ID credentials are stored.
-	IDPath = ""
-	// IDFile is the file where the credentials are stored.
+	IDPath           = ""
 	JwtTokenFile     = ""
-	RegTokenFile     = ""
 	ManagerIDFile    = ""
 	RefreshTokenFile = ""
 
@@ -79,7 +77,6 @@ func init() { //nolint:gochecknoinits
 	InventoryFile = filepath.Join(EtcPath, "inventory.yaml")
 	IDPath = filepath.Join(EtcPath, ".id")
 	JwtTokenFile = filepath.Join(IDPath, "jt")
-	RegTokenFile = filepath.Join(IDPath, "rt")
 	ManagerIDFile = filepath.Join(IDPath, "ai")
 	RefreshTokenFile = filepath.Join(IDPath, "rft")
 
