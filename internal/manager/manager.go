@@ -64,10 +64,6 @@ func (m *Manager) Start() error {
 	log.Info().Str("name", release.NAME).Str("version", release.VERSION).Msg("starting")
 
 	if viper.GetString(keys.Register) != "" {
-		if err := credentials.SaveRegistrationToken([]byte(viper.GetString(keys.Register))); err != nil {
-			log.Fatal().Err(err).Msg("saving registration token")
-		}
-
 		if err := registration.Start(m.groupCtx); err != nil {
 			log.Fatal().Err(err).Msg("registering agent manager")
 		}
@@ -75,10 +71,6 @@ func (m *Manager) Start() error {
 
 	if err := credentials.LoadManagerID(); err != nil {
 		log.Fatal().Err(err).Msg("loading manager id")
-	}
-
-	if err := credentials.LoadRegistrationToken(); err != nil {
-		log.Fatal().Err(err).Msg("loading registration token")
 	}
 
 	if err := credentials.LoadJWT(); err != nil {
@@ -121,12 +113,6 @@ func (m *Manager) Start() error {
 
 	m.group.Go(func() error {
 		poller.Start(m.groupCtx)
-
-		return nil
-	})
-
-	m.group.Go(func() error {
-		registration.ReRegister(m.groupCtx)
 
 		return nil
 	})
