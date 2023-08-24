@@ -34,7 +34,6 @@ func initCmd() *cobra.Command {
 			// set internal config items
 			viper.Set(keys.InventoryFile, defaults.InventoryFile)
 			viper.Set(keys.JwtTokenFile, defaults.JwtTokenFile)
-			viper.Set(keys.RegTokenFile, defaults.RegTokenFile)
 			viper.Set(keys.ManagerIDFile, defaults.ManagerIDFile)
 			viper.Set(keys.RefreshTokenFile, defaults.RefreshTokenFile)
 
