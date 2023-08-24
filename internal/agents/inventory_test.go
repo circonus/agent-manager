@@ -72,7 +72,7 @@ func TestFetchAgents(t *testing.T) {
 		case "/agent_type":
 			switch r.Method {
 			case http.MethodGet:
-				authToken := r.Header.Get("X-Circonus-Auth-Token")
+				authToken := r.Header.Get("Authorization")
 				if authToken != testAuthToken {
 					http.Error(w, "invalid auth token", http.StatusUnauthorized)
 
@@ -218,7 +218,7 @@ func TestCheckForAgents(t *testing.T) {
 		case "/agent/manager":
 			switch r.Method {
 			case http.MethodPost:
-				authToken := r.Header.Get("X-Circonus-Auth-Token")
+				authToken := r.Header.Get("Authorization")
 				if authToken != testAuthToken {
 					http.Error(w, "invalid auth token", http.StatusUnauthorized)
 

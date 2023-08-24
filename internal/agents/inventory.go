@@ -69,7 +69,7 @@ func FetchAgents(ctx context.Context) error {
 		return fmt.Errorf("creating request: %w", err)
 	}
 
-	req.Header.Add("X-Circonus-Auth-Token", token)
+	req.Header.Add("Authorization", token)
 
 	client := &http.Client{}
 
@@ -228,7 +228,7 @@ func registerAgents(ctx context.Context, c InstalledAgents) error {
 		return fmt.Errorf("creating request: %w", err)
 	}
 
-	req.Header.Add("X-Circonus-Auth-Token", token)
+	req.Header.Add("Authorization", token)
 
 	client := &http.Client{}
 

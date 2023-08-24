@@ -15,6 +15,7 @@ import (
 	"net/url"
 
 	"github.com/circonus/agent-manager/internal/config/keys"
+	"github.com/circonus/agent-manager/internal/registration"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 )
@@ -104,7 +105,7 @@ func getActions(ctx context.Context) error {
 		return fmt.Errorf("creating request: %w", err)
 	}
 
-	req.Header.Add("X-Circonus-Auth-Token", token)
+	req.Header.Add("Authorization", token)
 
 	client := &http.Client{}
 
@@ -118,6 +119,14 @@ func getActions(ctx context.Context) error {
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return fmt.Errorf("reading response body: %w", err)
+	}
+
+	if resp.StatusCode == http.StatusUnauthorized {
+		if err := registration.RefreshRegistration(ctx); err != nil { //nolint:govet
+			return fmt.Errorf("new token: %w", err)
+		}
+
+		return fmt.Errorf("token expired, refreshing") //nolint:goerr113
 	}
 
 	if resp.StatusCode != http.StatusOK {
@@ -187,7 +196,7 @@ func sendActionResult(ctx context.Context, data []byte) error {
 		return fmt.Errorf("creating request: %w", err)
 	}
 
-	req.Header.Add("X-Circonus-Auth-Token", token)
+	req.Header.Add("Authorization", token)
 
 	client := &http.Client{}
 
