@@ -29,7 +29,7 @@ func Test_getActions(t *testing.T) {
 		case "/agent/update":
 			switch r.Method {
 			case http.MethodGet:
-				authToken := r.Header.Get("X-Circonus-Auth-Token")
+				authToken := r.Header.Get("Authorization")
 				if authToken != testAuthToken {
 					http.Error(w, "invalid auth token", http.StatusUnauthorized)
 
@@ -61,7 +61,7 @@ func Test_getActions(t *testing.T) {
 				_, _ = w.Write(data)
 
 			case http.MethodPost:
-				authToken := r.Header.Get("X-Circonus-Auth-Token")
+				authToken := r.Header.Get("Authorization")
 				if authToken != testAuthToken {
 					http.Error(w, "invalid auth token", http.StatusUnauthorized)
 
