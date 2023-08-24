@@ -9,7 +9,6 @@ import (
 	"context"
 	"encoding/base64"
 	"runtime"
-	"strings"
 
 	"github.com/rs/zerolog/log"
 )
@@ -22,7 +21,7 @@ func installConfigs(ctx context.Context, action Action) {
 		return
 	}
 
-	for agent, configs := range action.Configs {
+	for agentID, configs := range action.Configs {
 		for _, config := range configs {
 			log.Debug().Str("path", config.Path).Str("contents", config.Contents).Msg("incoming contents")
 
@@ -74,27 +73,13 @@ func installConfigs(ctx context.Context, action Action) {
 			}
 		}
 
-		coll, ok := agents[runtime.GOOS][agent]
+		agent, ok := agents[runtime.GOOS][agentID]
 		if !ok {
-			log.Warn().Str("platform", runtime.GOOS).Str("agent", agent).Msg("unable to find agent definition for reload, skipping")
+			log.Warn().Str("platform", runtime.GOOS).Str("agent", agentID).Msg("unable to find agent definition for reload, skipping")
 
 			continue
 		}
 
-		switch {
-		case coll.Reload == "":
-			continue
-		case strings.ToLower(coll.Reload) == RESTART:
-			output, code, err := execute(ctx, coll.Restart)
-			if err != nil {
-				log.Warn().Err(err).Str("output", string(output)).Int("exit_code", code).Str("cmd", coll.Restart).Msg("restart failed")
-			}
-		//FUTURE: add case(s) for other options e.g. hitting an endpoint to trigger a reload
-		default:
-			output, code, err := execute(ctx, coll.Reload)
-			if err != nil {
-				log.Warn().Err(err).Str("output", string(output)).Int("exit_code", code).Str("cmd", coll.Reload).Msg("reload failed")
-			}
-		}
+		cmdReload(ctx, agent, Command{})
 	}
 }
