@@ -1,5 +1,25 @@
 # unreleased
 
+## v0.2.0
+
+* feat: add examples for aws_ec2_tags and tags config options
+* feat: tags config option
+* feat: add tags cli option
+* feat: single use registration token
+* feat: registration token to refresh token
+* feat: cutom tags support
+* feat: use Authorization header
+* feat: access and refresh token support
+* feat: refresh token on 401 from api
+* feat: Authorization header
+* chore: refactor reload command handling
+* chore: refactor command running to simplify
+* feat: add http endpoint handling option for reload command
+* feat: only check for binary during agent inventory
+* chore: update instructions for start/restart in brew formula
+* fix: brew creating subdir in etc
+* fix: brew instructions for start/restart
+
 ## v0.1.4
 
 * fix: remove term 'collectors' from inventory option
