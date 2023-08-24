@@ -9,3 +9,24 @@ log:
 
 poll_interal: "60s" 
 debug: false
+
+# list of aws ec2 attributes to add as meta data tags
+# aws_ec2_tags:
+#   - account_id
+#   - architecture
+#   - availability_zone
+#   - image_id
+#   - instance_id
+#   - instance_type
+#   - kernel_id
+#   - pending_time
+#   - private_ip
+#   - ramdisk_id
+#   - region
+#   - version
+
+# list of key:value pairs to add as meta data tags
+# tags:
+#   e.g.
+#   - environment:production
+#   - "location:123 any st. san francisco, ca"
