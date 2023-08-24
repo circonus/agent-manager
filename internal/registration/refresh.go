@@ -13,7 +13,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"time"
 
 	"github.com/circonus/agent-manager/internal/config/keys"
 	"github.com/circonus/agent-manager/internal/credentials"
@@ -21,34 +20,35 @@ import (
 	"github.com/spf13/viper"
 )
 
-// re-register every hour to get new JWT
+// refresh registration every hour to get new JWT
 
-func ReRegister(ctx context.Context) {
-	ticker := time.NewTicker(1 * time.Hour)
+func RefreshRegistration(ctx context.Context) error {
+	log.Info().Msg("refreshing token")
 
-	for {
-		select {
-		case <-ctx.Done():
-			ticker.Stop()
-
-			return
-		case <-ticker.C:
-			reg, err := getNewJWT(ctx)
-			if err != nil {
-				log.Error().Err(err).Msg("getting token")
-			}
-
-			if err := credentials.SaveJWT([]byte(reg.AuthToken)); err != nil {
-				log.Fatal().Err(err).Msg("saving token")
-			}
-		}
+	reg, err := getNewJWT(ctx)
+	if err != nil {
+		return fmt.Errorf("refreshing token: %w", err)
 	}
+
+	if err := credentials.SaveRefreshToken([]byte(reg.RefreshToken)); err != nil {
+		return fmt.Errorf("saving refresh token: %w", err)
+	}
+
+	if err := credentials.SaveJWT([]byte(reg.AuthToken)); err != nil {
+		return fmt.Errorf("saving access token: %w", err)
+	}
+
+	return nil
 }
 
 func getNewJWT(ctx context.Context) (*Response, error) {
-	token := viper.GetString(keys.RegistrationToken)
+	if err := credentials.LoadRefreshToken(); err != nil {
+		return nil, fmt.Errorf("loading refresh token: %w", err)
+	}
+
+	token := viper.GetString(keys.RefreshToken)
 	if token == "" {
-		return nil, fmt.Errorf("invalid token (empty)") //nolint:goerr113
+		return nil, fmt.Errorf("invalid refresh token (empty)") //nolint:goerr113
 	}
 
 	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "manager", "register")
@@ -63,7 +63,7 @@ func getNewJWT(ctx context.Context) (*Response, error) {
 		return nil, fmt.Errorf("creating request: %w", err)
 	}
 
-	req.Header.Add("X-Circonus-Register-Token", token)
+	req.Header.Add("Authorization", token)
 
 	client := &http.Client{}
 
@@ -80,7 +80,7 @@ func getNewJWT(ctx context.Context) (*Response, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("non-200 response -- status: %s, body: %s", resp.Status, string(body)) //nolint:goerr113
+		return nil, fmt.Errorf("non-200 response -- status: %d %s, body: %s", resp.StatusCode, resp.Status, string(body)) //nolint:goerr113
 	}
 
 	var response Response

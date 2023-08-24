@@ -16,6 +16,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"unicode"
 
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/feature/ec2/imds"
@@ -44,7 +45,8 @@ type Registration struct {
 }
 
 type Data struct {
-	AWSMeta AWSTags `json:"aws,omitempty"`
+	AWSMeta AWSTags  `json:"aws,omitempty"`
+	Tags    []string `json:"tags,omitempty"`
 }
 
 type AWSTags struct {
@@ -63,13 +65,15 @@ type AWSTags struct {
 }
 
 type Response struct {
-	AuthToken string  `json:"auth_token" yaml:"auth_token"`
-	Manager   Manager `json:"manager"    yaml:"manager"`
+	AuthToken    string `json:"access_token"  yaml:"access_token"`
+	ManagerID    string `json:"manager_id"    yaml:"manager_id"`
+	RefreshToken string `json:"refresh_token" yaml:"refresh_token"`
 }
 
-type Manager struct {
-	ID string `json:"manager_id" yaml:"manager_id"`
-}
+const (
+	maxTags   = 32
+	maxTagLen = 256
+)
 
 // Start the registration process.
 func Start(ctx context.Context) error {
@@ -110,6 +114,11 @@ func Start(ctx context.Context) error {
 		reg.Data.AWSMeta = at
 	}
 
+	tags := viper.GetStringSlice(keys.Tags)
+	if len(tags) > 0 {
+		reg.Data.Tags = formatTags(tags)
+	}
+
 	jwt, err := getJWT(ctx, token, reg)
 	if err != nil {
 		log.Fatal().Err(err).Msg("getting token")
@@ -119,7 +128,11 @@ func Start(ctx context.Context) error {
 		log.Fatal().Err(err).Msg("saving token")
 	}
 
-	if err := credentials.SaveManagerID([]byte(jwt.Manager.ID)); err != nil {
+	if err := credentials.SaveRefreshToken([]byte(jwt.RefreshToken)); err != nil {
+		log.Fatal().Err(err).Msg("saving token")
+	}
+
+	if err := credentials.SaveManagerID([]byte(jwt.ManagerID)); err != nil {
 		log.Fatal().Err(err).Msg("saving manager id")
 	}
 
@@ -154,7 +167,7 @@ func getJWT(ctx context.Context, token string, reg Registration) (*Response, err
 		return nil, fmt.Errorf("creating request: %w", err)
 	}
 
-	req.Header.Add("X-Circonus-Register-Token", token)
+	req.Header.Add("Authorization", token)
 
 	client := &http.Client{}
 
@@ -171,10 +184,8 @@ func getJWT(ctx context.Context, token string, reg Registration) (*Response, err
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("non-200 response -- status: %s, body: %s", resp.Status, string(body)) //nolint:goerr113
+		return nil, fmt.Errorf("non-200 response -- status: %d %s, body: %s", resp.StatusCode, resp.Status, string(body)) //nolint:goerr113
 	}
-
-	log.Debug().Str("resp", string(body)).Msg("response")
 
 	var response Response
 	if err := json.Unmarshal(body, &response); err != nil {
@@ -287,4 +298,38 @@ func getAWSTags(ctx context.Context, tags []string) (AWSTags, error) {
 	}
 
 	return aws, nil
+}
+
+func formatTags(tags []string) []string {
+	if len(tags) > maxTags {
+		log.Fatal().Int("max_tags", maxTags).Int("num_tags", len(tags)).Msg("too many tags")
+	}
+
+	t := make([]string, 0, len(tags))
+
+	for _, tag := range tags {
+		if len(tag) > maxTagLen {
+			log.Warn().Int("max_tag_len", maxTagLen).Int("tag_len", len(tag)).Str("tag", tag).Msg("tag too long, ignoring")
+
+			continue
+		}
+
+		tagOK := true
+
+		for i := 0; i < len(tag); i++ {
+			if !unicode.IsPrint(rune(tag[i])) {
+				log.Warn().Int("pos", i).Str("tag", tag).Msg("tag contains non-printable character, ignoring")
+
+				tagOK = false
+
+				break
+			}
+		}
+
+		if tagOK {
+			t = append(t, tag)
+		}
+	}
+
+	return t
 }

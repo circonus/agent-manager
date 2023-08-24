@@ -67,8 +67,9 @@ func Test_getJWT(t *testing.T) {
 				}
 
 				r := Response{
-					AuthToken: tokenString,
-					Manager:   Manager{ID: "test"},
+					AuthToken:    tokenString,
+					RefreshToken: "abc",
+					ManagerID:    "test",
 				}
 
 				data, err := json.Marshal(r)
@@ -103,8 +104,8 @@ func Test_getJWT(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		args    args
 		want    string
+		args    args
 		wantErr bool
 	}{
 		{
