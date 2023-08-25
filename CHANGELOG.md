@@ -1,5 +1,9 @@
 # unreleased
 
+## v0.2.1
+
+* feat(inventory): just return whatever the version command outputs do not verify semver
+
 ## v0.2.0
 
 * feat: add examples for aws_ec2_tags and tags config options
