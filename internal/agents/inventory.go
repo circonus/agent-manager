@@ -20,7 +20,6 @@ import (
 	"strings"
 
 	"github.com/circonus/agent-manager/internal/config/keys"
-	"github.com/hashicorp/go-version"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
@@ -196,13 +195,14 @@ func getAgentVersion(vercmd string) (string, error) {
 	}
 
 	if len(output) > 0 {
-		v, err := version.NewVersion(strings.TrimSpace(string(output)))
-		if err != nil {
-			return noVersion, err //nolint:wrapcheck
-		}
+		return strings.TrimSpace(string(output)), nil
+		// v, err := version.NewVersion(strings.TrimSpace(string(output)))
+		// if err != nil {
+		// 	return noVersion, err //nolint:wrapcheck
+		// }
 
-		return v.String(), nil
-	}
+		// return v.String(), nil
+	} //nolint:wsl
 
 	return noVersion, nil
 }
