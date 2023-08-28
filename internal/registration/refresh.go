@@ -38,6 +38,10 @@ func RefreshRegistration(ctx context.Context) error {
 		return fmt.Errorf("saving access token: %w", err)
 	}
 
+	if err := credentials.LoadJWT(); err != nil {
+		return fmt.Errorf("loading access token: %w", err)
+	}
+
 	return nil
 }
 
