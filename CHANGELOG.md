@@ -1,5 +1,9 @@
 # unreleased
 
+## v0.2.2
+
+* fix: load jwt after refresh
+
 ## v0.2.1
 
 * feat(inventory): just return whatever the version command outputs do not verify semver
