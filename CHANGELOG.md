@@ -1,5 +1,9 @@
 # unreleased
 
+## v0.2.3
+
+* feat(build): add docker images
+
 ## v0.2.2
 
 * fix: load jwt after refresh
