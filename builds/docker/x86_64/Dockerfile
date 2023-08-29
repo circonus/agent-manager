@@ -1,3 +1,3 @@
 FROM gcr.io/distroless/static
-COPY circonus-cma /
+COPY sbin/circonus-am /
 ENTRYPOINT ["/circonus-am"]
