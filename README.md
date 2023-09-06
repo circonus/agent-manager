@@ -37,6 +37,11 @@ Flags:
 
   ```
 
+## Note on tags
+
+* Environment variable format with a space separated list, e.g. `CAM_TAGS="foo:bar baz:qux"`
+* CLI option format with a comma separated list, e.g. `--tags="foo:bar,baz:qux"`
+
 ## Linux installation
 
 1. Download appropriate package from releases page
