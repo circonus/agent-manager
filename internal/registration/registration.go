@@ -31,23 +31,23 @@ import (
 )
 
 type Registration struct {
-	Version              string `json:"version"`
-	MachineID            string `json:"machine_id"`
-	Hostname             string `json:"hostname"`
-	OS                   string `json:"os"`
-	Platform             string `json:"platform"`
-	PlatformVersion      string `json:"platform_version"`
-	PlatformFamily       string `json:"platform_family"`
-	KernelArch           string `json:"kernel_arch"`
-	KernelVersion        string `json:"kernel_version"`
-	VirtualizationSystem string `json:"virtualization_system"`
-	VirtualizationRole   string `json:"virtualization_role"`
-	Data                 Data   `json:"data,omitempty"`
+	Version              string   `json:"version"`
+	MachineID            string   `json:"machine_id"`
+	Hostname             string   `json:"hostname"`
+	OS                   string   `json:"os"`
+	Platform             string   `json:"platform"`
+	PlatformVersion      string   `json:"platform_version"`
+	PlatformFamily       string   `json:"platform_family"`
+	KernelArch           string   `json:"kernel_arch"`
+	KernelVersion        string   `json:"kernel_version"`
+	VirtualizationSystem string   `json:"virtualization_system"`
+	VirtualizationRole   string   `json:"virtualization_role"`
+	Data                 Data     `json:"data,omitempty"`
+	Tags                 []string `json:"tags,omitempty"`
 }
 
 type Data struct {
-	AWSMeta AWSTags  `json:"aws,omitempty"`
-	Tags    []string `json:"tags,omitempty"`
+	AWSMeta AWSTags `json:"aws,omitempty"`
 }
 
 type AWSTags struct {
@@ -117,7 +117,7 @@ func Start(ctx context.Context) error {
 
 	tags := viper.GetStringSlice(keys.Tags)
 	if len(tags) > 0 {
-		reg.Data.Tags = formatTags(tags)
+		reg.Tags = formatTags(tags)
 	}
 
 	jwt, err := getJWT(ctx, token, reg)
