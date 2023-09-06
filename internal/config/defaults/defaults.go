@@ -24,6 +24,8 @@ const (
 	Debug     = false
 	LogLevel  = "info"
 	LogPretty = false
+
+	UseMachineID = true
 )
 
 var (

@@ -115,4 +115,21 @@ func initAppArgs(cmd *cobra.Command) {
 		bindEnvError(envVar, viper.BindEnv(key, envVar))
 		viper.SetDefault(key, defaultValue)
 	}
+
+	{
+		const (
+			key         = keys.UseMachineID
+			longOpt     = "use_machine_id"
+			envVar      = release.ENVPREFIX + "_USE_MACHINE_ID"
+			description = "Use machine_id or generate uuid"
+		)
+		defaultValue := defaults.UseMachineID
+
+		cmd.PersistentFlags().Bool(longOpt, defaultValue, envDescription(description, envVar))
+		flag := cmd.Flags().Lookup(longOpt)
+		flag.Hidden = true
+		bindFlagError(longOpt, viper.BindPFlag(key, flag))
+		bindEnvError(envVar, viper.BindEnv(key, envVar))
+		viper.SetDefault(key, defaultValue)
+	}
 }

@@ -30,10 +30,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-const (
-	useMachineID = false
-)
-
 type Registration struct {
 	Version              string `json:"version"`
 	MachineID            string `json:"machine_id"`
@@ -201,7 +197,7 @@ func getJWT(ctx context.Context, token string, reg Registration) (*Response, err
 }
 
 func getMachineID() (string, error) {
-	if useMachineID {
+	if viper.GetBool(keys.UseMachineID) {
 		id, err := machineid.ID()
 		if err != nil {
 			return "", err //nolint:wrapcheck

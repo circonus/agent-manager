@@ -45,6 +45,9 @@ const (
 	// Debug enables debug messages.
 	Debug = "debug"
 
+	// UseMachineID - use the machine id or generate a uuid.
+	UseMachineID = "use_machine_id"
+
 	//
 	// Informational
 	// NOTE: Not included in the configuration file, these
