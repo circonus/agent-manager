@@ -125,7 +125,7 @@ func initAppArgs(cmd *cobra.Command) {
 		)
 		defaultValue := defaults.UseMachineID
 
-		cmd.PersistentFlags().Bool(longOpt, defaultValue, envDescription(description, envVar))
+		cmd.Flags().Bool(longOpt, defaultValue, envDescription(description, envVar))
 		flag := cmd.Flags().Lookup(longOpt)
 		flag.Hidden = true
 		bindFlagError(longOpt, viper.BindPFlag(key, flag))
