@@ -1,5 +1,10 @@
 # unreleased
 
+## v0.2.5
+
+* feat: promote custom reg tags to top-level
+* doc: add note on tag format for env and cli
+
 ## v0.2.4
 
 * chore: ensure manager id is loaded for refresh
