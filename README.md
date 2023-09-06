@@ -42,7 +42,7 @@ Flags:
 1. Download appropriate package from releases page
 1. Install (use `sudo` to install, like all packages)
 1. Run `sudo /opt/circonus/am/sbin/circonua-am --register=<registration_token>`
-1. If registration successful, start the agent manager `sudo systemctl start circonus-am`
+1. If registration successful, restart the agent manager `sudo systemctl restart circonus-am`
 1. Check status of agent manager `sudo systemctl status circonus-am`
 1. If an additional agent is installed AFTER the agent manager has registered
    1. Stop agent manager `sudo systemctl stop circonus-am`
@@ -60,3 +60,9 @@ Flags:
    1. change permissions to allow write by group
 1. Add sudo configs for the commands of each installed agent
 1. Change agent definitions to include `sudo` for each of the commands used for managing the agent
+
+## Decomission (linux)
+
+1. `sudo systemctl stop circonus-am`
+1. `sudo /opt/circonus/am/sbin/circonus-am --decomission`
+1. Remove package using tool used to install e.g. apt/dpkg or yum/rpm

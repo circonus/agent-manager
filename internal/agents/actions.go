@@ -126,7 +126,7 @@ func getActions(ctx context.Context) error {
 			return fmt.Errorf("new token: %w", err)
 		}
 
-		return fmt.Errorf("token expired, refreshing") //nolint:goerr113
+		return fmt.Errorf("token expired, refreshed") //nolint:goerr113
 	}
 
 	if resp.StatusCode != http.StatusOK {

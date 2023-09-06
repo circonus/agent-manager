@@ -43,6 +43,19 @@ func initAppArgs(cmd *cobra.Command) {
 
 	{
 		const (
+			key          = keys.Decomission
+			longOpt      = "decomission"
+			description  = "Decomission agent manager and exit"
+			defaultValue = false
+		)
+
+		cmd.PersistentFlags().Bool(longOpt, defaultValue, description)
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.PersistentFlags().Lookup(longOpt)))
+		viper.SetDefault(key, defaultValue)
+	}
+
+	{
+		const (
 			key          = keys.APIURL
 			longOpt      = "apiurl"
 			envVar       = release.ENVPREFIX + "_API_URL"
@@ -99,6 +112,23 @@ func initAppArgs(cmd *cobra.Command) {
 
 		cmd.PersistentFlags().StringSlice(longOpt, defaultValue, envDescription(description, envVar))
 		bindFlagError(longOpt, viper.BindPFlag(key, cmd.PersistentFlags().Lookup(longOpt)))
+		bindEnvError(envVar, viper.BindEnv(key, envVar))
+		viper.SetDefault(key, defaultValue)
+	}
+
+	{
+		const (
+			key         = keys.UseMachineID
+			longOpt     = "use_machine_id"
+			envVar      = release.ENVPREFIX + "_USE_MACHINE_ID"
+			description = "Use machine_id or generate uuid"
+		)
+		defaultValue := defaults.UseMachineID
+
+		cmd.Flags().Bool(longOpt, defaultValue, envDescription(description, envVar))
+		flag := cmd.Flags().Lookup(longOpt)
+		flag.Hidden = true
+		bindFlagError(longOpt, viper.BindPFlag(key, flag))
 		bindEnvError(envVar, viper.BindEnv(key, envVar))
 		viper.SetDefault(key, defaultValue)
 	}

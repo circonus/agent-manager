@@ -24,6 +24,7 @@ import (
 	"github.com/circonus/agent-manager/internal/credentials"
 	"github.com/circonus/agent-manager/internal/release"
 	"github.com/denisbrodbeck/machineid"
+	"github.com/google/uuid"
 	"github.com/rs/zerolog/log"
 	"github.com/shirou/gopsutil/host"
 	"github.com/spf13/viper"
@@ -196,14 +197,39 @@ func getJWT(ctx context.Context, token string, reg Registration) (*Response, err
 }
 
 func getMachineID() (string, error) {
-	id, err := machineid.ID()
-	if err != nil {
-		return "", err //nolint:wrapcheck
+	if viper.GetBool(keys.UseMachineID) {
+		id, err := machineid.ID()
+		if err != nil {
+			return "", err //nolint:wrapcheck
+		}
+
+		mac := hmac.New(sha256.New, []byte(id))
+
+		return fmt.Sprintf("%x", mac.Sum(nil)), nil
 	}
 
-	mac := hmac.New(sha256.New, []byte(id))
+	if err := credentials.LoadMachineID(); err != nil {
+		// if it doesn't exist, we want to create it
+		// otherwise return the actual error
+		if !os.IsNotExist(err) {
+			return "", fmt.Errorf("loading machine id: %w", err)
+		}
+	} else if viper.GetString(keys.MachineID) != "" {
+		return viper.GetString(keys.MachineID), nil
+	}
 
-	return fmt.Sprintf("%x", mac.Sum(nil)), nil
+	id, err := uuid.NewRandom()
+	if err != nil {
+		return "", fmt.Errorf("generating uuid: %w", err)
+	}
+
+	ids := id.String()
+
+	if err := credentials.SaveMachineID([]byte(ids)); err != nil {
+		return "", fmt.Errorf("saving machine id: %w", err)
+	}
+
+	return ids, nil
 }
 
 func getHostInfo() (Registration, error) {
