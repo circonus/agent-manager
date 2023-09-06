@@ -1,5 +1,15 @@
 # unreleased
 
+## v0.2.4
+
+* chore: ensure manager id is loaded for refresh
+* feat: add some progress debug messages to decomission
+* fix: incorrect flag type for setting hidden
+* fix: error message on token refresh
+* feat: use machine id option
+* feat: decomission the agent manager
+* doc: change start to restart after registration (linux)
+
 ## v0.2.3
 
 * feat(build): add docker images
