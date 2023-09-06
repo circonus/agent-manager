@@ -15,10 +15,13 @@ import (
 
 	"github.com/circonus/agent-manager/internal/config/keys"
 	"github.com/circonus/agent-manager/internal/credentials"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 )
 
 func Start(ctx context.Context) error {
+	log.Debug().Msg("loading manager id")
+
 	if err := credentials.LoadManagerID(); err != nil {
 		return fmt.Errorf("loading manager id: %w", err)
 	}
@@ -27,25 +30,38 @@ func Start(ctx context.Context) error {
 		return fmt.Errorf("loading API credentials: %w", err)
 	}
 
+	log.Debug().Msg("deleting manager record via API")
+
 	if err := deleteManager(ctx); err != nil {
 		return fmt.Errorf("deleting agent manager record: %w", err)
 	}
+
+	log.Debug().Msg("removing agent inventory file")
 
 	if err := os.Remove(viper.GetString(keys.InventoryFile)); err != nil {
 		return fmt.Errorf("removing %s: %w", viper.GetString(keys.InventoryFile), err)
 	}
 
+	log.Debug().Msg("removing auth")
+
 	if err := os.Remove(viper.GetString(keys.JwtTokenFile)); err != nil {
 		return fmt.Errorf("removing %s: %w", viper.GetString(keys.JwtTokenFile), err)
 	}
+
+	log.Debug().Msg("removing manager id")
 
 	if err := os.Remove(viper.GetString(keys.ManagerIDFile)); err != nil {
 		return fmt.Errorf("removing %s: %w", viper.GetString(keys.ManagerIDFile), err)
 	}
 
+	log.Debug().Msg("removing refresh")
+
 	if err := os.Remove(viper.GetString(keys.RefreshTokenFile)); err != nil {
 		return fmt.Errorf("removing %s: %w", viper.GetString(keys.RefreshTokenFile), err)
 	}
+
+	// NOTE: not removing machine id file (if used with a generated uuid)
+	//       in case user tries to re-register.
 
 	return nil
 }
