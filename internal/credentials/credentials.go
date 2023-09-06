@@ -100,6 +100,35 @@ func SaveRefreshToken(creds []byte) error {
 	return write(file, creds) //nolint:wrapcheck
 }
 
+func LoadMachineID() error {
+	file := viper.GetString(keys.MachineID)
+	if file == "" {
+		return fmt.Errorf("invalid machine id file (empty)") //nolint:goerr113
+	}
+
+	token, err := read(file)
+	if err != nil {
+		return err //nolint:wrapcheck
+	}
+
+	viper.Set(keys.MachineIDFile, string(token))
+
+	return nil
+}
+
+func SaveMachineID(creds []byte) error {
+	file := viper.GetString(keys.MachineIDFile)
+	if file == "" {
+		return fmt.Errorf("invalid machine id file (empty)") //nolint:goerr113
+	}
+
+	if len(creds) == 0 {
+		return fmt.Errorf("invalid machine id (empty)") //nolint:goerr113
+	}
+
+	return write(file, creds) //nolint:wrapcheck
+}
+
 func read(file string) ([]byte, error) {
 	data, err := os.ReadFile(file)
 	if err != nil {

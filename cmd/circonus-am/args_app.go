@@ -43,6 +43,19 @@ func initAppArgs(cmd *cobra.Command) {
 
 	{
 		const (
+			key          = keys.Decomission
+			longOpt      = "decomission"
+			description  = "Decomission agent manager and exit"
+			defaultValue = false
+		)
+
+		cmd.PersistentFlags().Bool(longOpt, defaultValue, description)
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.PersistentFlags().Lookup(longOpt)))
+		viper.SetDefault(key, defaultValue)
+	}
+
+	{
+		const (
 			key          = keys.APIURL
 			longOpt      = "apiurl"
 			envVar       = release.ENVPREFIX + "_API_URL"

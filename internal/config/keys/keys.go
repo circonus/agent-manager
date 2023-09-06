@@ -8,14 +8,16 @@ package keys
 const (
 
 	// Register - token to use for registering this CMA.
-	Register  = "register"
-	Inventory = "invetory"
+	Register    = "register"
+	Inventory   = "invetory"
+	Decomission = "decomission"
 
 	APIURL            = "api.url"
 	APIToken          = "api.token"
 	ManagerID         = "manager_id"
 	RegistrationToken = "registration_token"
 	RefreshToken      = "refresh_token"
+	MachineID         = "machine_id"
 
 	// frequency of polling for actions.
 	PollingInterval = "poll_interval"
@@ -57,4 +59,5 @@ const (
 	JwtTokenFile     = "internal.jwt_token_file" //nolint:gosec
 	ManagerIDFile    = "internal.manager_id_file"
 	RefreshTokenFile = "internal.refresh_token_file"
+	MachineIDFile    = "internal.machine_id_file"
 )

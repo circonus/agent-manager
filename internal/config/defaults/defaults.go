@@ -50,6 +50,7 @@ var (
 	JwtTokenFile     = ""
 	ManagerIDFile    = ""
 	RefreshTokenFile = ""
+	MachineIDFile    = ""
 
 	AWSEC2Tags = []string{}
 	Tags       = []string{}
@@ -79,6 +80,7 @@ func init() { //nolint:gochecknoinits
 	JwtTokenFile = filepath.Join(IDPath, "jt")
 	ManagerIDFile = filepath.Join(IDPath, "ai")
 	RefreshTokenFile = filepath.Join(IDPath, "rft")
+	MachineIDFile = filepath.Join(IDPath, "mid")
 
 	if err := os.MkdirAll(IDPath, 0700); err != nil {
 		log.Fatal().Err(err).Msg("creating ID path")
