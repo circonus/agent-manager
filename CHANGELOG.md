@@ -9,6 +9,10 @@
 * feat: use machine id option
 * feat: decomission the agent manager
 * doc: change start to restart after registration (linux)
+* chore(deps): bump github.com/aws/aws-sdk-go-v2/config from 1.18.32 to 1.18.39
+* chore(deps): bump golangci/golangci-lint-action from 3.6.0 to 3.7.0
+* chore(deps): bump golang.org/x/sys from 0.11.0 to 0.12.0
+* chore(deps): bump actions/checkout from 3 to 4
 
 ## v0.2.3
 
