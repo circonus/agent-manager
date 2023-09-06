@@ -50,6 +50,10 @@ func getNewJWT(ctx context.Context) (*Response, error) {
 		return nil, fmt.Errorf("loading refresh token: %w", err)
 	}
 
+	if err := credentials.LoadManagerID(); err != nil {
+		return nil, fmt.Errorf("loading manager id: %w", err)
+	}
+
 	token := viper.GetString(keys.RefreshToken)
 	if token == "" {
 		return nil, fmt.Errorf("invalid refresh token (empty)") //nolint:goerr113
