@@ -1,0 +1,21 @@
+name: Package
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  make-package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sleep for 5 minutes (to let assets upload)
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '5m'
+      - name: Invoke packaging hook
+        uses: distributhor/workflow-webhook@v3
+        env:
+          webhook_url: ${{ secrets.WEBHOOK_URL }}?token=${{ secrets.JENKINS_WEBHOOK_TOKEN }}
+          webhook_secret: ${{ secrets.JENKINS_WEBHOOK_TOKEN }}
+          webhook_auth: ${{ secrets.JENKINS_WEBHOOK_AUTH }}
