@@ -111,7 +111,7 @@ nfpms:
     homepage: https://circonus.com
     maintainer: Circonus <support@circonus.com>
     description: Circonus Agent Manager
-    license: MIT
+    license: BSD-3-Clause
     file_name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Arch }}"
     formats:
       - deb
