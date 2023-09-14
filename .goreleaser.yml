@@ -16,6 +16,8 @@ builds:
       - goarch: 386
       - goos: windows
         goarch: arm64
+    flags:
+      - -trimpath
     ldflags: 
       - -s
       - -w
@@ -34,6 +36,8 @@ builds:
       - darwin
     goarch:
       - amd64
+    flags:
+      - -trimpath
     ldflags:
       - -s
       - -w
@@ -54,6 +58,8 @@ builds:
       - darwin
     goarch:
       - arm64
+    flags:
+      - -trimpath
     ldflags:
       - -s
       - -w
