@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	APIURL = "https://web-api.svcs-np.circonus.net/configurations/v1"
+	APIURL = "https://agents-api.circonus.app/configurations/v1"
 
 	PollingInterval = "60s"
 
