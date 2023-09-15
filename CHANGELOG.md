@@ -1,5 +1,7 @@
 # unreleased
 
+## v0.2.6
+
 * feat: switch default to prod api fqdn agents-api.circonus.app
 * chore: add -trimpath to flags
 * build: Package trigger automation (#39)
