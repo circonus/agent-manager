@@ -1,5 +1,10 @@
 # unreleased
 
+* feat: switch default to prod api fqdn agents-api.circonus.app
+* chore: add -trimpath to flags
+* build: Package trigger automation (#39)
+* fix(nfpms): change license from MIT to BSD-3-Clause
+
 ## v0.2.5
 
 * feat: promote custom reg tags to top-level
