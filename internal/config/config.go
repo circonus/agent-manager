@@ -5,6 +5,10 @@
 
 package config
 
+import (
+	"github.com/circonus/agent-manager/internal/config/defaults"
+)
+
 // Config defines the running configuration options.
 type Config struct {
 	Tags            map[string]string `json:"tags"          toml:"tags"          yaml:"tags"`
@@ -28,4 +32,16 @@ type Log struct {
 
 func Validate() error {
 	return nil
+}
+
+func SetPathsBasedOnConfigFile(cfgPath string) {
+	if cfgPath == "" {
+		return
+	}
+
+	if cfgPath == defaults.EtcPath {
+		return
+	}
+
+	defaults.SetEtcPaths(cfgPath)
 }

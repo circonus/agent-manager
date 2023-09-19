@@ -75,7 +75,13 @@ func init() { //nolint:gochecknoinits
 		log.Fatal().Err(err).Msg("unable to determine path to binary")
 	}
 
-	EtcPath = filepath.Join(BasePath, "etc")
+	// Set default etc paths/files. Will be re-set if a specific file was
+	// identified via --config argument.
+	SetEtcPaths(filepath.Join(BasePath, "etc"))
+}
+
+func SetEtcPaths(etcPath string) {
+	EtcPath = etcPath
 	ConfigFile = filepath.Join(EtcPath, release.NAME+".yaml")
 	InventoryFile = filepath.Join(EtcPath, "inventory.yaml")
 	IDPath = filepath.Join(EtcPath, ".id")
