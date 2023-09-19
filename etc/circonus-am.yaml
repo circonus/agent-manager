@@ -1,7 +1,7 @@
 # Circonus Agent Manager
 
 api:
-  url:
+  url: "https://agents-api.circonus.app/configurations/v1"
 
 log:
   level: "info"
