@@ -191,7 +191,7 @@ func getAgentVersion(vercmd string) (string, error) {
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return noVersion, err //nolint:wrapcheck
+		return noVersion, fmt.Errorf("%s: %w", string(output), err) //nolint:wrapcheck
 	}
 
 	if len(output) > 0 {
