@@ -87,3 +87,7 @@ internal/collectors/testdata/inventory.yaml
 
 .vagrant
 Vagrantfile
+
+# testing files/dirs
+etc/.id
+etc/test*.yaml
