@@ -191,18 +191,12 @@ func getAgentVersion(vercmd string) (string, error) {
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return noVersion, fmt.Errorf("%s: %w", string(output), err) //nolint:wrapcheck
+		return noVersion, fmt.Errorf("%s: %w", string(output), err)
 	}
 
 	if len(output) > 0 {
 		return strings.TrimSpace(string(output)), nil
-		// v, err := version.NewVersion(strings.TrimSpace(string(output)))
-		// if err != nil {
-		// 	return noVersion, err //nolint:wrapcheck
-		// }
-
-		// return v.String(), nil
-	} //nolint:wsl
+	}
 
 	return noVersion, nil
 }
