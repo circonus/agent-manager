@@ -15,7 +15,6 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
-	"runtime"
 	"testing"
 
 	"github.com/circonus/agent-manager/internal/config/keys"
@@ -40,7 +39,7 @@ func confFileName() string {
 func setupTest() {
 	file := inventoryFileName()
 	aa := Agents{
-		runtime.GOOS: map[string]Agent{
+		getPlatform(): map[string]Agent{
 			"foo": {
 				Binary: binaryFileName(),
 				Start:  "start foo",
@@ -83,7 +82,7 @@ func TestFetchAgents(t *testing.T) {
 					APIAgent{
 						Platforms: []Platform{
 							{
-								ID:          runtime.GOOS,
+								ID:          getPlatform(),
 								AgentTypeID: "foo",
 								Executable:  binaryFileName(),
 								Start:       "start foo",
@@ -182,7 +181,7 @@ func TestLoadAgents(t *testing.T) {
 		{
 			name:    "valid",
 			invFile: inventoryFileName(),
-			want:    Agents{runtime.GOOS: map[string]Agent{"foo": {ConfigFiles: map[string]string{confFileID(): confFileName()}, Binary: binaryFileName(), Start: "start foo", Stop: "stop foo", Restart: "", Reload: "", Status: "", Version: ""}}},
+			want:    Agents{getPlatform(): map[string]Agent{"foo": {ConfigFiles: map[string]string{confFileID(): confFileName()}, Binary: binaryFileName(), Start: "start foo", Stop: "stop foo", Restart: "", Reload: "", Status: "", Version: ""}}},
 			wantErr: false,
 		},
 		{

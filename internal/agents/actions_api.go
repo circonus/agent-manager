@@ -8,7 +8,6 @@ package agents
 import (
 	"encoding/json"
 	"fmt"
-	"runtime"
 
 	"github.com/rs/zerolog/log"
 )
@@ -50,10 +49,12 @@ func ParseAPIActions(data []byte) (Actions, error) {
 
 	foundConfigs := 0
 
+	platform := getPlatform()
+
 	for _, apiAction := range apiActions {
-		coll, ok := agents[runtime.GOOS][apiAction.Agent.ID]
+		coll, ok := agents[platform][apiAction.Agent.ID]
 		if !ok {
-			log.Warn().Str("agent", apiAction.Agent.ID).Str("platform", runtime.GOOS).Msg("unknown agent for this platform")
+			log.Warn().Str("agent", apiAction.Agent.ID).Str("platform", platform).Msg("unknown agent for this platform")
 
 			continue
 		}

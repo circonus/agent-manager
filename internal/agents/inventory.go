@@ -16,7 +16,6 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
-	"runtime"
 	"strings"
 
 	"github.com/circonus/agent-manager/internal/config/keys"
@@ -141,9 +140,11 @@ func CheckForAgents(ctx context.Context) error {
 		return err
 	}
 
-	gaa, ok := aa[runtime.GOOS]
+	platform := getPlatform()
+
+	gaa, ok := aa[platform]
 	if !ok {
-		return fmt.Errorf("no agents found for platform %s", runtime.GOOS) //nolint:goerr113
+		return fmt.Errorf("no agents found for platform %s", platform) //nolint:goerr113
 	}
 
 	found := InstalledAgents{}

@@ -8,7 +8,6 @@ package agents
 import (
 	"context"
 	"encoding/base64"
-	"runtime"
 
 	"github.com/rs/zerolog/log"
 )
@@ -20,6 +19,8 @@ func installConfigs(ctx context.Context, action Action) {
 
 		return
 	}
+
+	platform := getPlatform()
 
 	for agentID, configs := range action.Configs {
 		for _, config := range configs {
@@ -73,9 +74,9 @@ func installConfigs(ctx context.Context, action Action) {
 			}
 		}
 
-		agent, ok := agents[runtime.GOOS][agentID]
+		agent, ok := agents[platform][agentID]
 		if !ok {
-			log.Warn().Str("platform", runtime.GOOS).Str("agent", agentID).Msg("unable to find agent definition for reload, skipping")
+			log.Warn().Str("platform", platform).Str("agent", agentID).Msg("unable to find agent definition for reload, skipping")
 
 			continue
 		}

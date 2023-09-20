@@ -8,7 +8,6 @@ package agents
 import (
 	"context"
 	"encoding/base64"
-	"runtime"
 
 	"github.com/rs/zerolog/log"
 )
@@ -29,6 +28,8 @@ func runCommands(ctx context.Context, action Action) error {
 		return err
 	}
 
+	platform := getPlatform()
+
 	for _, command := range action.Commands {
 		switch command.Command {
 		case INVENTORY:
@@ -38,32 +39,32 @@ func runCommands(ctx context.Context, action Action) error {
 				log.Error().Err(err).Msg("checking for installed agents")
 			}
 		case START:
-			a, ok := agents[runtime.GOOS][command.Agent]
+			a, ok := agents[platform][command.Agent]
 			if ok {
 				runCommand(ctx, a.Start, command.ID)
 			}
 		case STOP:
-			a, ok := agents[runtime.GOOS][command.Agent]
+			a, ok := agents[platform][command.Agent]
 			if ok {
 				runCommand(ctx, a.Stop, command.ID)
 			}
 		case RESTART:
-			a, ok := agents[runtime.GOOS][command.Agent]
+			a, ok := agents[platform][command.Agent]
 			if ok {
 				runCommand(ctx, a.Restart, command.ID)
 			}
 		case RELOAD:
-			a, ok := agents[runtime.GOOS][command.Agent]
+			a, ok := agents[platform][command.Agent]
 			if ok {
 				cmdReload(ctx, a, command)
 			}
 		case STATUS:
-			a, ok := agents[runtime.GOOS][command.Agent]
+			a, ok := agents[platform][command.Agent]
 			if ok {
 				runCommand(ctx, a.Status, command.ID)
 			}
 		case VERSION:
-			a, ok := agents[runtime.GOOS][command.Agent]
+			a, ok := agents[platform][command.Agent]
 			if ok {
 				runCommand(ctx, a.Version, command.ID)
 			}
