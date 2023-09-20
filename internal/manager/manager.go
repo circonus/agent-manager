@@ -81,7 +81,7 @@ func (m *Manager) Start() error {
 
 	if !credentials.DoesFileExist(viper.GetString(keys.JwtTokenFile)) ||
 		!credentials.DoesFileExist(viper.GetString(keys.ManagerIDFile)) {
-		log.Fatal().Msg("manager not registered, see instructions for registeration")
+		log.Fatal().Msg("manager not registered, see instructions for registration")
 	}
 
 	if err := credentials.LoadManagerID(); err != nil {
