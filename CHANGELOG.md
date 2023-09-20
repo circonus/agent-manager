@@ -1,5 +1,18 @@
 # unreleased
 
+## v0.2.7
+
+* feat: break out darwin into arm64 and amd64
+* feat: add check for registration and emit a more clear error message if not registered
+* chore: ignore test files/dirs in etc
+* chore: add default api url to example conf
+* feat: update etc path if specific config supplied in non-default location
+* feat(inventory): add cmd output on error getting version
+* chore: remove old code
+* chore(deps): update gopsutil to v3
+* chore: ignore inventory.yaml in testdata
+* fix: keys for tests
+
 ## v0.2.6
 
 * feat: switch default to prod api fqdn agents-api.circonus.app
