@@ -91,3 +91,4 @@ Vagrantfile
 # testing files/dirs
 etc/.id
 etc/test*.yaml
+inventory.yaml
