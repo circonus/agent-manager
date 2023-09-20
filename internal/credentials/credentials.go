@@ -6,6 +6,7 @@
 package credentials
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -140,4 +141,14 @@ func read(file string) ([]byte, error) {
 
 func write(file string, data []byte) error {
 	return os.WriteFile(file, data, 0600) //nolint:wrapcheck
+}
+
+func DoesFileExist(file string) bool {
+	if _, err := os.Stat(file); err == nil {
+		return true
+	} else if errors.Is(err, os.ErrNotExist) {
+		return false
+	}
+
+	return false
 }
