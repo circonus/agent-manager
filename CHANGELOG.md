@@ -1,5 +1,9 @@
 # unreleased
 
+## v0.2.8
+
+* feat: add 30s timeout to commands
+
 ## v0.2.7
 
 * feat: break out darwin into arm64 and amd64
