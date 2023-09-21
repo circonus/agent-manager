@@ -10,10 +10,14 @@ package agents
 import (
 	"context"
 	"os/exec"
+	"time"
 )
 
 func execute(ctx context.Context, command string) ([]byte, int, error) {
-	cmd := exec.CommandContext(ctx, "bash", "-c", command)
+	c, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
+
+	cmd := exec.CommandContext(c, "bash", "-c", command)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
