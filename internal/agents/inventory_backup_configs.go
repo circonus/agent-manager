@@ -38,7 +38,7 @@ func backupConfigs(name string, configs map[string]string) {
 		}
 
 		if !sfi.Mode().IsRegular() {
-			log.Error().Str("src", src).Msg("source is not a regular file")
+			log.Error().Str("src", src).Str("mode", sfi.Mode().String()).Msg("source is not a regular file")
 
 			return
 		}
