@@ -56,6 +56,7 @@ var (
 
 	AWSEC2Tags = []string{}
 	Tags       = []string{}
+	Agents     = []string{}
 )
 
 func init() { //nolint:gochecknoinits

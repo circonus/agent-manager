@@ -48,6 +48,11 @@ const (
 	// UseMachineID - use the machine id or generate a uuid.
 	UseMachineID = "use_machine_id"
 
+	// InstanceID - provide an override for ephemeral environments (docker).
+	InstanceID = "instance_id"
+	// Agents - list of agents manager will manager (docker).
+	Agents = "agents"
+
 	//
 	// Informational
 	// NOTE: Not included in the configuration file, these

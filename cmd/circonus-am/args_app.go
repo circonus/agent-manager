@@ -20,11 +20,13 @@ func initAppArgs(cmd *cobra.Command) {
 			key          = keys.Register
 			longOpt      = "register"
 			description  = "Registration token -- register agent manager, inventory installed agents and exit"
+			envVar       = release.ENVPREFIX + "_REGISTER"
 			defaultValue = ""
 		)
 
 		cmd.PersistentFlags().String(longOpt, defaultValue, description)
 		bindFlagError(longOpt, viper.BindPFlag(key, cmd.PersistentFlags().Lookup(longOpt)))
+		bindEnvError(envVar, viper.BindEnv(key, envVar))
 		viper.SetDefault(key, defaultValue)
 	}
 
@@ -119,7 +121,7 @@ func initAppArgs(cmd *cobra.Command) {
 	{
 		const (
 			key         = keys.UseMachineID
-			longOpt     = "use_machine_id"
+			longOpt     = "use-machine-id"
 			envVar      = release.ENVPREFIX + "_USE_MACHINE_ID"
 			description = "Use machine_id or generate uuid"
 		)
@@ -132,4 +134,35 @@ func initAppArgs(cmd *cobra.Command) {
 		bindEnvError(envVar, viper.BindEnv(key, envVar))
 		viper.SetDefault(key, defaultValue)
 	}
+
+	{
+		const (
+			key          = keys.InstanceID
+			longOpt      = "instance-id"
+			envVar       = release.ENVPREFIX + "_INSTANCE_ID"
+			description  = "Instance ID (Docker specific)"
+			defaultValue = ""
+		)
+
+		cmd.PersistentFlags().String(longOpt, defaultValue, envDescription(description, envVar))
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.PersistentFlags().Lookup(longOpt)))
+		bindEnvError(envVar, viper.BindEnv(key, envVar))
+		viper.SetDefault(key, defaultValue)
+	}
+
+	{
+		const (
+			key         = keys.Agents
+			longOpt     = "agents"
+			envVar      = release.ENVPREFIX + "_AGENTS"
+			description = "List of agents (Docker specific)"
+		)
+		defaultValue := defaults.Agents
+
+		cmd.PersistentFlags().StringSlice(longOpt, defaultValue, envDescription(description, envVar))
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.PersistentFlags().Lookup(longOpt)))
+		bindEnvError(envVar, viper.BindEnv(key, envVar))
+		viper.SetDefault(key, defaultValue)
+	}
+
 }
