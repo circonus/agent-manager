@@ -70,6 +70,6 @@ func backupConfigs(name string, configs map[string]string) {
 
 		in.Close()
 		out.Close()
-		log.Info().Str("src", src).Str("dst", dst).Msg("backed up original config file")
+		log.Info().Str("src", src).Str("dst", dst).Msg("backed up current config file")
 	}
 }
