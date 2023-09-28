@@ -16,9 +16,13 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
+	"time"
 
+	"github.com/circonus/agent-manager/internal/config/defaults"
 	"github.com/circonus/agent-manager/internal/config/keys"
+	"github.com/circonus/agent-manager/internal/registration"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
@@ -156,15 +160,10 @@ func CheckForAgents(ctx context.Context) error {
 			continue
 		}
 
-		// only check for binary...
-		//
-		// for _, path := range a.ConfigFiles {
-		// 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
-		// 		log.Warn().Str("file", path).Msg("required config file not found, skipping")
-
-		// 		continue
-		// 	}
-		// }
+		if viper.GetString(keys.Register) != "" {
+			// if this is a registration, backup current configs
+			backupConfigs(name, a.ConfigFiles)
+		}
 
 		ver, err := getAgentVersion(a.Version)
 		if err != nil {
@@ -173,6 +172,25 @@ func CheckForAgents(ctx context.Context) error {
 
 		log.Info().Str("agent", name).Msg("found")
 		found = append(found, InstalledAgent{AgentTypeID: name, Version: ver})
+	}
+
+	if registration.IsRunningInDocker() && len(viper.GetStringSlice(keys.Agents)) > 0 {
+		for _, name := range viper.GetStringSlice(keys.Agents) {
+			a, ok := gaa[name]
+			if !ok {
+				log.Error().Str("agent", name).Msg("agent not found in inventory, skipping")
+
+				continue
+			}
+
+			if viper.GetString(keys.Register) != "" {
+				// if this is a registration, backup current configs
+				backupConfigs(name, a.ConfigFiles)
+			}
+
+			log.Info().Str("agent", name).Msg("force add agent from --agents")
+			found = append(found, InstalledAgent{AgentTypeID: name, Version: noVersion})
+		}
 	}
 
 	if len(found) > 0 {
@@ -246,4 +264,61 @@ func registerAgents(ctx context.Context, c InstalledAgents) error {
 	log.Debug().Str("resp", string(body)).Msg("response")
 
 	return nil
+}
+
+func backupConfigs(name string, configs map[string]string) {
+	ts := time.Now().Format("20060102_150405")
+	baseDir := filepath.Join(defaults.EtcPath, "configs", name)
+
+	if err := os.MkdirAll(baseDir, 0700); err != nil {
+		if !errors.Is(err, os.ErrExist) {
+			log.Error().Err(err).Str("path", baseDir).Msg("unable to make config dir to save backup")
+
+			return
+		}
+	}
+
+	for _, src := range configs {
+		dst := filepath.Join(baseDir, filepath.Base(src)+"."+ts)
+
+		sfi, err := os.Stat(src)
+		if err != nil {
+			log.Error().Err(err).Str("src", src).Msg("stat source file")
+
+			return
+		}
+
+		if !sfi.Mode().IsRegular() {
+			log.Error().Str("src", src).Msg("source is not a regular file")
+
+			return
+		}
+
+		in, err := os.Open(src)
+		if err != nil {
+			log.Error().Err(err).Str("src", src).Msg("opening source file")
+
+			return
+		}
+
+		out, err := os.Create(dst)
+		if err != nil {
+			log.Error().Err(err).Str("dst", dst).Msg("creating destination file")
+			in.Close()
+
+			return
+		}
+
+		if _, err := io.Copy(out, in); err != nil {
+			log.Error().Err(err).Msg("copying file contents")
+			in.Close()
+			out.Close()
+
+			return
+		}
+
+		in.Close()
+		out.Close()
+		log.Info().Str("src", src).Str("dst", dst).Msg("backed up original config file")
+	}
 }
