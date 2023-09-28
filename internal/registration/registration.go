@@ -87,6 +87,10 @@ func Start(ctx context.Context) error {
 		log.Fatal().Err(err).Msg("getting hostname")
 	}
 
+	if viper.GetString(keys.InstanceID) != "" {
+		hn = viper.GetString(keys.InstanceID)
+	}
+
 	if hn == "" {
 		log.Fatal().Str("hostname", hn).Msg("empty hostname")
 	}
