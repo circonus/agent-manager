@@ -92,6 +92,17 @@ func (m *Manager) Start() error {
 		log.Fatal().Err(err).Msg("loading API credentials")
 	}
 
+	if viper.GetString(keys.Register) != "" && registration.IsRunningInDocker() {
+		// verify that --agents and --instance-id have been provided
+		if len(viper.GetStringSlice(keys.Agents)) == 0 {
+			log.Fatal().Msg("--agents required to run in container")
+		}
+
+		if viper.GetString(keys.InstanceID) == "" {
+			log.Fatal().Msg("--instance-id required to run in a container")
+		}
+	}
+
 	if viper.GetString(keys.Register) != "" || viper.GetBool(keys.Inventory) {
 		if err := agents.FetchAgents(m.groupCtx); err != nil {
 			log.Fatal().Err(err).Msg("fetching agents")
@@ -102,18 +113,20 @@ func (m *Manager) Start() error {
 		}
 	}
 
-	//
-	// these two are command line actions and will exit after completion.
-	//
+	if !registration.IsRunningInDocker() {
+		//
+		// these two are command line actions and will exit after completion
+		// when not running in a docker/container.
+		//
+		if viper.GetString(keys.Register) != "" {
+			m.logger.Info().Msg("registration complete")
+			os.Exit(0)
+		}
 
-	if viper.GetString(keys.Register) != "" {
-		m.logger.Info().Msg("registration complete")
-		os.Exit(0)
-	}
-
-	if viper.GetBool(keys.Inventory) {
-		m.logger.Info().Msg("invetory complete")
-		os.Exit(0)
+		if viper.GetBool(keys.Inventory) {
+			m.logger.Info().Msg("invetory complete")
+			os.Exit(0)
+		}
 	}
 
 	m.logger.Debug().
