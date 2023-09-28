@@ -30,8 +30,6 @@ func backupConfigs(name string, configs map[string]string) {
 	}
 
 	for _, src := range configs {
-		dst := filepath.Join(baseDir, filepath.Base(src)+"."+ts)
-
 		sfi, err := os.Stat(src)
 		if err != nil {
 			log.Error().Err(err).Str("src", src).Msg("stat source file")
@@ -44,6 +42,8 @@ func backupConfigs(name string, configs map[string]string) {
 
 			return
 		}
+
+		dst := filepath.Join(baseDir, filepath.Base(src)+"."+ts)
 
 		in, err := os.Open(src)
 		if err != nil {
