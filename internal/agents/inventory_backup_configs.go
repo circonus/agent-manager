@@ -19,6 +19,7 @@ import (
 func backupConfigs(name string, configs map[string]string) {
 	ts := time.Now().Format("20060102_150405")
 	baseDir := filepath.Join(defaults.EtcPath, "configs", name)
+	// e.g. /opt/circonus/am/etc/configs/telegraf
 
 	if err := os.MkdirAll(baseDir, 0700); err != nil {
 		if !errors.Is(err, os.ErrExist) {
