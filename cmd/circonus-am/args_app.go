@@ -24,7 +24,7 @@ func initAppArgs(cmd *cobra.Command) {
 			defaultValue = ""
 		)
 
-		cmd.PersistentFlags().String(longOpt, defaultValue, description)
+		cmd.PersistentFlags().String(longOpt, defaultValue, envDescription(description, envVar))
 		bindFlagError(longOpt, viper.BindPFlag(key, cmd.PersistentFlags().Lookup(longOpt)))
 		bindEnvError(envVar, viper.BindEnv(key, envVar))
 		viper.SetDefault(key, defaultValue)
@@ -45,9 +45,9 @@ func initAppArgs(cmd *cobra.Command) {
 
 	{
 		const (
-			key          = keys.Decomission
-			longOpt      = "decomission"
-			description  = "Decomission agent manager and exit"
+			key          = keys.Decommission
+			longOpt      = "decommission"
+			description  = "Decommission agent manager and exit"
 			defaultValue = false
 		)
 
@@ -164,5 +164,4 @@ func initAppArgs(cmd *cobra.Command) {
 		bindEnvError(envVar, viper.BindEnv(key, envVar))
 		viper.SetDefault(key, defaultValue)
 	}
-
 }
