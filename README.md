@@ -22,19 +22,21 @@ Usage:
   circonus-am [flags]
 
 Flags:
-      --apiurl string              [ENV: CAM_API_URL] Circonus API URL (default "https://web-api.svcs-np.circonus.net/configurations/v1")
-      --aws-ec2-tags strings       [ENV: CAM_AWS_EC2_TAGS] AWS EC2 tags for registration meta data
-  -c, --config string              config file (default: /opt/circonus/am/etc/circonus-am.yaml|.json|.toml)
-  -d, --debug                      [ENV: CAM_DEBUG] Enable debug messages
-  -h, --help                       help for circonus-am
-      --inventory                  Inventory installed agents and exit
-      --log-level string           [ENV: CAM_LOG_LEVEL] Log level [(panic|fatal|error|warn|info|debug|disabled)] (default "info")
-      --log-pretty                 Output formatted/colored log lines [ignored on windows]
-      --poll-interval string       [ENV: CAM_POLL_INTERVAL] Polling interval for actions (default "60s")
-      --register string            Registration token -- register agent manager, inventory installed agents, and exit
-      --tags strings               [ENV: CAM_TAGS] Custom key:value tags for registration meta data
-  -V, --version                    Show version and exit
-
+      --agents strings         [ENV: CAM_AGENTS] List of agents (Docker specific)
+      --apiurl string          [ENV: CAM_API_URL] Circonus API URL (default "https://agents-api.circonus.app/configurations/v1")
+      --aws-ec2-tags strings   [ENV: CAM_AWS_EC2_TAGS] AWS EC2 tags for registration meta data
+  -c, --config string          config file (default: /Users/mgm/src/circonus/agent-manager/dist/am-macos_amd64_darwin_amd64_v1/etc/circonus-am.yaml|.json|.toml)
+  -d, --debug                  [ENV: CAM_DEBUG] Enable debug messages
+      --decommission           Decommission agent manager and exit
+  -h, --help                   help for circonus-am
+      --instance-id string     [ENV: CAM_INSTANCE_ID] Instance ID (Docker specific)
+      --inventory              Inventory installed agents and exit
+      --log-level string       [ENV: CAM_LOG_LEVEL] Log level [(panic|fatal|error|warn|info|debug|disabled)] (default "info")
+      --log-pretty             Output formatted/colored log lines [ignored on windows]
+      --poll-interval string   [ENV: CAM_POLL_INTERVAL] Polling interval for actions (default "60s")
+      --register string        [ENV: CAM_REGISTER] Registration token -- register agent manager, inventory installed agents and exit
+      --tags strings           [ENV: CAM_TAGS] Custom key:value tags for registration meta data
+  -V, --version                Show version and exit
   ```
 
 ## Note on tags
