@@ -15,7 +15,7 @@ import (
 	"github.com/circonus/agent-manager/internal/config"
 	"github.com/circonus/agent-manager/internal/config/keys"
 	"github.com/circonus/agent-manager/internal/credentials"
-	"github.com/circonus/agent-manager/internal/decomission"
+	"github.com/circonus/agent-manager/internal/decommission"
 	"github.com/circonus/agent-manager/internal/registration"
 	"github.com/circonus/agent-manager/internal/release"
 	"github.com/rs/zerolog"
@@ -64,11 +64,11 @@ func (m *Manager) Start() error {
 
 	log.Info().Str("name", release.NAME).Str("version", release.VERSION).Msg("starting")
 
-	if viper.GetBool(keys.Decomission) {
-		if err := decomission.Start(m.groupCtx); err != nil {
+	if viper.GetBool(keys.Decommission) {
+		if err := decommission.Start(m.groupCtx); err != nil {
 			log.Fatal().Err(err).Msg("decommissioning agent manager")
 		} else {
-			m.logger.Info().Msg("decomission complete")
+			m.logger.Info().Msg("decommission complete")
 			os.Exit(0)
 		}
 	}
@@ -124,7 +124,7 @@ func (m *Manager) Start() error {
 		}
 
 		if viper.GetBool(keys.Inventory) {
-			m.logger.Info().Msg("invetory complete")
+			m.logger.Info().Msg("inventory complete")
 			os.Exit(0)
 		}
 	}

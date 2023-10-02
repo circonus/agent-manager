@@ -8,9 +8,9 @@ package keys
 const (
 
 	// Register - token to use for registering this CMA.
-	Register    = "register"
-	Inventory   = "invetory"
-	Decomission = "decomission"
+	Register     = "register"
+	Inventory    = "inventory"
+	Decommission = "decommission"
 
 	APIURL            = "api.url"
 	APIToken          = "api.token"
