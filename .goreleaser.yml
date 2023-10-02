@@ -113,7 +113,8 @@ brews:
       error_log_path var/"log/circonus-agent-manager.log"
 
 nfpms:
-  - vendor: Circonus, Inc.
+  - id: cam
+    vendor: Circonus, Inc.
     homepage: https://circonus.com
     maintainer: Circonus <support@circonus.com>
     description: Circonus Agent Manager
@@ -137,6 +138,9 @@ nfpms:
       - src: "etc/circonus-am.yaml" 
         dst: "/opt/circonus/am/etc/circonus-am.yaml"
         type: "config|noreplace"
+    rpm:
+      signature:
+        key_file: "{{ .Env.GPG_RPM_KEY_PATH }}"
     overrides:
       deb:
         scripts:
