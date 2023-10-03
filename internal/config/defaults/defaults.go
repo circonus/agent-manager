@@ -25,7 +25,8 @@ const (
 	LogLevel  = "info"
 	LogPretty = false
 
-	UseMachineID = true
+	UseMachineID  = true
+	ForceRegister = false
 )
 
 var (
