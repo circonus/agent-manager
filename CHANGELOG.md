@@ -2,6 +2,9 @@
 
 ## v0.2.9
 
+* chore(deps): bump github.com/aws/aws-sdk-go-v2/config from 1.18.39 to 1.18.43
+* chore(deps): bump github.com/shirou/gopsutil/v3 from 3.23.8 to 3.23.9
+* chore(deps): bump github.com/rs/zerolog from 1.30.0 to 1.31.0
 * fix: is registered check to catch for inventory as well
 * feat: add already registered message
 * feat: add --force-register option (force a re-registration for a manager)
