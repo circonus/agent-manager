@@ -144,8 +144,10 @@ func write(file string, data []byte) error {
 }
 
 func DoesFileExist(file string) bool {
-	if _, err := os.Stat(file); err == nil {
-		return true
+	if fs, err := os.Stat(file); err == nil {
+		if fs.Size() > 0 {
+			return true
+		}
 	} else if errors.Is(err, os.ErrNotExist) {
 		return false
 	}
