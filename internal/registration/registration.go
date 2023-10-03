@@ -365,10 +365,10 @@ func formatTags(tags []string) []string {
 }
 
 func IsRegistered() bool {
-	if !credentials.DoesFileExist(viper.GetString(keys.JwtTokenFile)) ||
-		!credentials.DoesFileExist(viper.GetString(keys.ManagerIDFile)) {
-		return false
+	if credentials.DoesFileExist(viper.GetString(keys.JwtTokenFile)) &&
+		credentials.DoesFileExist(viper.GetString(keys.ManagerIDFile)) {
+		return true
 	}
 
-	return true
+	return false
 }

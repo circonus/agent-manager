@@ -73,8 +73,10 @@ func (m *Manager) Start() error {
 		}
 	}
 
+	isRegistered := registration.IsRegistered()
+
 	if viper.GetString(keys.Register) != "" {
-		if registration.IsRegistered() {
+		if isRegistered {
 			log.Info().Msg("agent manager already registered, see --force-register")
 		} else {
 			if err := registration.Start(m.groupCtx); err != nil {
@@ -107,7 +109,8 @@ func (m *Manager) Start() error {
 		}
 	}
 
-	if viper.GetString(keys.Register) != "" || viper.GetBool(keys.Inventory) {
+	if (!isRegistered && viper.GetString(keys.Register) != "") ||
+		viper.GetBool(keys.Inventory) {
 		if err := agents.FetchAgents(m.groupCtx); err != nil {
 			log.Fatal().Err(err).Msg("fetching agents")
 		}
