@@ -8,9 +8,10 @@ package keys
 const (
 
 	// Register - token to use for registering this CMA.
-	Register    = "register"
-	Inventory   = "invetory"
-	Decomission = "decomission"
+	Register      = "register"
+	ForceRegister = "force_register"
+	Inventory     = "inventory"
+	Decommission  = "decommission"
 
 	APIURL            = "api.url"
 	APIToken          = "api.token"
@@ -47,6 +48,11 @@ const (
 
 	// UseMachineID - use the machine id or generate a uuid.
 	UseMachineID = "use_machine_id"
+
+	// InstanceID - provide an override for ephemeral environments (docker).
+	InstanceID = "instance_id"
+	// Agents - list of agents manager will manager (docker).
+	Agents = "agents"
 
 	//
 	// Informational

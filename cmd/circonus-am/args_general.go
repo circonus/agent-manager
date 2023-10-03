@@ -21,7 +21,7 @@ func initGeneralArgs(cmd *cobra.Command) {
 			shortOpt    = "c"
 			description = "config file (default: " + defaults.ConfigFile + "|.json|.toml)"
 		)
-		cmd.PersistentFlags().StringVarP(&cfgFile, longOpt, shortOpt, "", description)
+		cmd.Flags().StringVarP(&cfgFile, longOpt, shortOpt, "", description)
 	}
 
 	{
@@ -48,8 +48,8 @@ func initGeneralArgs(cmd *cobra.Command) {
 			defaultValue = defaults.Debug
 		)
 
-		cmd.PersistentFlags().BoolP(longOpt, shortOpt, defaultValue, envDescription(description, envVar))
-		bindFlagError(longOpt, viper.BindPFlag(key, cmd.PersistentFlags().Lookup(longOpt)))
+		cmd.Flags().BoolP(longOpt, shortOpt, defaultValue, envDescription(description, envVar))
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.Flags().Lookup(longOpt)))
 		bindEnvError(envVar, viper.BindEnv(key, envVar))
 		viper.SetDefault(key, defaultValue)
 	}
@@ -63,8 +63,8 @@ func initGeneralArgs(cmd *cobra.Command) {
 			defaultValue = defaults.LogLevel
 		)
 
-		cmd.PersistentFlags().String(longOpt, defaultValue, envDescription(description, envVar))
-		bindFlagError(longOpt, viper.BindPFlag(key, cmd.PersistentFlags().Lookup(longOpt)))
+		cmd.Flags().String(longOpt, defaultValue, envDescription(description, envVar))
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.Flags().Lookup(longOpt)))
 		bindEnvError(envVar, viper.BindEnv(key, envVar))
 		viper.SetDefault(key, defaultValue)
 	}
@@ -77,8 +77,8 @@ func initGeneralArgs(cmd *cobra.Command) {
 			defaultValue = defaults.LogPretty
 		)
 
-		cmd.PersistentFlags().Bool(longOpt, defaultValue, description)
-		bindFlagError(longOpt, viper.BindPFlag(key, cmd.PersistentFlags().Lookup(longOpt)))
+		cmd.Flags().Bool(longOpt, defaultValue, description)
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.Flags().Lookup(longOpt)))
 		viper.SetDefault(key, defaultValue)
 	}
 }

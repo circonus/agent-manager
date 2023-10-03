@@ -19,6 +19,7 @@ import (
 	"strings"
 
 	"github.com/circonus/agent-manager/internal/config/keys"
+	"github.com/circonus/agent-manager/internal/registration"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
@@ -156,15 +157,10 @@ func CheckForAgents(ctx context.Context) error {
 			continue
 		}
 
-		// only check for binary...
-		//
-		// for _, path := range a.ConfigFiles {
-		// 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
-		// 		log.Warn().Str("file", path).Msg("required config file not found, skipping")
-
-		// 		continue
-		// 	}
-		// }
+		if viper.GetString(keys.Register) != "" {
+			// if this is a registration, backup current configs
+			backupConfigs(name, a.ConfigFiles)
+		}
 
 		ver, err := getAgentVersion(a.Version)
 		if err != nil {
@@ -173,6 +169,25 @@ func CheckForAgents(ctx context.Context) error {
 
 		log.Info().Str("agent", name).Msg("found")
 		found = append(found, InstalledAgent{AgentTypeID: name, Version: ver})
+	}
+
+	if registration.IsRunningInDocker() && len(viper.GetStringSlice(keys.Agents)) > 0 {
+		for _, name := range viper.GetStringSlice(keys.Agents) {
+			a, ok := gaa[name]
+			if !ok {
+				log.Error().Str("agent", name).Msg("agent not found in inventory, skipping")
+
+				continue
+			}
+
+			if viper.GetString(keys.Register) != "" {
+				// if this is a registration, backup current configs
+				backupConfigs(name, a.ConfigFiles)
+			}
+
+			log.Info().Str("agent", name).Msg("force add agent from --agents")
+			found = append(found, InstalledAgent{AgentTypeID: name, Version: noVersion})
+		}
 	}
 
 	if len(found) > 0 {

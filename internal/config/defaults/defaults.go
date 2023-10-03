@@ -25,7 +25,8 @@ const (
 	LogLevel  = "info"
 	LogPretty = false
 
-	UseMachineID = true
+	UseMachineID  = true
+	ForceRegister = false
 )
 
 var (
@@ -56,6 +57,7 @@ var (
 
 	AWSEC2Tags = []string{}
 	Tags       = []string{}
+	Agents     = []string{}
 )
 
 func init() { //nolint:gochecknoinits

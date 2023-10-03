@@ -20,11 +20,27 @@ func initAppArgs(cmd *cobra.Command) {
 			key          = keys.Register
 			longOpt      = "register"
 			description  = "Registration token -- register agent manager, inventory installed agents and exit"
+			envVar       = release.ENVPREFIX + "_REGISTER"
 			defaultValue = ""
 		)
 
-		cmd.PersistentFlags().String(longOpt, defaultValue, description)
-		bindFlagError(longOpt, viper.BindPFlag(key, cmd.PersistentFlags().Lookup(longOpt)))
+		cmd.Flags().String(longOpt, defaultValue, envDescription(description, envVar))
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.Flags().Lookup(longOpt)))
+		bindEnvError(envVar, viper.BindEnv(key, envVar))
+		viper.SetDefault(key, defaultValue)
+	}
+	{
+		const (
+			key          = keys.ForceRegister
+			longOpt      = "force-register"
+			envVar       = release.ENVPREFIX + "_FORCE_REGISTER"
+			description  = "Force registration attempt, even if manager is already registered"
+			defaultValue = defaults.ForceRegister
+		)
+
+		cmd.Flags().Bool(longOpt, defaultValue, envDescription(description, envVar))
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.Flags().Lookup(longOpt)))
+		bindEnvError(envVar, viper.BindEnv(key, envVar))
 		viper.SetDefault(key, defaultValue)
 	}
 
@@ -36,21 +52,21 @@ func initAppArgs(cmd *cobra.Command) {
 			defaultValue = false
 		)
 
-		cmd.PersistentFlags().Bool(longOpt, defaultValue, description)
-		bindFlagError(longOpt, viper.BindPFlag(key, cmd.PersistentFlags().Lookup(longOpt)))
+		cmd.Flags().Bool(longOpt, defaultValue, description)
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.Flags().Lookup(longOpt)))
 		viper.SetDefault(key, defaultValue)
 	}
 
 	{
 		const (
-			key          = keys.Decomission
-			longOpt      = "decomission"
-			description  = "Decomission agent manager and exit"
+			key          = keys.Decommission
+			longOpt      = "decommission"
+			description  = "Decommission agent manager and exit"
 			defaultValue = false
 		)
 
-		cmd.PersistentFlags().Bool(longOpt, defaultValue, description)
-		bindFlagError(longOpt, viper.BindPFlag(key, cmd.PersistentFlags().Lookup(longOpt)))
+		cmd.Flags().Bool(longOpt, defaultValue, description)
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.Flags().Lookup(longOpt)))
 		viper.SetDefault(key, defaultValue)
 	}
 
@@ -63,8 +79,8 @@ func initAppArgs(cmd *cobra.Command) {
 			defaultValue = defaults.APIURL
 		)
 
-		cmd.PersistentFlags().String(longOpt, defaultValue, envDescription(description, envVar))
-		bindFlagError(longOpt, viper.BindPFlag(key, cmd.PersistentFlags().Lookup(longOpt)))
+		cmd.Flags().String(longOpt, defaultValue, envDescription(description, envVar))
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.Flags().Lookup(longOpt)))
 		bindEnvError(envVar, viper.BindEnv(key, envVar))
 		viper.SetDefault(key, defaultValue)
 	}
@@ -78,8 +94,8 @@ func initAppArgs(cmd *cobra.Command) {
 			defaultValue = defaults.PollingInterval
 		)
 
-		cmd.PersistentFlags().String(longOpt, defaultValue, envDescription(description, envVar))
-		bindFlagError(longOpt, viper.BindPFlag(key, cmd.PersistentFlags().Lookup(longOpt)))
+		cmd.Flags().String(longOpt, defaultValue, envDescription(description, envVar))
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.Flags().Lookup(longOpt)))
 		bindEnvError(envVar, viper.BindEnv(key, envVar))
 		viper.SetDefault(key, defaultValue)
 	}
@@ -93,8 +109,8 @@ func initAppArgs(cmd *cobra.Command) {
 		)
 		defaultValue := defaults.AWSEC2Tags
 
-		cmd.PersistentFlags().StringSlice(longOpt, defaultValue, envDescription(description, envVar))
-		bindFlagError(longOpt, viper.BindPFlag(key, cmd.PersistentFlags().Lookup(longOpt)))
+		cmd.Flags().StringSlice(longOpt, defaultValue, envDescription(description, envVar))
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.Flags().Lookup(longOpt)))
 		bindEnvError(envVar, viper.BindEnv(key, envVar))
 		viper.SetDefault(key, defaultValue)
 	}
@@ -110,8 +126,8 @@ func initAppArgs(cmd *cobra.Command) {
 		)
 		defaultValue := defaults.Tags
 
-		cmd.PersistentFlags().StringSlice(longOpt, defaultValue, envDescription(description, envVar))
-		bindFlagError(longOpt, viper.BindPFlag(key, cmd.PersistentFlags().Lookup(longOpt)))
+		cmd.Flags().StringSlice(longOpt, defaultValue, envDescription(description, envVar))
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.Flags().Lookup(longOpt)))
 		bindEnvError(envVar, viper.BindEnv(key, envVar))
 		viper.SetDefault(key, defaultValue)
 	}
@@ -119,7 +135,7 @@ func initAppArgs(cmd *cobra.Command) {
 	{
 		const (
 			key         = keys.UseMachineID
-			longOpt     = "use_machine_id"
+			longOpt     = "use-machine-id"
 			envVar      = release.ENVPREFIX + "_USE_MACHINE_ID"
 			description = "Use machine_id or generate uuid"
 		)
@@ -129,6 +145,36 @@ func initAppArgs(cmd *cobra.Command) {
 		flag := cmd.Flags().Lookup(longOpt)
 		flag.Hidden = true
 		bindFlagError(longOpt, viper.BindPFlag(key, flag))
+		bindEnvError(envVar, viper.BindEnv(key, envVar))
+		viper.SetDefault(key, defaultValue)
+	}
+
+	{
+		const (
+			key          = keys.InstanceID
+			longOpt      = "instance-id"
+			envVar       = release.ENVPREFIX + "_INSTANCE_ID"
+			description  = "Instance ID (Docker specific)"
+			defaultValue = ""
+		)
+
+		cmd.Flags().String(longOpt, defaultValue, envDescription(description, envVar))
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.Flags().Lookup(longOpt)))
+		bindEnvError(envVar, viper.BindEnv(key, envVar))
+		viper.SetDefault(key, defaultValue)
+	}
+
+	{
+		const (
+			key         = keys.Agents
+			longOpt     = "agents"
+			envVar      = release.ENVPREFIX + "_AGENTS"
+			description = "List of agents (Docker specific)"
+		)
+		defaultValue := defaults.Agents
+
+		cmd.Flags().StringSlice(longOpt, defaultValue, envDescription(description, envVar))
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.Flags().Lookup(longOpt)))
 		bindEnvError(envVar, viper.BindEnv(key, envVar))
 		viper.SetDefault(key, defaultValue)
 	}

@@ -1,5 +1,27 @@
 # unreleased
 
+## v0.2.9
+
+* fix: is registered check to catch for inventory as well
+* feat: add already registered message
+* feat: add --force-register option (force a re-registration for a manager)
+* feat: add IsRegistered to prevent manager attempting to re-register itself every time a container restarts
+* feat: ensure an existing credential file is >0 bytes if it exists
+* feat(docker): add all assets to /cam to ensure correct etc/ usage
+* doc: update flags documentation
+* fix: typos
+* feat(rpm): sign rpm files
+* chore: print env var for register
+* chore(cfgbak): add mode to err msg when src not regular file
+* chore(cfgbak): refactor order in cfg loop
+* chore(cfgbak): update text of completion message
+* chore: breakout config backup
+* feat: backup configs on registration and inventory
+* feat: register and run when in container
+* feat: add --instance-id and --agents args for containers
+* feat: add --instance-id and use ss override for hostname
+* feat: add container detector
+
 ## v0.2.8
 
 * feat: add 30s timeout to commands
@@ -32,11 +54,11 @@
 ## v0.2.4
 
 * chore: ensure manager id is loaded for refresh
-* feat: add some progress debug messages to decomission
+* feat: add some progress debug messages to decommission
 * fix: incorrect flag type for setting hidden
 * fix: error message on token refresh
 * feat: use machine id option
-* feat: decomission the agent manager
+* feat: decommission the agent manager
 * doc: change start to restart after registration (linux)
 * chore(deps): bump github.com/aws/aws-sdk-go-v2/config from 1.18.32 to 1.18.39
 * chore(deps): bump golangci/golangci-lint-action from 3.6.0 to 3.7.0
@@ -62,7 +84,7 @@
 * feat: add tags cli option
 * feat: single use registration token
 * feat: registration token to refresh token
-* feat: cutom tags support
+* feat: custom tags support
 * feat: use Authorization header
 * feat: access and refresh token support
 * feat: refresh token on 401 from api
@@ -93,7 +115,7 @@
 
 ## v0.1.0
 
-* doc: add some linux spcefic install instructions
+* doc: add some linux specific install instructions
 * feat: add darwin support w/brew
 * chore: ignore vagrant stuff for testing
 * feat: add mac signing script

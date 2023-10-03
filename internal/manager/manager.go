@@ -15,7 +15,7 @@ import (
 	"github.com/circonus/agent-manager/internal/config"
 	"github.com/circonus/agent-manager/internal/config/keys"
 	"github.com/circonus/agent-manager/internal/credentials"
-	"github.com/circonus/agent-manager/internal/decomission"
+	"github.com/circonus/agent-manager/internal/decommission"
 	"github.com/circonus/agent-manager/internal/registration"
 	"github.com/circonus/agent-manager/internal/release"
 	"github.com/rs/zerolog"
@@ -64,18 +64,24 @@ func (m *Manager) Start() error {
 
 	log.Info().Str("name", release.NAME).Str("version", release.VERSION).Msg("starting")
 
-	if viper.GetBool(keys.Decomission) {
-		if err := decomission.Start(m.groupCtx); err != nil {
+	if viper.GetBool(keys.Decommission) {
+		if err := decommission.Start(m.groupCtx); err != nil {
 			log.Fatal().Err(err).Msg("decommissioning agent manager")
 		} else {
-			m.logger.Info().Msg("decomission complete")
+			m.logger.Info().Msg("decommission complete")
 			os.Exit(0)
 		}
 	}
 
+	isRegistered := registration.IsRegistered()
+
 	if viper.GetString(keys.Register) != "" {
-		if err := registration.Start(m.groupCtx); err != nil {
-			log.Fatal().Err(err).Msg("registering agent manager")
+		if isRegistered {
+			log.Info().Msg("agent manager already registered, see --force-register")
+		} else {
+			if err := registration.Start(m.groupCtx); err != nil {
+				log.Fatal().Err(err).Msg("registering agent manager")
+			}
 		}
 	}
 
@@ -92,7 +98,19 @@ func (m *Manager) Start() error {
 		log.Fatal().Err(err).Msg("loading API credentials")
 	}
 
-	if viper.GetString(keys.Register) != "" || viper.GetBool(keys.Inventory) {
+	if viper.GetString(keys.Register) != "" && registration.IsRunningInDocker() {
+		// verify that --agents and --instance-id have been provided
+		if len(viper.GetStringSlice(keys.Agents)) == 0 {
+			log.Fatal().Msg("--agents required to run in container")
+		}
+
+		if viper.GetString(keys.InstanceID) == "" {
+			log.Fatal().Msg("--instance-id required to run in a container")
+		}
+	}
+
+	if (!isRegistered && viper.GetString(keys.Register) != "") ||
+		viper.GetBool(keys.Inventory) {
 		if err := agents.FetchAgents(m.groupCtx); err != nil {
 			log.Fatal().Err(err).Msg("fetching agents")
 		}
@@ -102,18 +120,20 @@ func (m *Manager) Start() error {
 		}
 	}
 
-	//
-	// these two are command line actions and will exit after completion.
-	//
+	if !registration.IsRunningInDocker() {
+		//
+		// these two are command line actions and will exit after completion
+		// when not running in a docker/container.
+		//
+		if viper.GetString(keys.Register) != "" {
+			m.logger.Info().Msg("registration complete")
+			os.Exit(0)
+		}
 
-	if viper.GetString(keys.Register) != "" {
-		m.logger.Info().Msg("registration complete")
-		os.Exit(0)
-	}
-
-	if viper.GetBool(keys.Inventory) {
-		m.logger.Info().Msg("invetory complete")
-		os.Exit(0)
+		if viper.GetBool(keys.Inventory) {
+			m.logger.Info().Msg("inventory complete")
+			os.Exit(0)
+		}
 	}
 
 	m.logger.Debug().

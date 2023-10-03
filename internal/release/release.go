@@ -15,7 +15,7 @@ const (
 
 // vars are manipulated at link time (see .goreleaser.yml).
 var (
-	// COMMIT of relase in git repo.
+	// COMMIT of release in git repo.
 	COMMIT = "none"
 	// DATE of release.
 	DATE = "unknown"
