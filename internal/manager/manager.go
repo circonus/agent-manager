@@ -73,7 +73,7 @@ func (m *Manager) Start() error {
 		}
 	}
 
-	if viper.GetString(keys.Register) != "" {
+	if viper.GetString(keys.Register) != "" && !registration.IsRegistered() {
 		if err := registration.Start(m.groupCtx); err != nil {
 			log.Fatal().Err(err).Msg("registering agent manager")
 		}

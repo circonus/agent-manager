@@ -363,3 +363,12 @@ func formatTags(tags []string) []string {
 
 	return t
 }
+
+func IsRegistered() bool {
+	if !credentials.DoesFileExist(viper.GetString(keys.JwtTokenFile)) ||
+		!credentials.DoesFileExist(viper.GetString(keys.ManagerIDFile)) {
+		return false
+	}
+
+	return true
+}
