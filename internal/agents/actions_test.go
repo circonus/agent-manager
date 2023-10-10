@@ -110,6 +110,7 @@ func Test_getActions(t *testing.T) {
 			invFile:  inventoryFileName(),
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			viper.Set(keys.APIURL, tt.reqURL)

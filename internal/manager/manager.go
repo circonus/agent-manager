@@ -16,6 +16,7 @@ import (
 	"github.com/circonus/agent-manager/internal/config/keys"
 	"github.com/circonus/agent-manager/internal/credentials"
 	"github.com/circonus/agent-manager/internal/decommission"
+	"github.com/circonus/agent-manager/internal/inventory"
 	"github.com/circonus/agent-manager/internal/registration"
 	"github.com/circonus/agent-manager/internal/release"
 	"github.com/rs/zerolog"
@@ -111,11 +112,11 @@ func (m *Manager) Start() error {
 
 	if (!isRegistered && viper.GetString(keys.Register) != "") ||
 		viper.GetBool(keys.Inventory) {
-		if err := agents.FetchAgents(m.groupCtx); err != nil {
+		if err := inventory.FetchAgents(m.groupCtx); err != nil {
 			log.Fatal().Err(err).Msg("fetching agents")
 		}
 
-		if err := agents.CheckForAgents(m.groupCtx); err != nil {
+		if err := inventory.CheckForAgents(m.groupCtx); err != nil {
 			log.Fatal().Err(err).Msg("checking for installed agents")
 		}
 	}

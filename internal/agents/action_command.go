@@ -9,6 +9,8 @@ import (
 	"context"
 	"encoding/base64"
 
+	"github.com/circonus/agent-manager/internal/inventory"
+	"github.com/circonus/agent-manager/internal/platform"
 	"github.com/rs/zerolog/log"
 )
 
@@ -23,19 +25,19 @@ const (
 )
 
 func runCommands(ctx context.Context, action Action) error {
-	agents, err := LoadAgents()
+	agents, err := inventory.LoadAgents()
 	if err != nil {
-		return err
+		return err // nolint:wrapcheck
 	}
 
-	platform := getPlatform()
+	platform := platform.Get()
 
 	for _, command := range action.Commands {
 		switch command.Command {
 		case INVENTORY:
-			if err := FetchAgents(ctx); err != nil {
+			if err := inventory.FetchAgents(ctx); err != nil {
 				log.Error().Err(err).Msg("refreshing agent list")
-			} else if err := CheckForAgents(ctx); err != nil {
+			} else if err := inventory.CheckForAgents(ctx); err != nil {
 				log.Error().Err(err).Msg("checking for installed agents")
 			}
 		case START:

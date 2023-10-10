@@ -166,7 +166,7 @@ func sendConfigResult(ctx context.Context, r ConfigResult) error {
 		return fmt.Errorf("marshal result: %w", err)
 	}
 
-	fmt.Printf("sending config result: %v\n", string(data))
+	log.Debug().RawJSON("result", data).Msg("sending config result")
 
 	return sendActionResult(ctx, data)
 }
@@ -217,7 +217,7 @@ func sendActionResult(ctx context.Context, data []byte) error {
 	}
 
 	if len(body) > 0 {
-		log.Debug().Str("body", string(body)).Msg("action result response")
+		log.Debug().RawJSON("body", body).Msg("action result response")
 	}
 
 	return nil
