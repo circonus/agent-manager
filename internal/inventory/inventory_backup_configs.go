@@ -3,25 +3,27 @@
 // license that can be found in the LICENSE file.
 //
 
-package agents
+package inventory
 
 import (
 	"errors"
 	"io"
 	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/circonus/agent-manager/internal/config/defaults"
 	"github.com/rs/zerolog/log"
 )
 
 func backupConfigs(name string, configs map[string]string) {
-	ts := time.Now().Format("20060102_150405")
 	baseDir := filepath.Join(defaults.EtcPath, "configs", name)
 	// e.g. /opt/circonus/am/etc/configs/telegraf
 
 	if err := os.MkdirAll(baseDir, 0700); err != nil {
+		if errors.Is(err, os.ErrExist) {
+			return // don't need to backup again
+		}
+
 		if !errors.Is(err, os.ErrExist) {
 			log.Error().Err(err).Str("path", baseDir).Msg("unable to make config dir to save backup")
 
@@ -43,7 +45,7 @@ func backupConfigs(name string, configs map[string]string) {
 			return
 		}
 
-		dst := filepath.Join(baseDir, filepath.Base(src)+"."+ts)
+		dst := filepath.Join(baseDir, filepath.Base(src))
 
 		in, err := os.Open(src)
 		if err != nil {
