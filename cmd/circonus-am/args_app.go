@@ -102,6 +102,21 @@ func initAppArgs(cmd *cobra.Command) {
 
 	{
 		const (
+			key          = keys.TrackerPollingInterval
+			longOpt      = "tracker-poll-interval"
+			envVar       = release.ENVPREFIX + "_TRACKER_POLL_INTERVAL"
+			description  = "Polling interval for tracking and verifying checksums"
+			defaultValue = defaults.TrackerPollingInterval
+		)
+
+		cmd.Flags().String(longOpt, defaultValue, envDescription(description, envVar))
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.Flags().Lookup(longOpt)))
+		bindEnvError(envVar, viper.BindEnv(key, envVar))
+		viper.SetDefault(key, defaultValue)
+	}
+
+	{
+		const (
 			key         = keys.AWSEC2Tags
 			longOpt     = "aws-ec2-tags"
 			envVar      = release.ENVPREFIX + "_AWS_EC2_TAGS"

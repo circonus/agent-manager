@@ -23,6 +23,9 @@ const (
 	// frequency of polling for actions.
 	PollingInterval = "poll_interval"
 
+	// frequency of tracking config checksums
+	TrackerPollingInterval = "tracker_poll_interval"
+
 	// AWS EC2 tags to be included in registration meta data.
 	AWSEC2Tags = "aws_ec2_tags"
 
