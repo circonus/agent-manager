@@ -20,8 +20,9 @@ const (
 	defaultStatus = "unknown"
 )
 
-func getStatus(ctx context.Context, cmd string) (string, string, int, error) {
+func getStatus(ctx context.Context, cmd string) (string, string, string, int, error) {
 	currStatus := defaultStatus
+	subStatus := ""
 
 	switch {
 	case strings.HasPrefix(cmd, "systemctl"):
@@ -30,11 +31,12 @@ func getStatus(ctx context.Context, cmd string) (string, string, int, error) {
 		return brewStatus(ctx, cmd)
 	}
 
-	return currStatus, "", -1, fmt.Errorf("unable to obtain status") //nolint:goerr113
+	return currStatus, subStatus, "", -1, fmt.Errorf("unable to obtain status") //nolint:goerr113
 }
 
-func brewStatus(ctx context.Context, cmd string) (string, string, int, error) {
+func brewStatus(ctx context.Context, cmd string) (string, string, string, int, error) {
 	currStatus := defaultStatus
+	subStatus := ""
 
 	if !strings.HasSuffix(cmd, "--json") {
 		cmd += " --json"
@@ -42,11 +44,11 @@ func brewStatus(ctx context.Context, cmd string) (string, string, int, error) {
 
 	output, exitCode, err := execute(ctx, cmd)
 	if err != nil {
-		return currStatus, base64.StdEncoding.EncodeToString(output), exitCode, err
+		return currStatus, subStatus, base64.StdEncoding.EncodeToString(output), exitCode, err
 	}
 
 	if exitCode != 0 {
-		return currStatus, base64.StdEncoding.EncodeToString(output), exitCode, err
+		return currStatus, subStatus, base64.StdEncoding.EncodeToString(output), exitCode, err
 	}
 
 	if bytes.Contains(output, []byte(`"running": true`)) {
@@ -55,7 +57,7 @@ func brewStatus(ctx context.Context, cmd string) (string, string, int, error) {
 		currStatus = "stopped"
 	}
 
-	return currStatus, base64.StdEncoding.EncodeToString(output), exitCode, err
+	return currStatus, subStatus, base64.StdEncoding.EncodeToString(output), exitCode, err
 }
 
 func systemctlStatus(ctx context.Context, cmd string) (string, string, string, int, error) {
@@ -75,8 +77,6 @@ func systemctlStatus(ctx context.Context, cmd string) (string, string, string, i
 
 	scanner := bufio.NewScanner(bytes.NewReader(output))
 
-	aState := ""
-	sState := ""
 	sep := "="
 
 	for scanner.Scan() {
@@ -97,7 +97,7 @@ func systemctlStatus(ctx context.Context, cmd string) (string, string, string, i
 	}
 
 	if err = scanner.Err(); err != nil {
-		return currStatus, "error processing command output", -1, err //nolint:wrapcheck
+		return currStatus, subStatus, "error processing command output", -1, err //nolint:wrapcheck
 	}
 
 	output, exitCode, err = execute(ctx, cmd)
