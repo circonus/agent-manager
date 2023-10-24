@@ -42,11 +42,11 @@ func brewStatus(ctx context.Context, cmd string) (string, string, string, int, e
 
 	output, exitCode, err := execute(ctx, cmd)
 	if err != nil {
-		return currStatus, subStatus, base64.StdEncoding.EncodeToString(output), exitCode, err
+		return currStatus, subStatus, base64.StdEncoding.EncodeToString(output), exitCode, fmt.Errorf("%s: %w", cmd, err)
 	}
 
 	if exitCode != 0 {
-		return currStatus, subStatus, base64.StdEncoding.EncodeToString(output), exitCode, err
+		return currStatus, subStatus, base64.StdEncoding.EncodeToString(output), exitCode, fmt.Errorf("%s: %w", cmd, err)
 	}
 
 	if bytes.Contains(output, []byte(`"running": true`)) {
@@ -55,5 +55,5 @@ func brewStatus(ctx context.Context, cmd string) (string, string, string, int, e
 		currStatus = "stopped"
 	}
 
-	return currStatus, subStatus, base64.StdEncoding.EncodeToString(output), exitCode, err
+	return currStatus, subStatus, base64.StdEncoding.EncodeToString(output), exitCode, nil
 }
