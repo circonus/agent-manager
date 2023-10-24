@@ -2,6 +2,8 @@
 
 ## v0.2.10
 
+* chore(deps): bump github.com/aws/aws-sdk-go-v2/feature/ec2/imds from 1.13.11 to 1.13.13
+* chore(deps): bump github.com/aws/aws-sdk-go-v2/config from 1.18.43 to 1.19.0
 * feat: add agent status [C3-1710]
 * feat: add agent status poller interval
 * feat: add config tracker poller
