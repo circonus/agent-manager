@@ -17,23 +17,23 @@ import (
 
 // manages polling for actions
 
-type Poller struct {
+type ActionPoller struct {
 	interval time.Duration
 }
 
-func NewPoller() (*Poller, error) {
-	pi := viper.GetString(keys.PollingInterval)
+func NewActionPoller() (*ActionPoller, error) {
+	pi := viper.GetString(keys.ActionPollingInterval)
 
 	i, err := time.ParseDuration(pi)
 	if err != nil {
 		return nil, fmt.Errorf("parsing polling interval: %w", err)
 	}
 
-	return &Poller{interval: i}, nil
+	return &ActionPoller{interval: i}, nil
 }
 
-func (p *Poller) Start(ctx context.Context) {
-	log.Info().Str("interval", p.interval.String()).Msg("starting poller")
+func (p *ActionPoller) Start(ctx context.Context) {
+	log.Info().Str("interval", p.interval.String()).Msg("starting action poller")
 
 	for {
 		t := time.NewTimer(p.interval)

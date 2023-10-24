@@ -77,7 +77,7 @@ func installConfigs(ctx context.Context, action Action) {
 			}
 
 			// save config hash as current.
-			if err := tracker.UpdateConfig(agentID, config.Path, data); err != nil {
+			if err := tracker.UpdateConfig(agentID, config.ID, config.Path, data); err != nil {
 				log.Error().Err(err).Msg("updating config tracking data")
 			}
 		}
