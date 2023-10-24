@@ -63,8 +63,12 @@ func (p *Poller) Start(ctx context.Context) {
 				}
 
 				for cfgID, path := range agent.ConfigFiles {
-					if err := VerifyConfig(a.AgentTypeID, cfgID, path); err != nil {
-						log.Error().Err(err).Str("agent", a.AgentTypeID).Str("id", cfgID).Str("file", path).Msg("config changed")
+					if err := VerifyConfig(ctx, a.AgentTypeID, path); err != nil {
+						log.Error().Err(err).
+							Str("agent", a.AgentTypeID).
+							Str("id", cfgID).
+							Str("file", path).
+							Msg("config tracking issue")
 
 						continue
 					}
