@@ -9,6 +9,7 @@ package agents
 
 import (
 	"context"
+	"fmt"
 	"os/exec"
 	"time"
 )
@@ -20,6 +21,9 @@ func execute(ctx context.Context, command string) ([]byte, int, error) {
 	cmd := exec.CommandContext(c, "bash", "-c", command)
 
 	output, err := cmd.CombinedOutput()
+	if err != nil {
+		return output, cmd.ProcessState.ExitCode(), fmt.Errorf("%s: %w", command, err)
+	}
 
-	return output, cmd.ProcessState.ExitCode(), err
+	return output, cmd.ProcessState.ExitCode(), nil
 }
