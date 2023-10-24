@@ -87,11 +87,11 @@ func initAppArgs(cmd *cobra.Command) {
 
 	{
 		const (
-			key          = keys.PollingInterval
-			longOpt      = "poll-interval"
-			envVar       = release.ENVPREFIX + "_POLL_INTERVAL"
+			key          = keys.ActionPollingInterval
+			longOpt      = "action-poll-interval"
+			envVar       = release.ENVPREFIX + "_ACTION_POLL_INTERVAL"
 			description  = "Polling interval for actions"
-			defaultValue = defaults.PollingInterval
+			defaultValue = defaults.ActionPollingInterval
 		)
 
 		cmd.Flags().String(longOpt, defaultValue, envDescription(description, envVar))
@@ -107,6 +107,21 @@ func initAppArgs(cmd *cobra.Command) {
 			envVar       = release.ENVPREFIX + "_TRACKER_POLL_INTERVAL"
 			description  = "Polling interval for tracking and verifying checksums"
 			defaultValue = defaults.TrackerPollingInterval
+		)
+
+		cmd.Flags().String(longOpt, defaultValue, envDescription(description, envVar))
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.Flags().Lookup(longOpt)))
+		bindEnvError(envVar, viper.BindEnv(key, envVar))
+		viper.SetDefault(key, defaultValue)
+	}
+
+	{
+		const (
+			key          = keys.StatusPollingInterval
+			longOpt      = "status-poll-interval"
+			envVar       = release.ENVPREFIX + "_STATUS_POLL_INTERVAL"
+			description  = "Polling interval for gathering agent status"
+			defaultValue = defaults.StatusPollingInterval
 		)
 
 		cmd.Flags().String(longOpt, defaultValue, envDescription(description, envVar))
