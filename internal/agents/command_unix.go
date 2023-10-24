@@ -20,9 +20,6 @@ func execute(ctx context.Context, command string) ([]byte, int, error) {
 	cmd := exec.CommandContext(c, "bash", "-c", command)
 
 	output, err := cmd.CombinedOutput()
-	if err != nil {
-		return nil, 0, err //nolint:wrapcheck
-	}
 
-	return output, cmd.ProcessState.ExitCode(), nil
+	return output, cmd.ProcessState.ExitCode(), err
 }
