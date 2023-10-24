@@ -9,18 +9,21 @@ import (
 	"context"
 	"encoding/base64"
 
+	"github.com/circonus/agent-manager/internal/inventory"
+	"github.com/circonus/agent-manager/internal/platform"
+	"github.com/circonus/agent-manager/internal/tracker"
 	"github.com/rs/zerolog/log"
 )
 
 func installConfigs(ctx context.Context, action Action) {
-	agents, err := LoadAgents()
+	agents, err := inventory.LoadAgents()
 	if err != nil {
 		log.Warn().Err(err).Msg("unable to load agents, skipping configs")
 
 		return
 	}
 
-	platform := getPlatform()
+	platform := platform.Get()
 
 	for agentID, configs := range action.Configs {
 		for _, config := range configs {
@@ -71,6 +74,11 @@ func installConfigs(ctx context.Context, action Action) {
 
 			if err := sendConfigResult(ctx, result); err != nil {
 				log.Error().Err(err).Msg("config result")
+			}
+
+			// save config hash as current.
+			if err := tracker.UpdateConfig(agentID, config.ID, config.Path, data); err != nil {
+				log.Error().Err(err).Msg("updating config tracking data")
 			}
 		}
 

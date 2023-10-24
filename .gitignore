@@ -92,3 +92,6 @@ Vagrantfile
 etc/.id
 etc/test*.yaml
 inventory.yaml
+internal/tracker/testdata/configs
+internal/tracker/testdata/agents.yaml
+internal/tracker/testdata/*.conf

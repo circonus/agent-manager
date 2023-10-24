@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 //
 
-package agents
+package inventory
 
 import (
 	"bytes"
@@ -19,6 +19,7 @@ import (
 	"strings"
 
 	"github.com/circonus/agent-manager/internal/config/keys"
+	"github.com/circonus/agent-manager/internal/platform"
 	"github.com/circonus/agent-manager/internal/registration"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
@@ -88,7 +89,7 @@ func FetchAgents(ctx context.Context) error {
 		return fmt.Errorf("non-200 response -- status: %s, body: %s", resp.Status, string(body)) //nolint:goerr113
 	}
 
-	log.Debug().Str("resp", string(body)).Msg("response")
+	log.Debug().RawJSON("resp", body).Msg("response")
 
 	agents, err := ParseAPIAgents(body)
 	if err != nil {
@@ -135,13 +136,37 @@ func SaveAgents(aa Agents) error {
 	return nil
 }
 
+func GetAgent(agentType string) (Agent, error) {
+	aa, err := LoadAgents()
+	if err != nil {
+		return Agent{}, err
+	}
+
+	platform := platform.Get()
+
+	gaa, ok := aa[platform]
+	if !ok {
+		return Agent{}, fmt.Errorf("no agents found for platform %s", platform) //nolint:goerr113
+	}
+
+	for name, a := range gaa {
+		if name == agentType {
+			a := a
+
+			return a, nil
+		}
+	}
+
+	return Agent{}, fmt.Errorf("no agent found for type [%s]", agentType) //nolint:goerr113
+}
+
 func CheckForAgents(ctx context.Context) error {
 	aa, err := LoadAgents()
 	if err != nil {
 		return err
 	}
 
-	platform := getPlatform()
+	platform := platform.Get()
 
 	gaa, ok := aa[platform]
 	if !ok {
@@ -217,6 +242,12 @@ func getAgentVersion(vercmd string) (string, error) {
 	return noVersion, nil
 }
 
+type RegisterResponse []RegisteredAgents
+
+type RegisteredAgents struct {
+	AgentID string `json:"agent_id"`
+}
+
 func registerAgents(ctx context.Context, c InstalledAgents) error {
 	token := viper.GetString(keys.APIToken)
 	if token == "" {
@@ -258,7 +289,16 @@ func registerAgents(ctx context.Context, c InstalledAgents) error {
 		return fmt.Errorf("non-200 response -- status: %s, body: %s", resp.Status, string(body)) //nolint:goerr113
 	}
 
-	log.Debug().Str("resp", string(body)).Msg("response")
+	var a registration.Agents
+	if err := json.Unmarshal(body, &a); err != nil {
+		return fmt.Errorf("unmarshal register response: %w", err)
+	}
+
+	if err := registration.SaveInstalledAgents(a); err != nil {
+		return fmt.Errorf("saving installed agents: %w", err)
+	}
+
+	log.Debug().RawJSON("resp", body).Msg("response")
 
 	return nil
 }

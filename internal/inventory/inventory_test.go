@@ -3,7 +3,7 @@
 // license that can be found in the LICENSE file.
 //
 
-package agents
+package inventory
 
 import (
 	"context"
@@ -18,8 +18,14 @@ import (
 	"testing"
 
 	"github.com/circonus/agent-manager/internal/config/keys"
+	"github.com/circonus/agent-manager/internal/platform"
+	"github.com/rs/zerolog"
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
+)
+
+const (
+	testAuthToken = "foo"
 )
 
 var initialized = false //nolint:gochecknoglobals
@@ -37,9 +43,11 @@ func confFileName() string {
 	return filepath.Join("testdata", "test_conf")
 }
 func setupTest() {
+	zerolog.SetGlobalLevel(zerolog.Disabled)
+
 	file := inventoryFileName()
 	aa := Agents{
-		getPlatform(): map[string]Agent{
+		platform.Get(): map[string]Agent{
 			"foo": {
 				Binary: binaryFileName(),
 				Start:  "start foo",
@@ -82,7 +90,7 @@ func TestFetchAgents(t *testing.T) {
 					APIAgent{
 						Platforms: []Platform{
 							{
-								ID:          getPlatform(),
+								ID:          platform.Get(),
 								AgentTypeID: "foo",
 								Executable:  binaryFileName(),
 								Start:       "start foo",
@@ -181,7 +189,7 @@ func TestLoadAgents(t *testing.T) {
 		{
 			name:    "valid",
 			invFile: inventoryFileName(),
-			want:    Agents{getPlatform(): map[string]Agent{"foo": {ConfigFiles: map[string]string{confFileID(): confFileName()}, Binary: binaryFileName(), Start: "start foo", Stop: "stop foo", Restart: "", Reload: "", Status: "", Version: ""}}},
+			want:    Agents{platform.Get(): map[string]Agent{"foo": {ConfigFiles: map[string]string{confFileID(): confFileName()}, Binary: binaryFileName(), Start: "start foo", Stop: "stop foo", Restart: "", Reload: "", Status: "", Version: ""}}},
 			wantErr: false,
 		},
 		{
@@ -243,7 +251,7 @@ func TestCheckForAgents(t *testing.T) {
 
 				w.WriteHeader(http.StatusOK)
 				w.Header().Set("Content-Type", "application/json")
-				_, _ = w.Write([]byte(""))
+				_, _ = w.Write([]byte(`[{"agent_id":"abc123"}]`))
 			default:
 				http.Error(w, "not found", http.StatusNotFound)
 

@@ -2,7 +2,7 @@
     {
         "platforms": [
             {
-                "platform_id": "darwin",
+                "platform_id": "darwin_amd64",
                 "agent_type_id": "telegraf",
                 "description": null,
                 "executable": "testdata/fake_bin",

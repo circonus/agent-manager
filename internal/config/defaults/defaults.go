@@ -17,7 +17,9 @@ import (
 const (
 	APIURL = "https://agents-api.circonus.app/configurations/v1"
 
-	PollingInterval = "60s"
+	ActionPollingInterval  = "60s"
+	TrackerPollingInterval = "15m"
+	StatusPollingInterval  = "5m"
 
 	// General defaults.
 

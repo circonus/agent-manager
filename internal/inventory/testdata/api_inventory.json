@@ -1,0 +1,44 @@
+[
+    {
+        "agent_type_id": "telegraf",
+        "description": null,
+        "created_at": 1687373953,
+        "created_by": null,
+        "updated_at": 1687373953,
+        "updated_by": null,
+        "config_files": [
+            {
+                "config_file_id": "d81c7650-19ae-4bf3-98df-5d24d53f5756",
+                "agent_type_id": "telegraf",
+                "name": "telegraf",
+                "created_at": 1687373953,
+                "created_by": null,
+                "updated_at": 1687373953,
+                "updated_by": null
+            }
+        ],
+        "platforms": [
+            {
+                "platform_id": "linux",
+                "agent_type_id": "telegraf",
+                "description": null,
+                "executable": "telegraf",
+                "start": null,
+                "stop": null,
+                "reload": null,
+                "status": null,
+                "config_files": [
+                    {
+                        "config_file_id": "d81c7650-19ae-4bf3-98df-5d24d53f5756",
+                        "name": "telegraf",
+                        "path": "/etc/telegraf/telegraf.conf"
+                    }
+                ],
+                "created_at": 1687373953,
+                "created_by": null,
+                "updated_at": 1687373953,
+                "updated_by": null
+            }
+        ]
+    }
+]

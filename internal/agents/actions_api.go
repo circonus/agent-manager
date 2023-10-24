@@ -9,6 +9,8 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/circonus/agent-manager/internal/inventory"
+	"github.com/circonus/agent-manager/internal/platform"
 	"github.com/rs/zerolog/log"
 )
 
@@ -30,9 +32,9 @@ type APIConfigAgent struct {
 }
 
 func ParseAPIActions(data []byte) (Actions, error) {
-	agents, err := LoadAgents()
+	agents, err := inventory.LoadAgents()
 	if err != nil {
-		return nil, err
+		return nil, err //nolint:wrapcheck
 	}
 
 	var apiActions APIActions
@@ -49,7 +51,7 @@ func ParseAPIActions(data []byte) (Actions, error) {
 
 	foundConfigs := 0
 
-	platform := getPlatform()
+	platform := platform.Get()
 
 	for _, apiAction := range apiActions {
 		coll, ok := agents[platform][apiAction.Agent.ID]

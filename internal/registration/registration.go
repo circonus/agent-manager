@@ -10,6 +10,7 @@ import (
 	"context"
 	"crypto/hmac"
 	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -209,7 +210,7 @@ func getMachineID() (string, error) {
 
 		mac := hmac.New(sha256.New, []byte(id))
 
-		return fmt.Sprintf("%x", mac.Sum(nil)), nil
+		return hex.EncodeToString(mac.Sum(nil)), nil
 	}
 
 	if err := credentials.LoadMachineID(); err != nil {

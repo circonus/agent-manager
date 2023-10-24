@@ -14,6 +14,7 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/circonus/agent-manager/internal/inventory"
 	"github.com/rs/zerolog/log"
 )
 
@@ -21,7 +22,7 @@ import (
 //       1. as part of installing a new configuration (most common)
 //       2. as a direct action command (least common, restart would probably be used instead)
 
-func cmdReload(ctx context.Context, a Agent, command Command) {
+func cmdReload(ctx context.Context, a inventory.Agent, command Command) {
 	switch {
 	case a.Reload == "":
 		return

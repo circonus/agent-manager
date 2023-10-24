@@ -1,5 +1,24 @@
 # unreleased
 
+## v0.2.10
+
+* feat: add agent status [C3-1710]
+* feat: add agent status poller interval
+* feat: add config tracker poller
+* feat: add agent status poller (for non-docker)
+* chore: performance improvement
+* chore: reformat error message
+* feat(tracker): send status to API
+* feat(tracker): send modified status once, not on every check
+* feat: config tracking for local changes [C3-1697]
+* chore: update agents and inventory testdata json files
+* chore: keep tracker testdata dir
+* chore: ignore tracker dynamic testdata
+* chore: refactor to eliminate circular dependencies
+* chore(deps): bump golang.org/x/sync from 0.3.0 to 0.4.0
+* chore(deps): bump golang.org/x/sys from 0.12.0 to 0.13.0
+* chore(deps): bump github.com/spf13/viper from 1.16.0 to 1.17.0
+
 ## v0.2.9
 
 * chore(deps): bump github.com/aws/aws-sdk-go-v2/config from 1.18.39 to 1.18.43
