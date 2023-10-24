@@ -19,6 +19,7 @@ import (
 	"github.com/circonus/agent-manager/internal/inventory"
 	"github.com/circonus/agent-manager/internal/registration"
 	"github.com/circonus/agent-manager/internal/release"
+	"github.com/circonus/agent-manager/internal/tracker"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
@@ -142,16 +143,41 @@ func (m *Manager) Start() error {
 		Str("name", release.NAME).
 		Str("ver", release.VERSION).Msg("starting wait")
 
-	poller, err := agents.NewPoller()
+	actionPoller, err := agents.NewActionPoller()
 	if err != nil {
-		m.logger.Fatal().Err(err).Msg("unable to start poller")
+		m.logger.Fatal().Err(err).Msg("unable to start action poller")
+	}
+
+	trackerPoller, err := tracker.NewPoller()
+	if err != nil {
+		m.logger.Fatal().Err(err).Msg("unable to start config tracker poller")
 	}
 
 	m.group.Go(func() error {
-		poller.Start(m.groupCtx)
+		actionPoller.Start(m.groupCtx)
 
 		return nil
 	})
+
+	m.group.Go(func() error {
+		trackerPoller.Start(m.groupCtx)
+
+		return nil
+	})
+
+	// if not running in docker, start the agent status poller
+	if !registration.IsRunningInDocker() {
+		statusPoller, err := agents.NewStatusPoller()
+		if err != nil {
+			m.logger.Fatal().Err(err).Msg("unable to agent start status poller")
+		}
+
+		m.group.Go(func() error {
+			statusPoller.Start(m.groupCtx)
+
+			return nil
+		})
+	}
 
 	if err := m.group.Wait(); err != nil {
 		return fmt.Errorf("start manager: %w", err)
