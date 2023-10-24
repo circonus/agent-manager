@@ -6,12 +6,18 @@
 package tracker
 
 import (
+	"context"
+	"io"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/circonus/agent-manager/internal/config/defaults"
+	"github.com/circonus/agent-manager/internal/config/keys"
 	"github.com/circonus/agent-manager/internal/registration"
+	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
 )
 
@@ -140,6 +146,7 @@ func TestUpdateConfig(t *testing.T) {
 
 	type args struct {
 		agentName string
+		configID  string
 		cfgFile   string
 		data      []byte
 	}
@@ -153,6 +160,7 @@ func TestUpdateConfig(t *testing.T) {
 			name: "valid",
 			args: args{
 				agentName: "test1",
+				configID:  "123",
 				cfgFile:   filepath.Join("testdata", "test1.conf"),
 				data:      []byte("test:1"),
 			},
@@ -163,7 +171,7 @@ func TestUpdateConfig(t *testing.T) {
 	for _, tt := range tests {
 		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
-			if err := UpdateConfig(tt.args.agentName, tt.args.cfgFile, tt.args.data); (err != nil) != tt.wantErr {
+			if err := UpdateConfig(tt.args.agentName, tt.args.configID, tt.args.cfgFile, tt.args.data); (err != nil) != tt.wantErr {
 				t.Errorf("UpdateConfig() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -173,11 +181,30 @@ func TestUpdateConfig(t *testing.T) {
 func TestVerifyConfig(t *testing.T) {
 	setup(t)
 
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		t.Log(r.URL.String())
+		switch r.URL.String() {
+		case "/agent/abc123/config_assignment/123":
+			t.Log("ack modified config")
+			_, _ = io.WriteString(w, "all good")
+
+			return
+		default:
+			http.Error(w, "not found", http.StatusNotFound)
+
+			return
+		}
+	}))
+	defer ts.Close()
+
+	viper.Set(keys.APIURL, ts.URL)
+	viper.Set(keys.APIToken, "abc123")
+
 	if err := createTest1Conf(filepath.Join("testdata", "test1.conf")); err != nil {
 		t.Fatal(err)
 	}
 
-	if err := UpdateConfig("test1", filepath.Join("testdata", "test1.conf"), []byte("test:1")); err != nil {
+	if err := UpdateConfig("test1", "123", filepath.Join("testdata", "test1.conf"), []byte("test:1")); err != nil {
 		t.Fatal(err)
 	}
 
@@ -185,7 +212,7 @@ func TestVerifyConfig(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if err := VerifyConfig("test1", "abc123", filepath.Join("testdata", "test1.conf")); err == nil {
-		t.Fatal("expected error")
+	if err := VerifyConfig(context.Background(), "test1", filepath.Join("testdata", "test1.conf")); err != nil {
+		t.Fatalf("expected no error, got %v", err)
 	}
 }

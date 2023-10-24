@@ -6,27 +6,36 @@
 package tracker
 
 import (
+	"bytes"
+	"context"
 	"crypto/sha256"
 	"encoding/base64"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"io"
+	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 
 	"github.com/circonus/agent-manager/internal/config/defaults"
+	"github.com/circonus/agent-manager/internal/config/keys"
 	"github.com/circonus/agent-manager/internal/registration"
 	"github.com/rs/zerolog/log"
+	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
 )
 
 type Tracker struct {
-	AgentID string `json:"agent_id" yaml:"agent_id"`
-	S       string `json:"s"        yaml:"s"`
-	D       string `json:"d"        yaml:"d"`
+	AgentID      string `json:"agent_id"      yaml:"agent_id"`
+	AssignmentID string `json:"assignment_id" yaml:"assignment_id"`
+	S            string `json:"s"             yaml:"s"`
+	D            string `json:"d"             yaml:"d"`
+	Modified     bool   `json:"modified"      yaml:"modified"`
 }
 
-func VerifyConfig(agentName, cfgID, cfgFile string) error {
+func VerifyConfig(ctx context.Context, agentName, cfgFile string) error {
 	trackerFile, err := getTrackerFile(agentName, cfgFile)
 	if err != nil {
 		return err //nolint:wrapcheck
@@ -37,7 +46,11 @@ func VerifyConfig(agentName, cfgID, cfgFile string) error {
 		return err //nolint:wrapcheck
 	}
 
-	if t.AgentID == "" || t.S == "" {
+	if t.Modified {
+		return nil // has already been detected and reported, short-circuit to not report over and over
+	}
+
+	if t.AgentID == "" || t.AssignmentID == "" || t.S == "" {
 		return fmt.Errorf("no current tracking information available") //nolint:goerr113
 	}
 
@@ -47,13 +60,76 @@ func VerifyConfig(agentName, cfgID, cfgFile string) error {
 	}
 
 	if s != t.S {
-		return fmt.Errorf("tracking signature different: c[%s] v[%s] id:%s", s, t.S, cfgID) //nolint:goerr113
+		if err := UpdateAssignmentStatus(ctx, t); err != nil {
+			return err
+		}
+
+		log.Warn().Str("curr", s).Str("orig", t.S).Str("id", t.AssignmentID).Msg("file modified")
+
+		t.Modified = true
+		if err := saveTracker(trackerFile, t); err != nil {
+			return err //nolint:wrapcheck
+		}
 	}
 
 	return nil
 }
 
-func UpdateConfig(agentName, cfgFile string, data []byte) error {
+func UpdateAssignmentStatus(ctx context.Context, t *Tracker) error {
+	token := viper.GetString(keys.APIToken)
+	if token == "" {
+		return fmt.Errorf("invalid api token (empty)") //nolint:goerr113
+	}
+
+	reqURL, err := url.JoinPath(
+		viper.GetString(keys.APIURL),
+		"agent",
+		t.AgentID,
+		"config_assignment",
+		t.AssignmentID)
+	if err != nil {
+		return fmt.Errorf("req url: %w", err)
+	}
+
+	status := []byte(`{"status":"modified"}`)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPut, reqURL, bytes.NewReader(status))
+	if err != nil {
+		return fmt.Errorf("creating request: %w", err)
+	}
+
+	req.Header.Add("Authorization", token)
+
+	client := &http.Client{}
+
+	resp, err := client.Do(req)
+	if err != nil {
+		return fmt.Errorf("calling actions endpoint: %w", err)
+	}
+
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("reading response body: %w", err)
+	}
+
+	if resp.StatusCode == http.StatusUnauthorized {
+		if err := registration.RefreshRegistration(ctx); err != nil { //nolint:govet
+			return fmt.Errorf("new token: %w", err)
+		}
+
+		return fmt.Errorf("token expired, refreshed") //nolint:goerr113
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("non-200 response -- status: %s, body: %s", resp.Status, string(body)) //nolint:goerr113
+	}
+
+	return nil
+}
+
+func UpdateConfig(agentName, cfgAssignmentID, cfgFile string, data []byte) error {
 	trackerFile, err := getTrackerFile(agentName, cfgFile)
 	if err != nil {
 		return err //nolint:wrapcheck
@@ -72,6 +148,9 @@ func UpdateConfig(agentName, cfgFile string, data []byte) error {
 
 		t.AgentID = id
 	}
+
+	t.AssignmentID = cfgAssignmentID
+	t.Modified = false
 
 	s, err := generateChecksum(cfgFile)
 	if err != nil {
@@ -155,5 +234,5 @@ func generateChecksum(cfgFile string) (string, error) {
 		return "", err //nolint:wrapcheck
 	}
 
-	return fmt.Sprintf("%x", h.Sum(nil)), nil
+	return hex.EncodeToString(h.Sum(nil)), nil
 }
