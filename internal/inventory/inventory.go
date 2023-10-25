@@ -19,7 +19,7 @@ import (
 	"strings"
 
 	"github.com/circonus/agent-manager/internal/config/keys"
-	"github.com/circonus/agent-manager/internal/platform"
+	"github.com/circonus/agent-manager/internal/env"
 	"github.com/circonus/agent-manager/internal/registration"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/viper"
@@ -142,7 +142,7 @@ func GetAgent(agentType string) (Agent, error) {
 		return Agent{}, err
 	}
 
-	platform := platform.Get()
+	platform := env.GetPlatform()
 
 	gaa, ok := aa[platform]
 	if !ok {
@@ -166,7 +166,7 @@ func CheckForAgents(ctx context.Context) error {
 		return err
 	}
 
-	platform := platform.Get()
+	platform := env.GetPlatform()
 
 	gaa, ok := aa[platform]
 	if !ok {
@@ -196,7 +196,7 @@ func CheckForAgents(ctx context.Context) error {
 		found = append(found, InstalledAgent{AgentTypeID: name, Version: ver})
 	}
 
-	if registration.IsRunningInDocker() && len(viper.GetStringSlice(keys.Agents)) > 0 {
+	if env.IsRunningInDocker() && len(viper.GetStringSlice(keys.Agents)) > 0 {
 		for _, name := range viper.GetStringSlice(keys.Agents) {
 			a, ok := gaa[name]
 			if !ok {

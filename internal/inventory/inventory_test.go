@@ -18,7 +18,7 @@ import (
 	"testing"
 
 	"github.com/circonus/agent-manager/internal/config/keys"
-	"github.com/circonus/agent-manager/internal/platform"
+	"github.com/circonus/agent-manager/internal/env"
 	"github.com/rs/zerolog"
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
@@ -47,7 +47,7 @@ func setupTest() {
 
 	file := inventoryFileName()
 	aa := Agents{
-		platform.Get(): map[string]Agent{
+		env.GetPlatform(): map[string]Agent{
 			"foo": {
 				Binary: binaryFileName(),
 				Start:  "start foo",
@@ -90,7 +90,7 @@ func TestFetchAgents(t *testing.T) {
 					APIAgent{
 						Platforms: []Platform{
 							{
-								ID:          platform.Get(),
+								ID:          env.GetPlatform(),
 								AgentTypeID: "foo",
 								Executable:  binaryFileName(),
 								Start:       "start foo",
@@ -189,7 +189,7 @@ func TestLoadAgents(t *testing.T) {
 		{
 			name:    "valid",
 			invFile: inventoryFileName(),
-			want:    Agents{platform.Get(): map[string]Agent{"foo": {ConfigFiles: map[string]string{confFileID(): confFileName()}, Binary: binaryFileName(), Start: "start foo", Stop: "stop foo", Restart: "", Reload: "", Status: "", Version: ""}}},
+			want:    Agents{env.GetPlatform(): map[string]Agent{"foo": {ConfigFiles: map[string]string{confFileID(): confFileName()}, Binary: binaryFileName(), Start: "start foo", Stop: "stop foo", Restart: "", Reload: "", Status: "", Version: ""}}},
 			wantErr: false,
 		},
 		{

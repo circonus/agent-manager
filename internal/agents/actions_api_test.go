@@ -13,8 +13,8 @@ import (
 	"testing"
 
 	"github.com/circonus/agent-manager/internal/config/keys"
+	"github.com/circonus/agent-manager/internal/env"
 	"github.com/circonus/agent-manager/internal/inventory"
-	"github.com/circonus/agent-manager/internal/platform"
 	"github.com/rs/zerolog"
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
@@ -39,7 +39,7 @@ func setupTest() {
 
 	file := inventoryFileName()
 	aa := inventory.Agents{
-		platform.Get(): map[string]inventory.Agent{
+		env.GetPlatform(): map[string]inventory.Agent{
 			"foo": {
 				Binary: binaryFileName(),
 				Start:  "start foo",

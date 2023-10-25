@@ -3,12 +3,12 @@
 // license that can be found in the LICENSE file.
 //
 
-package platform
+package env
 
 import "runtime"
 
 // getPlatform returns the OS and for darwin appends the architecture.
-func Get() string {
+func GetPlatform() string {
 	platform := runtime.GOOS
 	if platform == "darwin" {
 		platform += "_" + runtime.GOARCH

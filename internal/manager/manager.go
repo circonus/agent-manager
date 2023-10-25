@@ -16,6 +16,7 @@ import (
 	"github.com/circonus/agent-manager/internal/config/keys"
 	"github.com/circonus/agent-manager/internal/credentials"
 	"github.com/circonus/agent-manager/internal/decommission"
+	"github.com/circonus/agent-manager/internal/env"
 	"github.com/circonus/agent-manager/internal/inventory"
 	"github.com/circonus/agent-manager/internal/registration"
 	"github.com/circonus/agent-manager/internal/release"
@@ -75,6 +76,7 @@ func (m *Manager) Start() error {
 		}
 	}
 
+	// initial registration status
 	isRegistered := registration.IsRegistered()
 
 	if viper.GetString(keys.Register) != "" {
@@ -87,8 +89,8 @@ func (m *Manager) Start() error {
 		}
 	}
 
-	if !credentials.DoesFileExist(viper.GetString(keys.JwtTokenFile)) ||
-		!credentials.DoesFileExist(viper.GetString(keys.ManagerIDFile)) {
+	// ensure manager is registered
+	if !registration.IsRegistered() {
 		log.Fatal().Msg("manager not registered, see instructions for registration")
 	}
 
@@ -100,8 +102,8 @@ func (m *Manager) Start() error {
 		log.Fatal().Err(err).Msg("loading API credentials")
 	}
 
-	if viper.GetString(keys.Register) != "" && registration.IsRunningInDocker() {
-		// verify that --agents and --instance-id have been provided
+	if viper.GetString(keys.Register) != "" && env.IsRunningInDocker() {
+		// verify that --agents and --instance-id have been provided when running in docker
 		if len(viper.GetStringSlice(keys.Agents)) == 0 {
 			log.Fatal().Msg("--agents required to run in container")
 		}
@@ -122,7 +124,7 @@ func (m *Manager) Start() error {
 		}
 	}
 
-	if !registration.IsRunningInDocker() {
+	if !env.IsRunningInDocker() {
 		//
 		// these two are command line actions and will exit after completion
 		// when not running in a docker/container.
@@ -166,7 +168,7 @@ func (m *Manager) Start() error {
 	})
 
 	// if not running in docker, start the agent status poller
-	if !registration.IsRunningInDocker() {
+	if !env.IsRunningInDocker() {
 		statusPoller, err := agents.NewStatusPoller()
 		if err != nil {
 			m.logger.Fatal().Err(err).Msg("unable to agent start status poller")

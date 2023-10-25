@@ -9,8 +9,8 @@ import (
 	"context"
 	"encoding/base64"
 
+	"github.com/circonus/agent-manager/internal/env"
 	"github.com/circonus/agent-manager/internal/inventory"
-	"github.com/circonus/agent-manager/internal/platform"
 	"github.com/circonus/agent-manager/internal/tracker"
 	"github.com/rs/zerolog/log"
 )
@@ -23,7 +23,7 @@ func installConfigs(ctx context.Context, action Action) {
 		return
 	}
 
-	platform := platform.Get()
+	platform := env.GetPlatform()
 
 	for agentID, configs := range action.Configs {
 		for _, config := range configs {

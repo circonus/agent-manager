@@ -9,8 +9,8 @@ import (
 	"context"
 	"encoding/base64"
 
+	"github.com/circonus/agent-manager/internal/env"
 	"github.com/circonus/agent-manager/internal/inventory"
-	"github.com/circonus/agent-manager/internal/platform"
 	"github.com/rs/zerolog/log"
 )
 
@@ -30,7 +30,7 @@ func runCommands(ctx context.Context, action Action) error {
 		return err // nolint:wrapcheck
 	}
 
-	platform := platform.Get()
+	platform := env.GetPlatform()
 
 	for _, command := range action.Commands {
 		switch command.Command {

@@ -9,8 +9,8 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/circonus/agent-manager/internal/env"
 	"github.com/circonus/agent-manager/internal/inventory"
-	"github.com/circonus/agent-manager/internal/platform"
 	"github.com/rs/zerolog/log"
 )
 
@@ -51,7 +51,7 @@ func ParseAPIActions(data []byte) (Actions, error) {
 
 	foundConfigs := 0
 
-	platform := platform.Get()
+	platform := env.GetPlatform()
 
 	for _, apiAction := range apiActions {
 		coll, ok := agents[platform][apiAction.Agent.ID]
