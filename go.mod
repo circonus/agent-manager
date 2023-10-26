@@ -8,7 +8,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.13.13
 	github.com/denisbrodbeck/machineid v1.0.1
 	github.com/golang-jwt/jwt/v5 v5.0.0
-	github.com/google/uuid v1.3.1
+	github.com/google/uuid v1.4.0
 	github.com/rs/zerolog v1.31.0
 	github.com/shirou/gopsutil/v3 v3.23.9
 	github.com/spf13/cobra v1.7.0
