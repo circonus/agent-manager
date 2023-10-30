@@ -1,5 +1,11 @@
 # unreleased
 
+## v0.2.11
+
+* feat: add health endpoint and config trigger endpoint
+* chore: refactor environment code (platform, is docker, etc.)
+* fix: return exit code and stderr when command fails
+
 ## v0.2.10
 
 * chore(deps): bump github.com/aws/aws-sdk-go-v2/feature/ec2/imds from 1.13.11 to 1.13.13
