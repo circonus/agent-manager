@@ -11,6 +11,7 @@ import (
 
 	"github.com/circonus/agent-manager/internal/env"
 	"github.com/circonus/agent-manager/internal/inventory"
+	"github.com/circonus/agent-manager/internal/server"
 	"github.com/circonus/agent-manager/internal/tracker"
 	"github.com/rs/zerolog/log"
 )
@@ -82,13 +83,17 @@ func installConfigs(ctx context.Context, action Action) {
 			}
 		}
 
-		agent, ok := agents[platform][agentID]
-		if !ok {
-			log.Warn().Str("platform", platform).Str("agent", agentID).Msg("unable to find agent definition for reload, skipping")
+		if env.IsRunningInDocker() {
+			server.AddConfigUpdate(agentID)
+		} else {
+			agent, ok := agents[platform][agentID]
+			if !ok {
+				log.Warn().Str("platform", platform).Str("agent", agentID).Msg("unable to find agent definition for reload, skipping")
 
-			continue
+				continue
+			}
+
+			cmdReload(ctx, agent, Command{})
 		}
-
-		cmdReload(ctx, agent, Command{})
 	}
 }

@@ -14,7 +14,7 @@ import (
 )
 
 // initAppArgs adds application specific args to the cobra command.
-func initAppArgs(cmd *cobra.Command) {
+func initAppArgs(cmd *cobra.Command) { //nolint:maintidx
 	{
 		const (
 			key          = keys.Register
@@ -204,6 +204,141 @@ func initAppArgs(cmd *cobra.Command) {
 		defaultValue := defaults.Agents
 
 		cmd.Flags().StringSlice(longOpt, defaultValue, envDescription(description, envVar))
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.Flags().Lookup(longOpt)))
+		bindEnvError(envVar, viper.BindEnv(key, envVar))
+		viper.SetDefault(key, defaultValue)
+	}
+
+	{
+		const (
+			key          = keys.ServerAddress
+			longOpt      = "server-address"
+			envVar       = release.ENVPREFIX + "_SERVER_ADDRESS"
+			description  = "Server Address for /health and /config"
+			defaultValue = defaults.ServerAddress
+		)
+
+		cmd.Flags().String(longOpt, defaultValue, envDescription(description, envVar))
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.Flags().Lookup(longOpt)))
+		bindEnvError(envVar, viper.BindEnv(key, envVar))
+		viper.SetDefault(key, defaultValue)
+	}
+
+	{
+		const (
+			key          = keys.ServerReadTimeout
+			longOpt      = "server-read-timeout"
+			envVar       = release.ENVPREFIX + "_SERVER_READ_TIMEOUT"
+			description  = "Server read timeout"
+			defaultValue = defaults.ServerReadTimeout
+		)
+
+		cmd.Flags().String(longOpt, defaultValue, envDescription(description, envVar))
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.Flags().Lookup(longOpt)))
+		bindEnvError(envVar, viper.BindEnv(key, envVar))
+		viper.SetDefault(key, defaultValue)
+	}
+
+	{
+		const (
+			key          = keys.ServerWriteTimeout
+			longOpt      = "server-write-timeout"
+			envVar       = release.ENVPREFIX + "_SERVER_WRITE_TIMEOUT"
+			description  = "Server write timeout"
+			defaultValue = defaults.ServerWriteTimeout
+		)
+
+		cmd.Flags().String(longOpt, defaultValue, envDescription(description, envVar))
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.Flags().Lookup(longOpt)))
+		bindEnvError(envVar, viper.BindEnv(key, envVar))
+		viper.SetDefault(key, defaultValue)
+	}
+
+	{
+		const (
+			key          = keys.ServerIdleTimeout
+			longOpt      = "server-idle-timeout"
+			envVar       = release.ENVPREFIX + "_SERVER_IDLE_TIMEOUT"
+			description  = "Server idle timeout"
+			defaultValue = defaults.ServerIdleTimeout
+		)
+
+		cmd.Flags().String(longOpt, defaultValue, envDescription(description, envVar))
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.Flags().Lookup(longOpt)))
+		bindEnvError(envVar, viper.BindEnv(key, envVar))
+		viper.SetDefault(key, defaultValue)
+	}
+
+	{
+		const (
+			key          = keys.ServerReadHeaderTimeout
+			longOpt      = "server-read-header-timeout"
+			envVar       = release.ENVPREFIX + "_SERVER_READ_HEADER_TIMEOUT"
+			description  = "Server read header timeout"
+			defaultValue = defaults.ServerReadHeaderTimeout
+		)
+
+		cmd.Flags().String(longOpt, defaultValue, envDescription(description, envVar))
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.Flags().Lookup(longOpt)))
+		bindEnvError(envVar, viper.BindEnv(key, envVar))
+		viper.SetDefault(key, defaultValue)
+	}
+
+	{
+		const (
+			key          = keys.ServerHandlerTimeout
+			longOpt      = "server-handler-timeout"
+			envVar       = release.ENVPREFIX + "_SERVER_HANDLER_TIMEOUT"
+			description  = "Server handler timeout"
+			defaultValue = defaults.ServerHandlerTimeout
+		)
+
+		cmd.Flags().String(longOpt, defaultValue, envDescription(description, envVar))
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.Flags().Lookup(longOpt)))
+		bindEnvError(envVar, viper.BindEnv(key, envVar))
+		viper.SetDefault(key, defaultValue)
+	}
+
+	{
+		const (
+			key         = keys.ServerTLSEnable
+			longOpt     = "server-tls-enable"
+			envVar      = release.ENVPREFIX + "_SERVER_TLS_ENABLE"
+			description = "Server Enable TLS"
+		)
+		defaultValue := defaults.ServerUseTLS
+
+		cmd.Flags().Bool(longOpt, defaultValue, envDescription(description, envVar))
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.Flags().Lookup(longOpt)))
+		bindEnvError(envVar, viper.BindEnv(key, envVar))
+		viper.SetDefault(key, defaultValue)
+	}
+
+	{
+		const (
+			key          = keys.ServerTLSKeyFile
+			longOpt      = "server-tls-key-file"
+			envVar       = release.ENVPREFIX + "_SERVER_TLS_KEY_FILE"
+			description  = "Server TLS key file"
+			defaultValue = defaults.ServerKeyFile
+		)
+
+		cmd.Flags().String(longOpt, defaultValue, envDescription(description, envVar))
+		bindFlagError(longOpt, viper.BindPFlag(key, cmd.Flags().Lookup(longOpt)))
+		bindEnvError(envVar, viper.BindEnv(key, envVar))
+		viper.SetDefault(key, defaultValue)
+	}
+
+	{
+		const (
+			key          = keys.ServerTLSCertFile
+			longOpt      = "server-tls-cert-file"
+			envVar       = release.ENVPREFIX + "_SERVER_TLS_CERT_FILE"
+			description  = "Server TLS cert file"
+			defaultValue = defaults.ServerKeyFile
+		)
+
+		cmd.Flags().String(longOpt, defaultValue, envDescription(description, envVar))
 		bindFlagError(longOpt, viper.BindPFlag(key, cmd.Flags().Lookup(longOpt)))
 		bindEnvError(envVar, viper.BindEnv(key, envVar))
 		viper.SetDefault(key, defaultValue)

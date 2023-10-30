@@ -29,6 +29,16 @@ const (
 
 	UseMachineID  = true
 	ForceRegister = false
+
+	ServerAddress           = ":43285"
+	ServerReadTimeout       = "60s"
+	ServerWriteTimeout      = "60s"
+	ServerIdleTimeout       = "30s"
+	ServerReadHeaderTimeout = "5s"
+	ServerHandlerTimeout    = "30s"
+	ServerUseTLS            = false
+	ServerCertFile          = ""
+	ServerKeyFile           = ""
 )
 
 var (

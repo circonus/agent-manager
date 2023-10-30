@@ -36,6 +36,20 @@ const (
 	Tags = "tags"
 
 	//
+	// Server.
+	//
+
+	ServerAddress           = "server.address"
+	ServerReadTimeout       = "server.read_timeout"
+	ServerWriteTimeout      = "server.write_timeout"
+	ServerIdleTimeout       = "server.idle_timeout"
+	ServerReadHeaderTimeout = "server.read_header_timeout"
+	ServerHandlerTimeout    = "server.handler_timeout"
+	ServerTLSEnable         = "server.tls_enable"
+	ServerTLSKeyFile        = "server.tls_key_file"
+	ServerTLSCertFile       = "server.tls_cert_file"
+
+	//
 	// Logging.
 	//
 
