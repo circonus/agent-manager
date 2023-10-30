@@ -20,6 +20,7 @@ import (
 	"github.com/circonus/agent-manager/internal/inventory"
 	"github.com/circonus/agent-manager/internal/registration"
 	"github.com/circonus/agent-manager/internal/release"
+	"github.com/circonus/agent-manager/internal/server"
 	"github.com/circonus/agent-manager/internal/tracker"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -34,6 +35,7 @@ type Manager struct {
 	groupCancel context.CancelFunc
 	signalCh    chan os.Signal
 	logger      zerolog.Logger
+	server      *server.Server
 }
 
 // New returns a new manager instance.
@@ -155,6 +157,13 @@ func (m *Manager) Start() error {
 		m.logger.Fatal().Err(err).Msg("unable to start config tracker poller")
 	}
 
+	server, err := server.New()
+	if err != nil {
+		m.logger.Fatal().Err(err).Msg("unable to start server")
+	}
+
+	m.server = server
+
 	m.group.Go(func() error {
 		actionPoller.Start(m.groupCtx)
 
@@ -165,6 +174,10 @@ func (m *Manager) Start() error {
 		trackerPoller.Start(m.groupCtx)
 
 		return nil
+	})
+
+	m.group.Go(func() error {
+		return server.Start(m.groupCtx) //nolint:wrapcheck
 	})
 
 	// if not running in docker, start the agent status poller
@@ -191,6 +204,11 @@ func (m *Manager) Start() error {
 // Stop cleans up and shuts down the manager.
 func (m *Manager) Stop() {
 	m.stopSignalHandler()
+
+	if err := m.server.Stop(m.groupCtx); err != nil {
+		m.logger.Warn().Err(err).Msg("stopping server")
+	}
+
 	m.groupCancel()
 
 	m.logger.Debug().
