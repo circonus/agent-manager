@@ -22,21 +22,33 @@ Usage:
   circonus-am [flags]
 
 Flags:
-      --agents strings         [ENV: CAM_AGENTS] List of agents (Docker specific)
-      --apiurl string          [ENV: CAM_API_URL] Circonus API URL (default "https://agents-api.circonus.app/configurations/v1")
-      --aws-ec2-tags strings   [ENV: CAM_AWS_EC2_TAGS] AWS EC2 tags for registration meta data
-  -c, --config string          config file (default: /Users/mgm/src/circonus/agent-manager/dist/am-macos_amd64_darwin_amd64_v1/etc/circonus-am.yaml|.json|.toml)
-  -d, --debug                  [ENV: CAM_DEBUG] Enable debug messages
-      --decommission           Decommission agent manager and exit
-  -h, --help                   help for circonus-am
-      --instance-id string     [ENV: CAM_INSTANCE_ID] Instance ID (Docker specific)
-      --inventory              Inventory installed agents and exit
-      --log-level string       [ENV: CAM_LOG_LEVEL] Log level [(panic|fatal|error|warn|info|debug|disabled)] (default "info")
-      --log-pretty             Output formatted/colored log lines [ignored on windows]
-      --poll-interval string   [ENV: CAM_POLL_INTERVAL] Polling interval for actions (default "60s")
-      --register string        [ENV: CAM_REGISTER] Registration token -- register agent manager, inventory installed agents and exit
-      --tags strings           [ENV: CAM_TAGS] Custom key:value tags for registration meta data
-  -V, --version                Show version and exit
+      --action-poll-interval string         [ENV: CAM_ACTION_POLL_INTERVAL] Polling interval for actions (default "60s")
+      --agents strings                      [ENV: CAM_AGENTS] List of agents (Docker specific)
+      --apiurl string                       [ENV: CAM_API_URL] Circonus API URL (default "https://agents-api.circonus.app/configurations/v1")
+      --aws-ec2-tags strings                [ENV: CAM_AWS_EC2_TAGS] AWS EC2 tags for registration meta data
+  -c, --config string                       config file (default: /Users/mgm/src/circonus/agent-manager/dist/am-macos_amd64_darwin_amd64_v1/etc/circonus-am.yaml|.json|.toml)
+  -d, --debug                               [ENV: CAM_DEBUG] Enable debug messages
+      --decommission                        Decommission agent manager and exit
+      --force-register                      [ENV: CAM_FORCE_REGISTER] Force registration attempt, even if manager is already registered
+  -h, --help                                help for circonus-am
+      --instance-id string                  [ENV: CAM_INSTANCE_ID] Instance ID (Docker specific)
+      --inventory                           Inventory installed agents and exit
+      --log-level string                    [ENV: CAM_LOG_LEVEL] Log level [(panic|fatal|error|warn|info|debug|disabled)] (default "info")
+      --log-pretty                          Output formatted/colored log lines [ignored on windows]
+      --register string                     [ENV: CAM_REGISTER] Registration token -- register agent manager, inventory installed agents and exit
+      --server-address string               [ENV: CAM_SERVER_ADDRESS] Server Address for /health and /config (default ":43285")
+      --server-handler-timeout string       [ENV: CAM_SERVER_HANDLER_TIMEOUT] Server handler timeout (default "30s")
+      --server-idle-timeout string          [ENV: CAM_SERVER_IDLE_TIMEOUT] Server idle timeout (default "30s")
+      --server-read-header-timeout string   [ENV: CAM_SERVER_READ_HEADER_TIMEOUT] Server read header timeout (default "5s")
+      --server-read-timeout string          [ENV: CAM_SERVER_READ_TIMEOUT] Server read timeout (default "60s")
+      --server-tls-cert-file string         [ENV: CAM_SERVER_TLS_CERT_FILE] Server TLS cert file
+      --server-tls-enable                   [ENV: CAM_SERVER_TLS_ENABLE] Server Enable TLS
+      --server-tls-key-file string          [ENV: CAM_SERVER_TLS_KEY_FILE] Server TLS key file
+      --server-write-timeout string         [ENV: CAM_SERVER_WRITE_TIMEOUT] Server write timeout (default "60s")
+      --status-poll-interval string         [ENV: CAM_STATUS_POLL_INTERVAL] Polling interval for gathering agent status (default "5m")
+      --tags strings                        [ENV: CAM_TAGS] Custom key:value tags for registration meta data
+      --tracker-poll-interval string        [ENV: CAM_TRACKER_POLL_INTERVAL] Polling interval for tracking and verifying checksums (default "15m")
+  -V, --version                             Show version and exit
   ```
 
 ## Note on tags
@@ -73,3 +85,7 @@ Flags:
 1. `sudo systemctl stop circonus-am`
 1. `sudo /opt/circonus/am/sbin/circonus-am --decommission`
 1. Remove package using tool used to install e.g. apt/dpkg or yum/rpm
+
+## Health check endpoint
+
+The agent manager exposes a health endpoint for monitoring, it can be reached at `http://ip:43285/health`. It can be configured for TLS if desired. It will return 200 with a payload of JSON `{"status":"ok","dur":"duration"}` the duration is the round trip time for checking the remote API health endpoint.
