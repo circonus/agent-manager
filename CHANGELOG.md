@@ -2,6 +2,8 @@
 
 ## v0.2.11
 
+* chore(deps): bump github.com/google/uuid from 1.3.1 to 1.4.0
+* chore(deps): bump github.com/aws/aws-sdk-go-v2/config from 1.19.0 to 1.19.1
 * feat: add health endpoint and config trigger endpoint
 * chore: refactor environment code (platform, is docker, etc.)
 * fix: return exit code and stderr when command fails
