@@ -1,14 +1,17 @@
 # Circonus Agent Manager
 
-api:
-  url: "https://agents-api.circonus.app/configurations/v1"
+# api:
+#   url: "https://agents-api.circonus.app/configurations/v1"
 
-log:
-  level: "info"
-  pretty: false
+# log:
+#   level: "info"
+#   pretty: false
 
-poll_interal: "60s" 
-debug: false
+# action_poll_interval: "60s"
+# tracker_poll_interval: "15m"
+# status_poll_interval: "5m"
+
+# debug: false
 
 # list of aws ec2 attributes to add as meta data tags
 # aws_ec2_tags:
@@ -30,3 +33,18 @@ debug: false
 #   e.g.
 #   - environment:production
 #   - "location:123 any st. san francisco, ca"
+
+# for docker
+# instance_id: ""
+# agents: ""
+
+# server:
+#   address: ":43285"
+#   read_timeout: "60s"
+#   write_timeout: "60s"
+#   idle_timeout: "30s"
+#   read_header_timeout: "5s"
+#   handler_timeout: "30s"
+#   tls_enable: false
+#   tls_key_file: ""
+#   tls_cert_file: ""
