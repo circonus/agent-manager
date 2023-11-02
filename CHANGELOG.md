@@ -1,5 +1,11 @@
 # unreleased
 
+## v0.2.13
+
+* chore(deps): bump github.com/shirou/gopsutil/v3 from 3.23.9 to 3.23.10
+* chore(deps): bump github.com/aws/aws-sdk-go-v2/config from 1.19.1 to 1.21.0
+* chore(deps): bump github.com/aws/aws-sdk-go-v2/feature/ec2/imds from 1.13.13 to 1.14.0
+
 ## v0.2.12
 
 * fix: ensure all config items are in config struct
