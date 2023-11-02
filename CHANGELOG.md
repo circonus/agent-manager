@@ -1,5 +1,10 @@
 # unreleased
 
+## v0.2.12
+
+* fix: ensure all config items are in config struct
+* fix: add defaults for all config items to example config file
+
 ## v0.2.11
 
 * chore(deps): bump github.com/google/uuid from 1.3.1 to 1.4.0
