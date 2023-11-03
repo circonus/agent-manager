@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137
 	github.com/aws/aws-sdk-go-v2/config v1.21.0
-	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.14.1
+	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.14.2
 	github.com/denisbrodbeck/machineid v1.0.1
 	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/google/uuid v1.4.0
