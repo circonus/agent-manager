@@ -11,7 +11,7 @@ require (
 	github.com/google/uuid v1.4.0
 	github.com/rs/zerolog v1.31.0
 	github.com/shirou/gopsutil/v3 v3.23.10
-	github.com/spf13/cobra v1.7.0
+	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.17.0
 	golang.org/x/sync v0.4.0
 	golang.org/x/sys v0.13.0
