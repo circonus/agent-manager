@@ -1,5 +1,12 @@
 # unreleased
 
+## v0.2.14
+
+* chore(deps): bump github.com/aws/aws-sdk-go-v2/config from 1.21.0 to 1.22.3
+* chore(deps): bump golang.org/x/sync from 0.4.0 to 0.5.0
+* chore(deps): bump golang.org/x/sys from 0.13.0 to 0.14.0
+* chore(deps): bump github.com/spf13/cobra from 1.7.0 to 1.8.0
+
 ## v0.2.13
 
 * chore(deps): bump github.com/shirou/gopsutil/v3 from 3.23.9 to 3.23.10
