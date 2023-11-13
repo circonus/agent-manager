@@ -1,5 +1,10 @@
 # unreleased
 
+## v0.2.15
+
+* chore(deps): bump github.com/aws/aws-sdk-go-v2/config from 1.22.3 to 1.23.0
+* chore(deps): bump github.com/golang-jwt/jwt/v5 from 5.0.0 to 5.1.0
+
 ## v0.2.14
 
 * chore(deps): bump github.com/aws/aws-sdk-go-v2/config from 1.21.0 to 1.22.3
