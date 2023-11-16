@@ -1,5 +1,9 @@
 # unreleased
 
+## v0.3.0
+
+* feat: always inventory agents on startup (remove --inventory option)
+
 ## v0.2.16
 
 * feat: always update agent manager version on start-up
