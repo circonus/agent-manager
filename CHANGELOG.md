@@ -1,5 +1,9 @@
 # unreleased
 
+## v0.3.1
+
+* feat: add status message for agent status poller (start, or not start)
+
 ## v0.3.0
 
 * feat: always inventory agents on startup (remove --inventory option)
