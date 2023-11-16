@@ -1,5 +1,9 @@
 # unreleased
 
+## v0.2.16
+
+* feat: always update agent manager version on start-up
+
 ## v0.2.15
 
 * chore(deps): bump github.com/aws/aws-sdk-go-v2/config from 1.22.3 to 1.23.0
