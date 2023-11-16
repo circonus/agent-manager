@@ -182,6 +182,8 @@ func (m *Manager) Start() error {
 
 	// if not running in docker, start the agent status poller
 	if !env.IsRunningInDocker() {
+		m.logger.Info().Msg("starting agent status poller")
+
 		statusPoller, err := agents.NewStatusPoller()
 		if err != nil {
 			m.logger.Fatal().Err(err).Msg("unable to agent start status poller")
@@ -192,6 +194,8 @@ func (m *Manager) Start() error {
 
 			return nil
 		})
+	} else {
+		m.logger.Info().Msg("NOT starting agent status poller -- running in docker or container")
 	}
 
 	if err := m.group.Wait(); err != nil {
