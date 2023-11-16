@@ -142,6 +142,10 @@ func (m *Manager) Start() error {
 		}
 	}
 
+	if err := registration.UpdateVersion(m.groupCtx); err != nil {
+		m.logger.Warn().Err(err).Msg("updating manager version via API")
+	}
+
 	m.logger.Debug().
 		Int("pid", os.Getpid()).
 		Str("name", release.NAME).
