@@ -32,7 +32,6 @@ Flags:
       --force-register                      [ENV: CAM_FORCE_REGISTER] Force registration attempt, even if manager is already registered
   -h, --help                                help for circonus-am
       --instance-id string                  [ENV: CAM_INSTANCE_ID] Instance ID (Docker specific)
-      --inventory                           Inventory installed agents and exit
       --log-level string                    [ENV: CAM_LOG_LEVEL] Log level [(panic|fatal|error|warn|info|debug|disabled)] (default "info")
       --log-pretty                          Output formatted/colored log lines [ignored on windows]
       --register string                     [ENV: CAM_REGISTER] Registration token -- register agent manager, inventory installed agents and exit

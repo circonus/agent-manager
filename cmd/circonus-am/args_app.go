@@ -46,19 +46,6 @@ func initAppArgs(cmd *cobra.Command) { //nolint:maintidx
 
 	{
 		const (
-			key          = keys.Inventory
-			longOpt      = "inventory"
-			description  = "Inventory installed agents and exit"
-			defaultValue = false
-		)
-
-		cmd.Flags().Bool(longOpt, defaultValue, description)
-		bindFlagError(longOpt, viper.BindPFlag(key, cmd.Flags().Lookup(longOpt)))
-		viper.SetDefault(key, defaultValue)
-	}
-
-	{
-		const (
 			key          = keys.Decommission
 			longOpt      = "decommission"
 			description  = "Decommission agent manager and exit"

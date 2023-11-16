@@ -10,7 +10,6 @@ const (
 	// Register - token to use for registering this CMA.
 	Register      = "register"
 	ForceRegister = "force_register"
-	Inventory     = "inventory"
 	Decommission  = "decommission"
 
 	APIURL            = "api.url"

@@ -115,17 +115,6 @@ func (m *Manager) Start() error {
 		}
 	}
 
-	if (!isRegistered && viper.GetString(keys.Register) != "") ||
-		viper.GetBool(keys.Inventory) {
-		if err := inventory.FetchAgents(m.groupCtx); err != nil {
-			log.Fatal().Err(err).Msg("fetching agents")
-		}
-
-		if err := inventory.CheckForAgents(m.groupCtx); err != nil {
-			log.Fatal().Err(err).Msg("checking for installed agents")
-		}
-	}
-
 	if !env.IsRunningInDocker() {
 		//
 		// these two are command line actions and will exit after completion
@@ -135,15 +124,22 @@ func (m *Manager) Start() error {
 			m.logger.Info().Msg("registration complete")
 			os.Exit(0)
 		}
-
-		if viper.GetBool(keys.Inventory) {
-			m.logger.Info().Msg("inventory complete")
-			os.Exit(0)
-		}
 	}
+
+	//
+	// these run every time the manager starts
+	//
 
 	if err := registration.UpdateVersion(m.groupCtx); err != nil {
 		m.logger.Warn().Err(err).Msg("updating manager version via API")
+	}
+
+	if err := inventory.FetchAgents(m.groupCtx); err != nil {
+		log.Fatal().Err(err).Msg("fetching agents")
+	}
+
+	if err := inventory.CheckForAgents(m.groupCtx); err != nil {
+		log.Fatal().Err(err).Msg("checking for installed agents")
 	}
 
 	m.logger.Debug().
