@@ -2,6 +2,7 @@
 
 ## v0.3.2
 
+* chore(deps): bump github.com/aws/aws-sdk-go-v2/config from 1.25.0 to 1.25.1
 * chore: make tracker error message more clear when no config has been assigned
 
 ## v0.3.1
