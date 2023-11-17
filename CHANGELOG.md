@@ -1,5 +1,9 @@
 # unreleased
 
+## v0.3.2
+
+* chore: make tracker error message more clear when no config has been assigned
+
 ## v0.3.1
 
 * feat: add status message for agent status poller (start, or not start)
