@@ -92,7 +92,7 @@ brews:
     license: MIT
     caveats: |
       Install:
-      1. Run #{sbin}/circonus-am --register="registration token"
+      1. Run #{sbin}/circonus-am --config="#{etc}/circonus-am/circonus-am.yaml" --register="registration token"
       2. Run "brew services start circonus-am"
 
       Upgrade:
