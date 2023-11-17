@@ -43,6 +43,16 @@ func VerifyConfig(ctx context.Context, agentName, cfgFile string) error {
 
 	t, err := loadTracker(trackerFile)
 	if err != nil {
+		if errors.Is(err, os.ErrNotExist) {
+			log.Warn().
+				Err(err).
+				Str("file", cfgFile).
+				Str("agent", agentName).
+				Msg("no config to track")
+
+			return nil
+		}
+
 		return err //nolint:wrapcheck
 	}
 
@@ -179,10 +189,6 @@ func getTrackerFile(agentName, cfgFile string) (string, error) {
 func loadTracker(file string) (*Tracker, error) {
 	data, err := os.ReadFile(file)
 	if err != nil {
-		if errors.Is(err, os.ErrNotExist) {
-			return &Tracker{}, nil
-		}
-
 		return nil, err //nolint:wrapcheck
 	}
 
