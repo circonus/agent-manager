@@ -1,5 +1,9 @@
 # unreleased
 
+## v0.3.4
+
+* fix: use machine id file correctly when loading mid
+
 ## v0.3.3
 
 * fix: disable machine ID use if running in docker/container
