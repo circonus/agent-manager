@@ -91,6 +91,7 @@ Vagrantfile
 # testing files/dirs
 etc/.id
 etc/test*.yaml
+etc/agents.yaml
 inventory.yaml
 internal/tracker/testdata/configs
 internal/tracker/testdata/agents.yaml
