@@ -102,7 +102,7 @@ func SaveRefreshToken(creds []byte) error {
 }
 
 func LoadMachineID() error {
-	file := viper.GetString(keys.MachineID)
+	file := viper.GetString(keys.MachineIDFile)
 	if file == "" {
 		return fmt.Errorf("invalid machine id file (empty)") //nolint:goerr113
 	}
@@ -112,7 +112,7 @@ func LoadMachineID() error {
 		return err //nolint:wrapcheck
 	}
 
-	viper.Set(keys.MachineIDFile, string(token))
+	viper.Set(keys.MachineID, string(token))
 
 	return nil
 }
