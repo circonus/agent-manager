@@ -67,7 +67,7 @@ func New() (*Server, error) {
 		//   HEALTHCHECK --interval=90s --timeout=3s \
 		//     CMD curl --silent --fail "http://<cam-container-ip>:43285/config/<agent_type>" || exit 1
 		//     CMD wget --quiet "http://<cam-container-ip>:43285/config/<agent_type>" || exit 1
-		mux.Handle("/config", reqLogger(http.TimeoutHandler(
+		mux.Handle("/config/", reqLogger(http.TimeoutHandler(
 			configHandler{}, handlerTimeout, "config handler timeout")))
 	}
 
