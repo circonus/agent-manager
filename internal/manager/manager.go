@@ -78,6 +78,10 @@ func (m *Manager) Start() error {
 		}
 	}
 
+	if env.IsRunningInDocker() {
+		viper.Set(keys.UseMachineID, false)
+	}
+
 	// initial registration status
 	isRegistered := registration.IsRegistered()
 
