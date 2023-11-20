@@ -1,5 +1,9 @@
 # unreleased
 
+## v0.3.5
+
+* fix: set machine id file on startup
+
 ## v0.3.4
 
 * fix: use machine id file correctly when loading mid
