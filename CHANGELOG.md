@@ -1,5 +1,10 @@
 # unreleased
 
+## v0.3.7
+
+* fix: config endpoint needs trailing slash /config/
+* fix: ignore etc/agents.yaml
+
 ## v0.3.6
 
 * fix: return empty tracker struct when tracker file not found
