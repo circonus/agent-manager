@@ -43,6 +43,7 @@ func initCmd() *cobra.Command {
 			viper.Set(keys.JwtTokenFile, defaults.JwtTokenFile)
 			viper.Set(keys.ManagerIDFile, defaults.ManagerIDFile)
 			viper.Set(keys.RefreshTokenFile, defaults.RefreshTokenFile)
+			viper.Set(keys.MachineIDFile, defaults.MachineIDFile)
 
 			m, err := manager.New()
 			if err != nil {
