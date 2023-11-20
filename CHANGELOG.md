@@ -1,5 +1,9 @@
 # unreleased
 
+## v0.3.6
+
+* fix: return empty tracker struct when tracker file not found
+
 ## v0.3.5
 
 * fix: set machine id file on startup
