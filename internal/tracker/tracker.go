@@ -189,7 +189,11 @@ func getTrackerFile(agentName, cfgFile string) (string, error) {
 func loadTracker(file string) (*Tracker, error) {
 	data, err := os.ReadFile(file)
 	if err != nil {
-		return nil, err //nolint:wrapcheck
+		if !errors.Is(err, os.ErrNotExist) {
+			return nil, err //nolint:wrapcheck
+		}
+
+		return &Tracker{}, nil
 	}
 
 	var t Tracker
