@@ -1,5 +1,9 @@
 # unreleased
 
+* build: change sbom format to `cyclonedx-json@1.4`
+* build: add after hook for `grype` on generated sboms
+* build: add before hooks for `go mod tidy`, `govulncheck` and `golangci-lint`
+
 ## v0.3.8
 
 * build: add .sbom for archive artifacts
