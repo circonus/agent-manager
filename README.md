@@ -5,6 +5,9 @@ Requires:
 * [go](https://go.dev/dl/)
 * [goreleaser](https://goreleaser.com/install/)
 * [golangci-lint](https://golangci-lint.run/usage/install/#local-installation)
+* [syft](https://github.com/anchore/syft)
+* [grype](https://github.com/anchore/grype)
+* [govulncheck](https://go.googlesource.com/vuln)
 
 1. Build (for testing): `goreleaser build --clean --snapshot`
 1. Release:
