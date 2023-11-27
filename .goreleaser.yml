@@ -267,6 +267,7 @@ checksum:
 
 sboms:
   - artifacts: archive
+    args: ["$artifact", "--output", "cyclonedx-json@1.4=$document"]
     env:
       - SYFT_GOLANG_SEARCH_LOCAL_MOD_CACHE_LICENSES=true
       - SYFT_GOLANG_SEARCH_REMOTE_LICENSES=true
