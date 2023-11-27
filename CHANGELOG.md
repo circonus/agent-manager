@@ -1,5 +1,10 @@
 # unreleased
 
+## v0.3.8
+
+* build: add .sbom for archive artifacts
+* chore(deps): bump golang.org/x/sys from 0.14.0 to 0.15.0
+
 ## v0.3.7
 
 * fix: config endpoint needs trailing slash /config/
