@@ -7,7 +7,7 @@ before:
     - cmd: golangci-lint run
       env:
         - GOOS=linux
-    - govulncheck
+    - govulncheck ./...
 
 builds: 
   - id: am
