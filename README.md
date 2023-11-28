@@ -3,7 +3,7 @@
 Requires:
 
 * [go](https://go.dev/dl/)
-* [goreleaser](https://goreleaser.com/install/)
+* [goreleaser](https://goreleaser.com/install/) [pro](https://github.com/goreleaser/goreleaser-pro) is used for post hooks
 * [golangci-lint](https://golangci-lint.run/usage/install/#local-installation)
 * [syft](https://github.com/anchore/syft)
 * [grype](https://github.com/anchore/grype)
