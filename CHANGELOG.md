@@ -1,5 +1,16 @@
 # unreleased
 
+## v0.3.10
+
+* chore: use latest lint version
+* chore(deps): bump github.com/aws/aws-sdk-go-v2/config from 1.25.10 to 1.25.11
+* chore(deps): bump github.com/golang-jwt/jwt/v5 from 5.1.0 to 5.2.0
+* chore(deps): bump github.com/aws/aws-sdk-go-v2/feature/ec2/imds from 1.14.8 to 1.14.9
+* chore(deps): bump github.com/shirou/gopsutil/v3 from 3.23.10 to 3.23.11
+* fix: syntax for govulncheck
+* build: use CycloneDX 1.5 for sboms
+* doc: update requirements for building
+
 ## v0.3.9
 
 * build: change sbom format to `cyclonedx-json@1.4`
