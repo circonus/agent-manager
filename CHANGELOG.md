@@ -1,5 +1,7 @@
 # unreleased
 
+* chore(deps): bump  github.com/alecthomas/units 0.0.0-20211218093645-b94a6e3cc137 -> 0.0.0-20231202071711-9a357b53e9c9
+
 ## v0.3.10
 
 * chore: use latest lint version
