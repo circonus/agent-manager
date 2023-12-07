@@ -21,14 +21,14 @@ import (
 func Test_getJWT(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
-		case "/agent/registration":
+		case "/manager/register":
 			switch r.Method {
 			case http.MethodGet:
 				http.Error(w, "not found", http.StatusNotFound)
 
 				return
 			case http.MethodPost:
-				regToken := r.Header.Get("X-Circonus-Register-Token")
+				regToken := r.Header.Get("Authorization")
 				if regToken == "" {
 					http.Error(w, "missing token", http.StatusUnauthorized)
 
