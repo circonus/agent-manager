@@ -66,9 +66,7 @@ Flags:
 1. If registration successful, restart the agent manager `sudo systemctl restart circonus-am`
 1. Check status of agent manager `sudo systemctl status circonus-am`
 1. If an additional agent is installed AFTER the agent manager has registered
-   1. Stop agent manager `sudo systemctl stop circonus-am`
-   1. Run `sudo /opt/circonus/am/sbin/circonus-am --inventory`
-   1. Start agent manager `sudo systemctl start circonus-am`
+   1. Restart agent manager `sudo systemctl restart circonus-am`
 
 ## Unprivileged
 
