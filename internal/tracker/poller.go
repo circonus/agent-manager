@@ -49,7 +49,7 @@ func (p *Poller) Start(ctx context.Context) {
 
 			agents, err := registration.LoadInstalledAgents()
 			if err != nil {
-				log.Error().Err(err).Msg("loading installed agents, run --inventory again to generate")
+				log.Error().Err(err).Msg("loading installed agents, restart to inventory installed agents")
 
 				continue
 			}
