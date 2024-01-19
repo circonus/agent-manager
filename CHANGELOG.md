@@ -1,5 +1,12 @@
-# unreleased
+# **unreleased**
 
+* chore: update err message when no agents found to restart rather than --inventory
+* fix(codecov): failing test
+* chore(deps): bump github.com/aws/aws-sdk-go-v2/config from 1.25.11 to 1.25.12
+* chore: add codecov workflow config
+* chore(deps): bump github.com/spf13/viper from 1.17.0 to 1.18.0
+* chore: clean up workflows
+* chore(deps): bump actions/setup-go from 4 to 5
 * chore(deps): bump  github.com/alecthomas/units 0.0.0-20211218093645-b94a6e3cc137 -> 0.0.0-20231202071711-9a357b53e9c9
 
 ## v0.3.10

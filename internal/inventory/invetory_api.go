@@ -21,14 +21,15 @@ type Platform struct {
 	ID          string       `json:"platform_id"   yaml:"platform_id"`
 	AgentTypeID string       `json:"agent_type_id" yaml:"agent_type_id"`
 	Executable  string       `json:"executable"    yaml:"executable"`
-	Commands    []Commands   `json:"commands"      yaml:"commands"`
 	Start       string       `json:"start"         yaml:"start"`
 	Stop        string       `json:"stop"          yaml:"stop"`
 	Restart     string       `json:"restart"       yaml:"restart"`
 	Reload      string       `json:"reload"        yaml:"reload"`
 	Status      string       `json:"status"        yaml:"status"`
 	Version     string       `json:"version"       yaml:"version"`
+	Commands    []Commands   `json:"commands"      yaml:"commands"`
 	ConfigFiles []ConfigFile `json:"config_files"  yaml:"config_files"`
+	Sudo        bool         `json:"sudo"          yaml:"sudo"`
 }
 
 type Commands struct {
@@ -54,6 +55,7 @@ func ParseAPIAgents(data []byte) (Agents, error) {
 			col := Agent{
 				Binary:      platform.Executable,
 				ConfigFiles: make(map[string]string, len(platform.ConfigFiles)),
+				Sudo:        platform.Sudo,
 			}
 
 			for _, c := range platform.Commands {

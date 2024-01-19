@@ -45,6 +45,7 @@ type Agent struct {
 	Reload      string            `json:"reload"       yaml:"reload"`
 	Status      string            `json:"status"       yaml:"status"`
 	Version     string            `json:"version"      yaml:"version"`
+	Sudo        bool              `json:"sudo"         yaml:"sudo"`
 }
 
 type InstalledAgents []InstalledAgent
