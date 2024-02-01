@@ -10,7 +10,7 @@ jobs:
       - name: Run coverage
         run: go test ./... -race -coverprofile=coverage.out -covermode=atomic
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@v4
         if: success() || failure()
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
