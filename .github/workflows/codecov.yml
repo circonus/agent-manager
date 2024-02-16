@@ -16,4 +16,3 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
           files: ./coverage.out
-          move_coverage_to_trash: true

@@ -15,7 +15,7 @@ jobs:
           time: '5m'
       - name: Invoke packaging hook
         uses: distributhor/workflow-webhook@v3
-        env:
+        with:
           webhook_url: ${{ secrets.WEBHOOK_URL }}?token=${{ secrets.JENKINS_WEBHOOK_TOKEN }}
           webhook_secret: ${{ secrets.JENKINS_WEBHOOK_TOKEN }}
           webhook_auth: ${{ secrets.JENKINS_WEBHOOK_AUTH }}
