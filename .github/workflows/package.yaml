@@ -1,10 +1,8 @@
-name: Package
-
+name: package
 on:
   push:
     tags:
       - "v*.*.*"
-
 jobs:
   make-package:
     runs-on: ubuntu-latest

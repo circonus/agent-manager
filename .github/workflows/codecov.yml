@@ -1,16 +1,18 @@
-name: Test and coverage
-
-on: [push, pull_request]
-
+name: codecov
+on:
+  push:
+    tags: [ "v*" ]
+    branches: [ main ]
+  pull_request:
+    branches: [ "*" ]
 jobs:
-  build:
+  codecov:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/setup-go@v5
       - uses: actions/checkout@v4
-      - name: Run coverage
-        run: go test ./... -race -coverprofile=coverage.out -covermode=atomic
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+      - run: go test ./... -race -coverprofile=coverage.out -covermode=atomic
+      - uses: codecov/codecov-action@v4
         if: success() || failure()
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
