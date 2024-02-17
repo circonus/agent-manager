@@ -31,7 +31,7 @@ func getStatus(ctx context.Context, cmd string) (string, string, string, int, er
 		return brewStatus(ctx, cmd)
 	}
 
-	return currStatus, subStatus, "", -1, fmt.Errorf("unable to obtain status") //nolint:goerr113
+	return currStatus, subStatus, "", -1, fmt.Errorf("unable to obtain status")
 }
 
 func brewStatus(ctx context.Context, cmd string) (string, string, string, int, error) {
@@ -97,7 +97,7 @@ func systemctlStatus(ctx context.Context, cmd string) (string, string, string, i
 	}
 
 	if err = scanner.Err(); err != nil {
-		return currStatus, subStatus, "error processing command output", -1, err //nolint:wrapcheck
+		return currStatus, subStatus, "error processing command output", -1, err
 	}
 
 	output, exitCode, err = execute(ctx, cmd)

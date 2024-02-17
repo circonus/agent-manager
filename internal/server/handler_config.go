@@ -14,8 +14,8 @@ import (
 )
 
 var (
-	configs = make(map[string]bool) //nolint:gochecknoglobals
-	cm      sync.Mutex              //nolint:gochecknoglobals
+	configs = make(map[string]bool)
+	cm      sync.Mutex
 )
 
 type configHandler struct{}

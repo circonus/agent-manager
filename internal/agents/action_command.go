@@ -27,7 +27,7 @@ const (
 func runCommands(ctx context.Context, action Action) error {
 	agents, err := inventory.LoadAgents()
 	if err != nil {
-		return err // nolint:wrapcheck
+		return err
 	}
 
 	platform := env.GetPlatform()

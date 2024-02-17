@@ -36,6 +36,7 @@ func Test_getJWT(t *testing.T) {
 				}
 
 				defer r.Body.Close()
+
 				b, err := io.ReadAll(r.Body)
 				if err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -59,6 +60,7 @@ func Test_getJWT(t *testing.T) {
 				token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{
 					Subject: reg.MachineID,
 				})
+
 				tokenString, err := token.SignedString([]byte("secret"))
 				if err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -135,6 +137,7 @@ func Test_getJWT(t *testing.T) {
 
 				return
 			}
+
 			if got != nil {
 				if got.AuthToken != tt.want {
 					t.Errorf("getJWT() = '%v', want '%v'", got.AuthToken, tt.want)

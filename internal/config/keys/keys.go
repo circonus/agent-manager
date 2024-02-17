@@ -84,7 +84,7 @@ const (
 
 	// Internal settings.
 	InventoryFile    = "internal.inventory_file"
-	JwtTokenFile     = "internal.jwt_token_file" //nolint:gosec
+	JwtTokenFile     = "internal.jwt_token_file"
 	ManagerIDFile    = "internal.manager_id_file"
 	RefreshTokenFile = "internal.refresh_token_file"
 	MachineIDFile    = "internal.machine_id_file"

@@ -15,6 +15,7 @@ import (
 func testAPIInventoryFileName() string {
 	return filepath.Join("testdata", "api_inventory.json")
 }
+
 func TestParseAPIAgents(t *testing.T) {
 	tests := []struct {
 		want    Agents
@@ -23,9 +24,22 @@ func TestParseAPIAgents(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			name:    "valid",
-			file:    testAPIInventoryFileName(),
-			want:    Agents{"linux": map[string]Agent{"telegraf": {Binary: "telegraf", Start: "", Stop: "", Restart: "", Reload: "", Status: "", Version: "", ConfigFiles: map[string]string{"d81c7650-19ae-4bf3-98df-5d24d53f5756": "/etc/telegraf/telegraf.conf"}}}},
+			name: "valid",
+			file: testAPIInventoryFileName(),
+			want: Agents{"linux": map[string]Agent{
+				"telegraf": {
+					Binary:  "telegraf",
+					Start:   "",
+					Stop:    "",
+					Restart: "",
+					Reload:  "",
+					Status:  "",
+					Version: "",
+					ConfigFiles: map[string]string{
+						"d81c7650-19ae-4bf3-98df-5d24d53f5756": "/etc/telegraf/telegraf.conf",
+					},
+				},
+			}},
 			wantErr: false,
 		},
 	}

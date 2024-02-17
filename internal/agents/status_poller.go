@@ -125,7 +125,7 @@ func (p *StatusPoller) submitAgentStatus(ctx context.Context, agentID, cmd strin
 
 	token := viper.GetString(keys.APIToken)
 	if token == "" {
-		return fmt.Errorf("invalid api token (empty)") //nolint:goerr113
+		return fmt.Errorf("invalid api token (empty)")
 	}
 
 	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "agent", agentID)
@@ -155,7 +155,7 @@ func (p *StatusPoller) submitAgentStatus(ctx context.Context, agentID, cmd strin
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("non-200 response -- status: %s, body: %s", resp.Status, string(body)) //nolint:goerr113
+		return fmt.Errorf("non-200 response -- status: %s, body: %s", resp.Status, string(body))
 	}
 
 	if len(body) > 0 {

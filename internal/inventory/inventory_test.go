@@ -28,20 +28,24 @@ const (
 	testAuthToken = "foo"
 )
 
-var initialized = false //nolint:gochecknoglobals
+var initialized = false
 
 func inventoryFileName() string {
 	return filepath.Join("testdata", "inventory.yaml")
 }
+
 func binaryFileName() string {
 	return filepath.Join("testdata", "test_binary")
 }
+
 func confFileID() string {
 	return "d81c7650-19ae-4bf3-98df-5d24d53f5756"
 }
+
 func confFileName() string {
 	return filepath.Join("testdata", "test_conf")
 }
+
 func setupTest() {
 	zerolog.SetGlobalLevel(zerolog.Disabled)
 
@@ -64,7 +68,7 @@ func setupTest() {
 		log.Fatal("yaml marshal", err)
 	}
 
-	if err := os.WriteFile(file, data, 0600); err != nil {
+	if err := os.WriteFile(file, data, 0o600); err != nil {
 		log.Fatal("write inv file", err)
 	}
 
@@ -105,6 +109,7 @@ func TestFetchAgents(t *testing.T) {
 						},
 					},
 				}
+
 				data, err := json.Marshal(c)
 				if err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -170,6 +175,7 @@ func TestFetchAgents(t *testing.T) {
 			viper.Set(keys.APIURL, tt.reqURL)
 			viper.Set(keys.APIToken, tt.apiToken)
 			viper.Set(keys.InventoryFile, tt.invFile)
+
 			if err := FetchAgents(context.Background()); (err != nil) != tt.wantErr {
 				t.Fatalf("FetchAgents() error = %v, wantErr %v", err, tt.wantErr)
 			}
@@ -189,7 +195,20 @@ func TestLoadAgents(t *testing.T) {
 		{
 			name:    "valid",
 			invFile: inventoryFileName(),
-			want:    Agents{env.GetPlatform(): map[string]Agent{"foo": {ConfigFiles: map[string]string{confFileID(): confFileName()}, Binary: binaryFileName(), Start: "start foo", Stop: "stop foo", Restart: "", Reload: "", Status: "", Version: ""}}},
+			want: Agents{
+				env.GetPlatform(): map[string]Agent{
+					"foo": {
+						ConfigFiles: map[string]string{confFileID(): confFileName()},
+						Binary:      binaryFileName(),
+						Start:       "start foo",
+						Stop:        "stop foo",
+						Restart:     "",
+						Reload:      "",
+						Status:      "",
+						Version:     "",
+					},
+				},
+			},
 			wantErr: false,
 		},
 		{

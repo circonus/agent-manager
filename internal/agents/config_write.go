@@ -11,7 +11,7 @@ import (
 )
 
 func writeConfig(path string, data []byte) error {
-	perms := os.FileMode(0640)
+	perms := os.FileMode(0o640)
 
 	f, err := os.Stat(path)
 	if err == nil {
@@ -19,16 +19,13 @@ func writeConfig(path string, data []byte) error {
 	}
 
 	if err := os.WriteFile(path, data, perms); err != nil {
-		return err //nolint:wrapcheck
+		return err
 	}
 
 	fileSys := f.Sys()
-	if _, ok := fileSys.(*syscall.Stat_t); ok {
-		gid := int(fileSys.(*syscall.Stat_t).Gid) //nolint:forcetypeassert
-		uid := int(fileSys.(*syscall.Stat_t).Uid) //nolint:forcetypeassert
-
-		if err := os.Chown(path, uid, gid); err != nil {
-			return err //nolint:wrapcheck
+	if s, ok := fileSys.(*syscall.Stat_t); ok {
+		if err := os.Chown(path, int(s.Uid), int(s.Gid)); err != nil {
+			return err
 		}
 	}
 

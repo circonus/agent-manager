@@ -25,12 +25,12 @@ func LoadInstalledAgents() (Agents, error) {
 
 	data, err := os.ReadFile(agentFile)
 	if err != nil {
-		return nil, err //nolint:wrapcheck
+		return nil, err
 	}
 
 	var a Agents
 	if err := yaml.Unmarshal(data, &a); err != nil {
-		return nil, err //nolint:wrapcheck
+		return nil, err
 	}
 
 	return a, nil
@@ -41,16 +41,16 @@ func SaveInstalledAgents(a Agents) error {
 
 	data, err := yaml.Marshal(a)
 	if err != nil {
-		return err //nolint:wrapcheck
+		return err
 	}
 
-	return os.WriteFile(agentFile, data, 0600) //nolint:wrapcheck
+	return os.WriteFile(agentFile, data, 0o600)
 }
 
 func GetInstalledAgentID(agentTypeID string) (string, error) {
 	agents, err := LoadInstalledAgents()
 	if err != nil {
-		return "", err //nolint:wrapcheck
+		return "", err
 	}
 
 	for _, agent := range agents {
@@ -59,5 +59,5 @@ func GetInstalledAgentID(agentTypeID string) (string, error) {
 		}
 	}
 
-	return "", fmt.Errorf("agent [%s] not found in installed agents", agentTypeID) //nolint:goerr113
+	return "", fmt.Errorf("agent [%s] not found in installed agents", agentTypeID)
 }

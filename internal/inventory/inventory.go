@@ -48,6 +48,7 @@ type Agent struct {
 }
 
 type InstalledAgents []InstalledAgent
+
 type InstalledAgent struct {
 	AgentTypeID string `json:"agent_type_id"`
 	Version     string `json:"version"`
@@ -56,7 +57,7 @@ type InstalledAgent struct {
 func FetchAgents(ctx context.Context) error {
 	token := viper.GetString(keys.APIToken)
 	if token == "" {
-		return fmt.Errorf("invalid api token (empty)") //nolint:goerr113
+		return fmt.Errorf("invalid api token (empty)")
 	}
 
 	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "agent_type")
@@ -86,7 +87,7 @@ func FetchAgents(ctx context.Context) error {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("non-200 response -- status: %s, body: %s", resp.Status, string(body)) //nolint:goerr113
+		return fmt.Errorf("non-200 response -- status: %s, body: %s", resp.Status, string(body))
 	}
 
 	log.Debug().RawJSON("resp", body).Msg("response")
@@ -102,7 +103,7 @@ func FetchAgents(ctx context.Context) error {
 func LoadAgents() (Agents, error) {
 	file := viper.GetString(keys.InventoryFile)
 	if file == "" {
-		return nil, fmt.Errorf("invalid inventory file (empty)") //nolint:goerr113
+		return nil, fmt.Errorf("invalid inventory file (empty)")
 	}
 
 	data, err := os.ReadFile(file)
@@ -121,7 +122,7 @@ func LoadAgents() (Agents, error) {
 func SaveAgents(aa Agents) error {
 	file := viper.GetString(keys.InventoryFile)
 	if file == "" {
-		return fmt.Errorf("invalid inventory file (empty)") //nolint:goerr113
+		return fmt.Errorf("invalid inventory file (empty)")
 	}
 
 	data, err := yaml.Marshal(aa)
@@ -129,7 +130,7 @@ func SaveAgents(aa Agents) error {
 		return fmt.Errorf("marshal agent inventory: %w", err)
 	}
 
-	if err := os.WriteFile(file, data, 0600); err != nil {
+	if err := os.WriteFile(file, data, 0o600); err != nil {
 		return fmt.Errorf("saving agent inventory: %w", err)
 	}
 
@@ -146,7 +147,7 @@ func GetAgent(agentType string) (Agent, error) {
 
 	gaa, ok := aa[platform]
 	if !ok {
-		return Agent{}, fmt.Errorf("no agents found for platform %s", platform) //nolint:goerr113
+		return Agent{}, fmt.Errorf("no agents found for platform %s", platform)
 	}
 
 	for name, a := range gaa {
@@ -157,7 +158,7 @@ func GetAgent(agentType string) (Agent, error) {
 		}
 	}
 
-	return Agent{}, fmt.Errorf("no agent found for type [%s]", agentType) //nolint:goerr113
+	return Agent{}, fmt.Errorf("no agent found for type [%s]", agentType)
 }
 
 func CheckForAgents(ctx context.Context) error {
@@ -170,7 +171,7 @@ func CheckForAgents(ctx context.Context) error {
 
 	gaa, ok := aa[platform]
 	if !ok {
-		return fmt.Errorf("no agents found for platform %s", platform) //nolint:goerr113
+		return fmt.Errorf("no agents found for platform %s", platform)
 	}
 
 	found := InstalledAgents{}
@@ -228,7 +229,7 @@ func getAgentVersion(vercmd string) (string, error) {
 		return noVersion, nil
 	}
 
-	cmd := exec.Command("bash", "-c", vercmd) //nolint:gosec
+	cmd := exec.Command("bash", "-c", vercmd)
 
 	output, err := cmd.CombinedOutput()
 	if err != nil {
@@ -251,7 +252,7 @@ type RegisteredAgents struct {
 func registerAgents(ctx context.Context, c InstalledAgents) error {
 	token := viper.GetString(keys.APIToken)
 	if token == "" {
-		return fmt.Errorf("invalid api token (empty)") //nolint:goerr113
+		return fmt.Errorf("invalid api token (empty)")
 	}
 
 	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "agent", "manager")
@@ -286,7 +287,7 @@ func registerAgents(ctx context.Context, c InstalledAgents) error {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("non-200 response -- status: %s, body: %s", resp.Status, string(body)) //nolint:goerr113
+		return fmt.Errorf("non-200 response -- status: %s, body: %s", resp.Status, string(body))
 	}
 
 	var a registration.Agents

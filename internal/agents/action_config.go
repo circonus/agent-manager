@@ -51,7 +51,7 @@ func installConfigs(ctx context.Context, action Action) {
 			if err := writeConfig(config.Path, data); err != nil {
 				result := ConfigResult{
 					ID:     config.ID,
-					Status: STATUS_ERROR, //nolint:nosnakecase
+					Status: STATUS_ERROR,
 					Info:   err.Error(),
 					ConfigData: ConfigData{
 						WriteResult: err.Error(),
@@ -67,7 +67,7 @@ func installConfigs(ctx context.Context, action Action) {
 
 			result := ConfigResult{
 				ID:     config.ID,
-				Status: STATUS_ACTIVE, //nolint:nosnakecase
+				Status: STATUS_ACTIVE,
 				ConfigData: ConfigData{
 					WriteResult: "OK",
 				},
@@ -88,7 +88,8 @@ func installConfigs(ctx context.Context, action Action) {
 		} else {
 			agent, ok := agents[platform][agentID]
 			if !ok {
-				log.Warn().Str("platform", platform).Str("agent", agentID).Msg("unable to find agent definition for reload, skipping")
+				log.Warn().Str("platform", platform).Str("agent", agentID).
+					Msg("unable to find agent definition for reload, skipping")
 
 				continue
 			}

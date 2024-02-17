@@ -25,7 +25,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-var cfgFile string //nolint:gochecknoglobals
+var cfgFile string
 
 func main() {
 	zerolog.TimeFieldFormat = zerolog.TimeFormatUnix
@@ -130,7 +130,7 @@ func initLogging() error {
 		case "disabled":
 			zerolog.SetGlobalLevel(zerolog.Disabled)
 		default:
-			return fmt.Errorf("unknown log level (%s)", level) //nolint:goerr113
+			return fmt.Errorf("unknown log level (%s)", level)
 		}
 	}
 

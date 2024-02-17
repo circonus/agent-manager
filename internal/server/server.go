@@ -86,10 +86,10 @@ func New() (*Server, error) {
 
 func (s *Server) Start(ctx context.Context) error {
 	if done(ctx) {
-		return ctx.Err() //nolint:wrapcheck
+		return ctx.Err()
 	}
 
-	if viper.GetBool(keys.ServerTLSEnable) && //nolint:nestif
+	if viper.GetBool(keys.ServerTLSEnable) &&
 		viper.GetString(keys.ServerTLSCertFile) != "" &&
 		viper.GetString(keys.ServerTLSKeyFile) != "" {
 		log.Info().Str("listen", s.srv.Addr).Msg("starting TLS server")
@@ -103,6 +103,7 @@ func (s *Server) Start(ctx context.Context) error {
 		}
 	} else {
 		log.Info().Str("listen", s.srv.Addr).Msg("starting server")
+
 		if err := s.srv.ListenAndServe(); err != nil {
 			if !errors.Is(err, http.ErrServerClosed) {
 				log.Error().Err(err).Msg("listen and serve")
@@ -129,7 +130,7 @@ func (s *Server) Stop(ctx context.Context) error {
 
 	// if no error, check the ctx and return that error
 	if done(ctx) {
-		return ctx.Err() //nolint:wrapcheck
+		return ctx.Err()
 	}
 
 	return nil

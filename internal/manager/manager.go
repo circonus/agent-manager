@@ -31,7 +31,7 @@ import (
 // Manager holds the main manager process.
 type Manager struct {
 	group       *errgroup.Group
-	groupCtx    context.Context //nolint:containedctx
+	groupCtx    context.Context
 	groupCancel context.CancelFunc
 	signalCh    chan os.Signal
 	logger      zerolog.Logger
@@ -181,7 +181,7 @@ func (m *Manager) Start() error {
 	})
 
 	m.group.Go(func() error {
-		return server.Start(m.groupCtx) //nolint:wrapcheck
+		return server.Start(m.groupCtx)
 	})
 
 	// if not running in docker, start the agent status poller

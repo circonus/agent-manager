@@ -67,7 +67,9 @@ func Test_getActions(t *testing.T) {
 
 					return
 				}
+
 				defer r.Body.Close()
+
 				b, err := io.ReadAll(r.Body)
 				if err != nil {
 					http.Error(w, err.Error(), http.StatusInternalServerError)

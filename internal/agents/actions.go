@@ -27,8 +27,8 @@ const (
 	CONFIG  = "config"
 	COMMAND = "command"
 
-	STATUS_ACTIVE = "active" //nolint:revive,nosnakecase,stylecheck
-	STATUS_ERROR  = "error"  //nolint:revive,nosnakecase,stylecheck
+	STATUS_ACTIVE = "active"
+	STATUS_ERROR  = "error"
 )
 
 type Actions []Action
@@ -57,7 +57,8 @@ type Config struct {
 }
 
 type Result struct {
-	ActionID      string        `json:"action_id"      yaml:"action_id"` // not used at this time, api only supports configs
+	// not used at this time, api only supports configs
+	ActionID      string        `json:"action_id"      yaml:"action_id"`
 	ConfigResult  ConfigResult  `json:"config_result"  yaml:"config_result"`
 	CommandResult CommandResult `json:"command_result" yaml:"command_result"`
 }
@@ -92,7 +93,7 @@ type CommandData struct {
 func getActions(ctx context.Context) error {
 	token := viper.GetString(keys.APIToken)
 	if token == "" {
-		return fmt.Errorf("invalid api token (empty)") //nolint:goerr113
+		return fmt.Errorf("invalid api token (empty)")
 	}
 
 	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "agent", "update")
@@ -122,15 +123,15 @@ func getActions(ctx context.Context) error {
 	}
 
 	if resp.StatusCode == http.StatusUnauthorized {
-		if err := registration.RefreshRegistration(ctx); err != nil { //nolint:govet
+		if err := registration.RefreshRegistration(ctx); err != nil {
 			return fmt.Errorf("new token: %w", err)
 		}
 
-		return fmt.Errorf("token expired, refreshed") //nolint:goerr113
+		return fmt.Errorf("token expired, refreshed")
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("non-200 response -- status: %s, body: %s", resp.Status, string(body)) //nolint:goerr113
+		return fmt.Errorf("non-200 response -- status: %s, body: %s", resp.Status, string(body))
 	}
 
 	actions, err := ParseAPIActions(body)
@@ -183,7 +184,7 @@ func sendCommandResult(ctx context.Context, r CommandResult) error {
 func sendActionResult(ctx context.Context, data []byte) error {
 	token := viper.GetString(keys.APIToken)
 	if token == "" {
-		return fmt.Errorf("invalid api token (empty)") //nolint:goerr113
+		return fmt.Errorf("invalid api token (empty)")
 	}
 
 	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "agent", "update")
@@ -213,7 +214,7 @@ func sendActionResult(ctx context.Context, data []byte) error {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("non-200 response -- status: %s, body: %s", resp.Status, string(body)) //nolint:goerr113
+		return fmt.Errorf("non-200 response -- status: %s, body: %s", resp.Status, string(body))
 	}
 
 	if len(body) > 0 {

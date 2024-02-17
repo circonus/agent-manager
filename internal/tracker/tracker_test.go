@@ -42,13 +42,13 @@ func setup(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if err := os.WriteFile(filepath.Join("testdata", "agents.yaml"), data, 0600); err != nil {
+	if err := os.WriteFile(filepath.Join("testdata", "agents.yaml"), data, 0o600); err != nil {
 		t.Fatal(err)
 	}
 }
 
 func createTest1Conf(cfgFile string) error {
-	return os.WriteFile(cfgFile, baseConfData(), 0600) //nolint:wrapcheck
+	return os.WriteFile(cfgFile, baseConfData(), 0o600)
 }
 
 func baseConfData() []byte {
@@ -56,7 +56,7 @@ func baseConfData() []byte {
 }
 
 func updateTest1Conf(cfgFile string) error {
-	return os.WriteFile(cfgFile, updatedConfData(), 0600) //nolint:wrapcheck
+	return os.WriteFile(cfgFile, updatedConfData(), 0o600)
 }
 
 func updatedConfData() []byte {
@@ -89,6 +89,7 @@ func Test_getBasePath(t *testing.T) {
 
 				return
 			}
+
 			if got != tt.want {
 				t.Errorf("getBasePath() = %v, want %v", got, tt.want)
 			}
@@ -130,6 +131,7 @@ func Test_getTrackerFile(t *testing.T) {
 
 				return
 			}
+
 			if got != tt.want {
 				t.Errorf("getTrackerFile() = %v, want %v", got, tt.want)
 			}
@@ -170,8 +172,10 @@ func TestUpdateConfig(t *testing.T) {
 
 	for _, tt := range tests {
 		tt := tt
+
 		t.Run(tt.name, func(t *testing.T) {
-			if err := UpdateConfig(tt.args.agentName, tt.args.configID, tt.args.cfgFile, tt.args.data); (err != nil) != tt.wantErr {
+			if err := UpdateConfig(tt.args.agentName, tt.args.configID,
+				tt.args.cfgFile, tt.args.data); (err != nil) != tt.wantErr {
 				t.Errorf("UpdateConfig() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
@@ -183,9 +187,11 @@ func TestVerifyConfig(t *testing.T) {
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		t.Log(r.URL.String())
+
 		switch r.URL.String() {
 		case "/agent/abc123/config_assignment/123":
 			t.Log("ack modified config")
+
 			_, _ = io.WriteString(w, "all good")
 
 			return

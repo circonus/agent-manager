@@ -29,7 +29,7 @@ func getStatus(ctx context.Context, cmd string) (string, string, string, int, er
 	default:
 	}
 
-	return currStatus, subStatus, "", -1, fmt.Errorf("unable to obtain status") //nolint:goerr113
+	return currStatus, subStatus, "", -1, fmt.Errorf("unable to obtain status")
 }
 
 func brewStatus(ctx context.Context, cmd string) (string, string, string, int, error) {

@@ -28,7 +28,7 @@ func UpdateVersion(ctx context.Context) error {
 
 		token = viper.GetString(keys.APIToken)
 		if token == "" {
-			return fmt.Errorf("invalid api token (empty)") //nolint:goerr113
+			return fmt.Errorf("invalid api token (empty)")
 		}
 	}
 
@@ -40,7 +40,7 @@ func UpdateVersion(ctx context.Context) error {
 
 		managerID = viper.GetString(keys.ManagerID)
 		if managerID == "" {
-			return fmt.Errorf("invalid manager ID (empty)") //nolint:goerr113
+			return fmt.Errorf("invalid manager ID (empty)")
 		}
 	}
 
@@ -73,7 +73,7 @@ func UpdateVersion(ctx context.Context) error {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("non-200 response -- status: %d %s, body: %s", resp.StatusCode, resp.Status, string(body)) //nolint:goerr113
+		return fmt.Errorf("non-200 response -- status: %d %s, body: %s", resp.StatusCode, resp.Status, string(body))
 	}
 
 	return nil

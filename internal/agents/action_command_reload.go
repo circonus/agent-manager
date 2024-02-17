@@ -89,16 +89,16 @@ func httpReloadRequest(ctx context.Context, method, body, rawURL string) ([]byte
 	case http.MethodPost, http.MethodPut:
 		req, rerr = http.NewRequestWithContext(ctx, method, rawURL, strings.NewReader(body))
 	default:
-		return nil, fmt.Errorf("http reload, unsupported method '%s'", method) //nolint:goerr113
+		return nil, fmt.Errorf("http reload, unsupported method '%s'", method)
 	}
 
 	if rerr != nil {
-		return nil, rerr //nolint:wrapcheck
+		return nil, rerr
 	}
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, err //nolint:wrapcheck
+		return nil, err
 	}
 	defer resp.Body.Close()
 
@@ -108,7 +108,7 @@ func httpReloadRequest(ctx context.Context, method, body, rawURL string) ([]byte
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return b, fmt.Errorf("non-200 response %d - %s: %s", resp.StatusCode, resp.Status, string(b)) //nolint:goerr113
+		return b, fmt.Errorf("non-200 response %d - %s: %s", resp.StatusCode, resp.Status, string(b))
 	}
 
 	return b, nil

@@ -34,7 +34,7 @@ type APIConfigAgent struct {
 func ParseAPIActions(data []byte) (Actions, error) {
 	agents, err := inventory.LoadAgents()
 	if err != nil {
-		return nil, err //nolint:wrapcheck
+		return nil, err
 	}
 
 	var apiActions APIActions
@@ -84,7 +84,7 @@ func ParseAPIActions(data []byte) (Actions, error) {
 	}
 
 	if foundConfigs == 0 {
-		return Actions{}, fmt.Errorf("no configs found to install") //nolint:goerr113
+		return Actions{}, fmt.Errorf("no configs found to install")
 	}
 
 	return actions, nil

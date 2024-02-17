@@ -14,7 +14,7 @@ import (
 )
 
 // initAppArgs adds application specific args to the cobra command.
-func initAppArgs(cmd *cobra.Command) { //nolint:maintidx
+func initAppArgs(cmd *cobra.Command) {
 	{
 		const (
 			key          = keys.Register
@@ -124,6 +124,7 @@ func initAppArgs(cmd *cobra.Command) { //nolint:maintidx
 			envVar      = release.ENVPREFIX + "_AWS_EC2_TAGS"
 			description = "AWS EC2 tags for registration meta data"
 		)
+
 		defaultValue := defaults.AWSEC2Tags
 
 		cmd.Flags().StringSlice(longOpt, defaultValue, envDescription(description, envVar))
@@ -141,6 +142,7 @@ func initAppArgs(cmd *cobra.Command) { //nolint:maintidx
 			// env separate with space CAM_TAGS="foo:bar baz:qux"
 			// cli separate with comma --tags="foo:bar,baz:qux"
 		)
+
 		defaultValue := defaults.Tags
 
 		cmd.Flags().StringSlice(longOpt, defaultValue, envDescription(description, envVar))
@@ -156,6 +158,7 @@ func initAppArgs(cmd *cobra.Command) { //nolint:maintidx
 			envVar      = release.ENVPREFIX + "_USE_MACHINE_ID"
 			description = "Use machine_id or generate uuid"
 		)
+
 		defaultValue := defaults.UseMachineID
 
 		cmd.Flags().Bool(longOpt, defaultValue, envDescription(description, envVar))
@@ -188,6 +191,7 @@ func initAppArgs(cmd *cobra.Command) { //nolint:maintidx
 			envVar      = release.ENVPREFIX + "_AGENTS"
 			description = "List of agents (Docker specific)"
 		)
+
 		defaultValue := defaults.Agents
 
 		cmd.Flags().StringSlice(longOpt, defaultValue, envDescription(description, envVar))
@@ -293,6 +297,7 @@ func initAppArgs(cmd *cobra.Command) { //nolint:maintidx
 			envVar      = release.ENVPREFIX + "_SERVER_TLS_ENABLE"
 			description = "Server Enable TLS"
 		)
+
 		defaultValue := defaults.ServerUseTLS
 
 		cmd.Flags().Bool(longOpt, defaultValue, envDescription(description, envVar))

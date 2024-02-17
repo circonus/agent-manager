@@ -56,7 +56,7 @@ func getNewJWT(ctx context.Context) (*Response, error) {
 
 	token := viper.GetString(keys.RefreshToken)
 	if token == "" {
-		return nil, fmt.Errorf("invalid refresh token (empty)") //nolint:goerr113
+		return nil, fmt.Errorf("invalid refresh token (empty)")
 	}
 
 	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "manager", "register")
@@ -88,7 +88,7 @@ func getNewJWT(ctx context.Context) (*Response, error) {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("non-200 response -- status: %d %s, body: %s", resp.StatusCode, resp.Status, string(body)) //nolint:goerr113
+		return nil, fmt.Errorf("non-200 response -- status: %d %s, body: %s", resp.StatusCode, resp.Status, string(body))
 	}
 
 	var response Response

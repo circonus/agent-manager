@@ -21,6 +21,7 @@ func initGeneralArgs(cmd *cobra.Command) {
 			shortOpt    = "c"
 			description = "config file (default: " + defaults.ConfigFile + "|.json|.toml)"
 		)
+
 		cmd.Flags().StringVarP(&cfgFile, longOpt, shortOpt, "", description)
 	}
 
@@ -32,7 +33,9 @@ func initGeneralArgs(cmd *cobra.Command) {
 			defaultValue = false
 			description  = "Show version and exit"
 		)
+
 		cmd.Flags().BoolP(longOpt, shortOpt, defaultValue, description)
+
 		if err := viper.BindPFlag(key, cmd.Flags().Lookup(longOpt)); err != nil {
 			bindFlagError(longOpt, err)
 		}

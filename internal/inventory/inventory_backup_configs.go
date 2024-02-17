@@ -19,7 +19,7 @@ func backupConfigs(name string, configs map[string]string) {
 	baseDir := filepath.Join(defaults.EtcPath, "configs", name)
 	// e.g. /opt/circonus/am/etc/configs/telegraf
 
-	if err := os.MkdirAll(baseDir, 0700); err != nil {
+	if err := os.MkdirAll(baseDir, 0o700); err != nil {
 		if errors.Is(err, os.ErrExist) {
 			return // don't need to backup again
 		}

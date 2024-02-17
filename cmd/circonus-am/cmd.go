@@ -27,7 +27,8 @@ func initCmd() *cobra.Command {
 		PersistentPreRunE: initApp,
 		Run: func(cmd *cobra.Command, args []string) {
 			if viper.GetBool(keys.ShowVersion) {
-				fmt.Printf("%s v%s - commit: %s, date: %s, tag: %s, built with: %s\n", release.NAME, release.VERSION, release.COMMIT, release.DATE, release.TAG, runtime.Version())
+				fmt.Printf("%s v%s - commit: %s, date: %s, tag: %s, built with: %s\n",
+					release.NAME, release.VERSION, release.COMMIT, release.DATE, release.TAG, runtime.Version())
 
 				return
 			}

@@ -38,7 +38,7 @@ type Tracker struct {
 func VerifyConfig(ctx context.Context, agentName, cfgFile string) error {
 	trackerFile, err := getTrackerFile(agentName, cfgFile)
 	if err != nil {
-		return err //nolint:wrapcheck
+		return err
 	}
 
 	t, err := loadTracker(trackerFile)
@@ -53,7 +53,7 @@ func VerifyConfig(ctx context.Context, agentName, cfgFile string) error {
 			return nil
 		}
 
-		return err //nolint:wrapcheck
+		return err
 	}
 
 	if t.Modified {
@@ -61,12 +61,12 @@ func VerifyConfig(ctx context.Context, agentName, cfgFile string) error {
 	}
 
 	if t.AgentID == "" || t.AssignmentID == "" || t.S == "" {
-		return fmt.Errorf("no current tracking information available") //nolint:goerr113
+		return fmt.Errorf("no current tracking information available")
 	}
 
 	s, err := generateChecksum(cfgFile)
 	if err != nil {
-		return err //nolint:wrapcheck
+		return err
 	}
 
 	if s != t.S {
@@ -78,7 +78,7 @@ func VerifyConfig(ctx context.Context, agentName, cfgFile string) error {
 
 		t.Modified = true
 		if err := saveTracker(trackerFile, t); err != nil {
-			return err //nolint:wrapcheck
+			return err
 		}
 	}
 
@@ -88,7 +88,7 @@ func VerifyConfig(ctx context.Context, agentName, cfgFile string) error {
 func UpdateAssignmentStatus(ctx context.Context, t *Tracker) error {
 	token := viper.GetString(keys.APIToken)
 	if token == "" {
-		return fmt.Errorf("invalid api token (empty)") //nolint:goerr113
+		return fmt.Errorf("invalid api token (empty)")
 	}
 
 	reqURL, err := url.JoinPath(
@@ -125,15 +125,15 @@ func UpdateAssignmentStatus(ctx context.Context, t *Tracker) error {
 	}
 
 	if resp.StatusCode == http.StatusUnauthorized {
-		if err := registration.RefreshRegistration(ctx); err != nil { //nolint:govet
+		if err := registration.RefreshRegistration(ctx); err != nil {
 			return fmt.Errorf("new token: %w", err)
 		}
 
-		return fmt.Errorf("token expired, refreshed") //nolint:goerr113
+		return fmt.Errorf("token expired, refreshed")
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("non-200 response -- status: %s, body: %s", resp.Status, string(body)) //nolint:goerr113
+		return fmt.Errorf("non-200 response -- status: %s, body: %s", resp.Status, string(body))
 	}
 
 	return nil
@@ -142,18 +142,18 @@ func UpdateAssignmentStatus(ctx context.Context, t *Tracker) error {
 func UpdateConfig(agentName, cfgAssignmentID, cfgFile string, data []byte) error {
 	trackerFile, err := getTrackerFile(agentName, cfgFile)
 	if err != nil {
-		return err //nolint:wrapcheck
+		return err
 	}
 
 	t, err := loadTracker(trackerFile)
 	if err != nil {
-		return err //nolint:wrapcheck
+		return err
 	}
 
 	if t.AgentID == "" {
-		id, err := registration.GetInstalledAgentID(agentName) //nolint:govet
+		id, err := registration.GetInstalledAgentID(agentName)
 		if err != nil {
-			return err //nolint:wrapcheck
+			return err
 		}
 
 		t.AgentID = id
@@ -164,14 +164,14 @@ func UpdateConfig(agentName, cfgAssignmentID, cfgFile string, data []byte) error
 
 	s, err := generateChecksum(cfgFile)
 	if err != nil {
-		return err //nolint:wrapcheck
+		return err
 	}
 
 	t.S = s
 	t.D = base64.StdEncoding.EncodeToString(data)
 
 	if err := saveTracker(trackerFile, t); err != nil {
-		return err //nolint:wrapcheck
+		return err
 	}
 
 	return nil
@@ -180,7 +180,7 @@ func UpdateConfig(agentName, cfgAssignmentID, cfgFile string, data []byte) error
 func getTrackerFile(agentName, cfgFile string) (string, error) {
 	baseDir, err := getBasePath(agentName)
 	if err != nil {
-		return "", err //nolint:wrapcheck
+		return "", err
 	}
 
 	return filepath.Join(baseDir, filepath.Base(cfgFile)+".current"+".yaml"), nil
@@ -190,7 +190,7 @@ func loadTracker(file string) (*Tracker, error) {
 	data, err := os.ReadFile(file)
 	if err != nil {
 		if !errors.Is(err, os.ErrNotExist) {
-			return nil, err //nolint:wrapcheck
+			return nil, err
 		}
 
 		return &Tracker{}, nil
@@ -198,7 +198,7 @@ func loadTracker(file string) (*Tracker, error) {
 
 	var t Tracker
 	if err := yaml.Unmarshal(data, &t); err != nil {
-		return nil, err //nolint:wrapcheck
+		return nil, err
 	}
 
 	return &t, nil
@@ -207,11 +207,11 @@ func loadTracker(file string) (*Tracker, error) {
 func saveTracker(file string, t *Tracker) error {
 	data, err := yaml.Marshal(t)
 	if err != nil {
-		return err //nolint:wrapcheck
+		return err
 	}
 
-	if err := os.WriteFile(file, data, 0600); err != nil {
-		return err //nolint:wrapcheck
+	if err := os.WriteFile(file, data, 0o600); err != nil {
+		return err
 	}
 
 	return nil
@@ -221,11 +221,11 @@ func getBasePath(agentID string) (string, error) {
 	baseDir := filepath.Join(defaults.EtcPath, "configs", agentID)
 	// e.g. /opt/circonus/am/etc/configs/telegraf
 
-	if err := os.MkdirAll(baseDir, 0700); err != nil {
+	if err := os.MkdirAll(baseDir, 0o700); err != nil {
 		if !errors.Is(err, os.ErrExist) {
 			log.Error().Err(err).Str("path", baseDir).Msg("unable to make config dir to save backup")
 
-			return "", err //nolint:wrapcheck
+			return "", err
 		}
 	}
 
@@ -235,13 +235,13 @@ func getBasePath(agentID string) (string, error) {
 func generateChecksum(cfgFile string) (string, error) {
 	f, err := os.Open(cfgFile)
 	if err != nil {
-		return "", err //nolint:wrapcheck
+		return "", err
 	}
 	defer f.Close()
 
 	h := sha256.New()
 	if _, err := io.Copy(h, f); err != nil {
-		return "", err //nolint:wrapcheck
+		return "", err
 	}
 
 	return hex.EncodeToString(h.Sum(nil)), nil

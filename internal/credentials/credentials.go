@@ -17,12 +17,12 @@ import (
 func LoadJWT() error {
 	file := viper.GetString(keys.JwtTokenFile)
 	if file == "" {
-		return fmt.Errorf("invalid id file (empty)") //nolint:goerr113
+		return fmt.Errorf("invalid id file (empty)")
 	}
 
 	token, err := read(file)
 	if err != nil {
-		return err //nolint:wrapcheck
+		return err
 	}
 
 	viper.Set(keys.APIToken, string(token))
@@ -33,25 +33,25 @@ func LoadJWT() error {
 func SaveJWT(creds []byte) error {
 	file := viper.GetString(keys.JwtTokenFile)
 	if file == "" {
-		return fmt.Errorf("invalid id file (empty)") //nolint:goerr113
+		return fmt.Errorf("invalid id file (empty)")
 	}
 
 	if len(creds) == 0 {
-		return fmt.Errorf("invalid credential token (empty)") //nolint:goerr113
+		return fmt.Errorf("invalid credential token (empty)")
 	}
 
-	return write(file, creds) //nolint:wrapcheck
+	return write(file, creds)
 }
 
 func LoadManagerID() error {
 	file := viper.GetString(keys.ManagerIDFile)
 	if file == "" {
-		return fmt.Errorf("invalid manager id file (empty)") //nolint:goerr113
+		return fmt.Errorf("invalid manager id file (empty)")
 	}
 
 	token, err := read(file)
 	if err != nil {
-		return err //nolint:wrapcheck
+		return err
 	}
 
 	viper.Set(keys.ManagerID, string(token))
@@ -62,25 +62,25 @@ func LoadManagerID() error {
 func SaveManagerID(creds []byte) error {
 	file := viper.GetString(keys.ManagerIDFile)
 	if file == "" {
-		return fmt.Errorf("invalid manager id file (empty)") //nolint:goerr113
+		return fmt.Errorf("invalid manager id file (empty)")
 	}
 
 	if len(creds) == 0 {
-		return fmt.Errorf("invalid manager id (empty)") //nolint:goerr113
+		return fmt.Errorf("invalid manager id (empty)")
 	}
 
-	return write(file, creds) //nolint:wrapcheck
+	return write(file, creds)
 }
 
 func LoadRefreshToken() error {
 	file := viper.GetString(keys.RefreshTokenFile)
 	if file == "" {
-		return fmt.Errorf("invalid refresh token file (empty)") //nolint:goerr113
+		return fmt.Errorf("invalid refresh token file (empty)")
 	}
 
 	token, err := read(file)
 	if err != nil {
-		return err //nolint:wrapcheck
+		return err
 	}
 
 	viper.Set(keys.RefreshToken, string(token))
@@ -91,25 +91,25 @@ func LoadRefreshToken() error {
 func SaveRefreshToken(creds []byte) error {
 	file := viper.GetString(keys.RefreshTokenFile)
 	if file == "" {
-		return fmt.Errorf("invalid refresh token file (empty)") //nolint:goerr113
+		return fmt.Errorf("invalid refresh token file (empty)")
 	}
 
 	if len(creds) == 0 {
-		return fmt.Errorf("invalid refresh token (empty)") //nolint:goerr113
+		return fmt.Errorf("invalid refresh token (empty)")
 	}
 
-	return write(file, creds) //nolint:wrapcheck
+	return write(file, creds)
 }
 
 func LoadMachineID() error {
 	file := viper.GetString(keys.MachineIDFile)
 	if file == "" {
-		return fmt.Errorf("invalid machine id file (empty)") //nolint:goerr113
+		return fmt.Errorf("invalid machine id file (empty)")
 	}
 
 	token, err := read(file)
 	if err != nil {
-		return err //nolint:wrapcheck
+		return err
 	}
 
 	viper.Set(keys.MachineID, string(token))
@@ -120,27 +120,27 @@ func LoadMachineID() error {
 func SaveMachineID(creds []byte) error {
 	file := viper.GetString(keys.MachineIDFile)
 	if file == "" {
-		return fmt.Errorf("invalid machine id file (empty)") //nolint:goerr113
+		return fmt.Errorf("invalid machine id file (empty)")
 	}
 
 	if len(creds) == 0 {
-		return fmt.Errorf("invalid machine id (empty)") //nolint:goerr113
+		return fmt.Errorf("invalid machine id (empty)")
 	}
 
-	return write(file, creds) //nolint:wrapcheck
+	return write(file, creds)
 }
 
 func read(file string) ([]byte, error) {
 	data, err := os.ReadFile(file)
 	if err != nil {
-		return nil, err //nolint:wrapcheck
+		return nil, err
 	}
 
 	return data, nil
 }
 
 func write(file string, data []byte) error {
-	return os.WriteFile(file, data, 0600) //nolint:wrapcheck
+	return os.WriteFile(file, data, 0o600)
 }
 
 func DoesFileExist(file string) bool {

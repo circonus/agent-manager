@@ -112,7 +112,7 @@ func Start(ctx context.Context) error {
 
 	awstags := viper.GetStringSlice(keys.AWSEC2Tags)
 	if len(awstags) > 0 {
-		at, err := getAWSTags(ctx, awstags) //nolint:govet
+		at, err := getAWSTags(ctx, awstags)
 		if err != nil {
 			log.Fatal().Err(err).Msg("adding AWS EC2 tags")
 		}
@@ -147,15 +147,15 @@ func Start(ctx context.Context) error {
 
 func getJWT(ctx context.Context, token string, reg Registration) (*Response, error) {
 	if token == "" {
-		return nil, fmt.Errorf("invalid token (empty)") //nolint:goerr113
+		return nil, fmt.Errorf("invalid token (empty)")
 	}
 
 	if reg.Hostname == "" {
-		return nil, fmt.Errorf("invalid claims (empty hostname)") //nolint:goerr113
+		return nil, fmt.Errorf("invalid claims (empty hostname)")
 	}
 
 	if reg.MachineID == "" {
-		return nil, fmt.Errorf("invalid claims (empty machine id)") //nolint:goerr113
+		return nil, fmt.Errorf("invalid claims (empty machine id)")
 	}
 
 	c, err := json.Marshal(reg)
@@ -190,7 +190,7 @@ func getJWT(ctx context.Context, token string, reg Registration) (*Response, err
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("non-200 response -- status: %d %s, body: %s", resp.StatusCode, resp.Status, string(body)) //nolint:goerr113
+		return nil, fmt.Errorf("non-200 response -- status: %d %s, body: %s", resp.StatusCode, resp.Status, string(body))
 	}
 
 	var response Response
@@ -205,7 +205,7 @@ func getMachineID() (string, error) {
 	if viper.GetBool(keys.UseMachineID) {
 		id, err := machineid.ID()
 		if err != nil {
-			return "", err //nolint:wrapcheck
+			return "", err
 		}
 
 		mac := hmac.New(sha256.New, []byte(id))
@@ -242,7 +242,7 @@ func getHostInfo() (Registration, error) {
 
 	hi, err := host.Info()
 	if err != nil {
-		return reg, err //nolint:wrapcheck
+		return reg, err
 	}
 
 	// hi.OS is runtime.GOOS

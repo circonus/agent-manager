@@ -69,7 +69,7 @@ func Start(ctx context.Context) error {
 func deleteManager(ctx context.Context) error {
 	token := viper.GetString(keys.APIToken)
 	if token == "" {
-		return fmt.Errorf("invalid api token (empty)") //nolint:goerr113
+		return fmt.Errorf("invalid api token (empty)")
 	}
 
 	reqURL, err := url.JoinPath(viper.GetString(keys.APIURL), "manager", viper.GetString(keys.ManagerID))
@@ -99,7 +99,7 @@ func deleteManager(ctx context.Context) error {
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		return fmt.Errorf("non-204 response -- status: %s, body: %s", resp.Status, string(body)) //nolint:goerr113
+		return fmt.Errorf("non-204 response -- status: %s, body: %s", resp.Status, string(body))
 	}
 
 	return nil

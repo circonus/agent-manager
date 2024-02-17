@@ -3,7 +3,6 @@
 // license that can be found in the LICENSE file.
 //
 
-//nolint:gochecknoglobals
 package defaults
 
 import (
@@ -104,7 +103,7 @@ func SetEtcPaths(etcPath string) {
 	RefreshTokenFile = filepath.Join(IDPath, "rft")
 	MachineIDFile = filepath.Join(IDPath, "mid")
 
-	if err := os.MkdirAll(IDPath, 0700); err != nil {
+	if err := os.MkdirAll(IDPath, 0o700); err != nil {
 		log.Fatal().Err(err).Msg("creating ID path")
 	}
 }

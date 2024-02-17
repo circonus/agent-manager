@@ -20,20 +20,24 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-var initialized = false //nolint:gochecknoglobals
+var initialized = false
 
 func inventoryFileName() string {
 	return filepath.Join("testdata", "inventory.yaml")
 }
+
 func binaryFileName() string {
 	return filepath.Join("testdata", "test_binary")
 }
+
 func confFileID() string {
 	return "d81c7650-19ae-4bf3-98df-5d24d53f5756"
 }
+
 func confFileName() string {
 	return filepath.Join("testdata", "test_conf")
 }
+
 func setupTest() {
 	zerolog.SetGlobalLevel(zerolog.Disabled)
 
@@ -58,7 +62,7 @@ func setupTest() {
 		log.Fatal("yaml marshal", err)
 	}
 
-	if err := os.WriteFile(file, data, 0600); err != nil {
+	if err := os.WriteFile(file, data, 0o600); err != nil {
 		log.Fatal("write inv file", err)
 	}
 
@@ -104,19 +108,22 @@ func TestParseAPIActions(t *testing.T) {
 		},
 	}
 
-	for _, tt := range tests { //nolint:varnamelen
+	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			viper.Set(keys.InventoryFile, tt.invFile)
+
 			data, err := os.ReadFile(tt.actFile)
 			if err != nil {
 				t.Fatalf("reading test file: %s", err)
 			}
+
 			got, err := ParseAPIActions(data)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ParseAPIActions() error = %v, wantErr %v", err, tt.wantErr)
 
 				return
 			}
+
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("ParseAPIActions() = %#v, want %#v", got, tt.want)
 			}
