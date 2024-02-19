@@ -4,9 +4,6 @@ before:
   hooks:
     - go mod tidy
     - golangci-lint run
-    - cmd: golangci-lint run
-      env:
-        - GOOS=linux
     - govulncheck ./...
 
 builds: 
@@ -22,7 +19,7 @@ builds:
       - linux
       # - windows
     ignore: 
-      - goarch: 386
+      - goarch: "386"
       - goos: windows
         goarch: arm64
     flags:
