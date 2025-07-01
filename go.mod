@@ -1,6 +1,6 @@
 module github.com/circonus/agent-manager
 
-go 1.20
+go 1.23.0
 
 require (
 	github.com/alecthomas/units v0.0.0-20231202071711-9a357b53e9c9
@@ -14,7 +14,7 @@ require (
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.18.2
 	golang.org/x/sync v0.6.0
-	golang.org/x/sys v0.19.0
+	golang.org/x/sys v0.33.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
